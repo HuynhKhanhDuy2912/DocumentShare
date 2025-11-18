@@ -298,3 +298,59 @@ body {
     height: 250px; /* Chiều cao trên điện thoại */
   }
 }
+
+/* Mega Dropdown Container */
+.mega-dropdown {
+  position: relative;
+}
+
+.mega-menu {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 1000px; /* Mega menu rộng hơn menu chính */
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  z-index: 1000;
+}
+
+/* Hover để hiện menu */
+.mega-dropdown:hover .mega-menu {
+  display: block;
+}
+
+/* Grid 4 cột mỗi hàng */
+.mega-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); 
+  gap: 25px;
+}
+
+/* Column */
+.mega-column h4 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #0d6efd;
+}
+
+.mega-column ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.mega-column ul li a {
+  display: block;
+  padding: 6px 0;
+  color: #4a5568;
+  font-size: 14px;
+}
+
+.mega-column ul li a:hover {
+  color: #0d6efd;
+  padding-left: 5px;
+}

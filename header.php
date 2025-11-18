@@ -46,7 +46,8 @@ if (isset($_SESSION['emailUser'])) {
             <a class="navbar-brand d-flex align-items-center" href="index.php">
                 <img src="assets/img/logo.png" alt="Logo" style="height: 40px; margin-right: 10px;">
                 <div class="d-flex flex-column">
-                    <span style="font-weight: 700; font-size: 18px; line-height: 1.2; color: #0d6efd;">DocumentShare</span>
+                    <span
+                        style="font-weight: 700; font-size: 18px; line-height: 1.2; color: #0d6efd;">DocumentShare</span>
                     <span style="font-size: 12px; color: #6c757d; font-weight: 500;">Học Tập & Chia Sẻ</span>
                 </div>
             </a>
@@ -57,25 +58,117 @@ if (isset($_SESSION['emailUser'])) {
 
             <div class="collapse navbar-collapse" id="navbarMenu">
 
-                <ul class="navbar-nav mr-auto ml-4">
+                <!-- MENU TRÁI -->
+                <ul class="navbar-nav mr-auto">
                     <li class="nav-item"><a class="nav-link" href="index.php"><i class="fa fa-home mr-1"></i> Trang chủ</a></li>
-                    <li class="nav-item"><a class="nav-link" href="danhmuc.php"><i class="fa fa-tag mr-1"></i> Danh mục</a></li>
+                    <li class="nav-item mega-dropdown">
+                        <a class="nav-link" href="danhmuc.php">
+                            <i class="fa fa-tag mr-1"></i> Danh mục tài liệu
+                        </a>
+
+                        <!-- Mega Menu -->
+                        <div class="mega-menu">
+                            <div class="mega-grid">
+
+                                <!-- Cột danh mục 1 -->
+                                <div class="mega-column">
+                                    <h4 class="mega-title">Lập trình Web</h4>
+                                    <ul>
+                                        <li><a href="#">Tài liệu HTML</a></li>
+                                        <li><a href="#">Tài liệu CSS</a></li>
+                                        <li><a href="#">Tài liệu JavaScript</a></li>
+                                    </ul>
+                                </div>
+
+                                <!-- Cột danh mục 2 -->
+                                <div class="mega-column">
+                                    <h4 class="mega-title">Lập trình Mobile</h4>
+                                    <ul>
+                                        <li><a href="#">Tài liệu Android</a></li>
+                                        <li><a href="#">Tài liệu iOS</a></li>
+                                        <li><a href="#">Tài liệu Flutter</a></li>
+                                    </ul>
+                                </div>
+
+                                <!-- Cột danh mục 3 -->
+                                <div class="mega-column">
+                                    <h4 class="mega-title">Cơ sở dữ liệu</h4>
+                                    <ul>
+                                        <li><a href="#">Tài liệu MySQL</a></li>
+                                        <li><a href="#">Tài liệu MongoDB</a></li>
+                                        <li><a href="#">Tài liệu SQL Server</a></li>
+                                    </ul>
+                                </div>
+
+                                <!-- Cột danh mục 4 -->
+                                <div class="mega-column">
+                                    <h4 class="mega-title">AI & Data Science</h4>
+                                    <ul>
+                                        <li><a href="#">Python cơ bản</a></li>
+                                        <li><a href="#">Machine Learning</a></li>
+                                        <li><a href="#">Xử lý dữ liệu</a></li>
+                                    </ul>
+                                </div>
+
+                                <!-- HÀNG 2 Cũng 4 danh mục -->
+                                <div class="mega-column">
+                                    <h4 class="mega-title">Mạng máy tính</h4>
+                                    <ul>
+                                        <li><a href="#">Tài liệu CCNA</a></li>
+                                        <li><a href="#">Mạng nâng cao</a></li>
+                                        <li><a href="#">An ninh mạng</a></li>
+                                    </ul>
+                                </div>
+
+                                <div class="mega-column">
+                                    <h4 class="mega-title">Tin học văn phòng</h4>
+                                    <ul>
+                                        <li><a href="#">Word nâng cao</a></li>
+                                        <li><a href="#">Excel chuyên sâu</a></li>
+                                        <li><a href="#">PowerPoint</a></li>
+                                    </ul>
+                                </div>
+
+                                <div class="mega-column">
+                                    <h4 class="mega-title">Thiết kế đồ họa</h4>
+                                    <ul>
+                                        <li><a href="#">Photoshop</a></li>
+                                        <li><a href="#">Illustrator</a></li>
+                                        <li><a href="#">Figma</a></li>
+                                    </ul>
+                                </div>
+
+                                <div class="mega-column">
+                                    <h4 class="mega-title">Kỹ năng mềm</h4>
+                                    <ul>
+                                        <li><a href="#">Giao tiếp</a></li>
+                                        <li><a href="#">Thuyết trình</a></li>
+                                        <li><a href="#">Quản lý thời gian</a></li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
+                    </li>
                     <li class="nav-item"><a class="nav-link" href="contact.php"><i class="fa fa-envelope mr-1"></i> Liên hệ</a></li>
                 </ul>
 
-                <form class="form-inline search-box" action="search.php" method="get">
+                <!-- Ô tìm kiếm -->
+                <form class="form-inline search-box mx-auto" action="search.php" method="get">
                     <div class="input-group">
-                        <input class="form-control" type="search" name="q" placeholder="Tìm kiếm tài liệu, giáo trình..." aria-label="Search">
+                        <input class="form-control" type="search" name="q" placeholder="Tìm kiếm tài liệu...">
                         <div class="input-group-append">
-                            <button class="btn btn-light border" type="submit"><i class="fa fa-search text-muted"></i></button>
+                            <button class="btn btn-light border" type="submit">
+                                <i class="fa fa-search text-muted"></i>
+                            </button>
                         </div>
                     </div>
                 </form>
 
-                <ul class="navbar-nav align-items-center">
+                <!-- MENU PHẢI (Đăng nhập / Đăng ký hoặc User) -->
+                <ul class="navbar-nav ml-auto align-items-center">
 
                     <?php if (isset($_SESSION["emailUser"])): ?>
-
                         <li class="nav-item" style="margin-right: 40px">
                             <a class="btn btn-primary btn-sm btn-rounded text-white px-4 py-2" href="upload.php">
                                 <i class="fa fa-upload mr-2"></i> Đăng tài liệu
@@ -111,15 +204,15 @@ if (isset($_SESSION['emailUser'])) {
                                 <a class="dropdown-item text-danger" href="logout.php"><i class="fa fa-sign-out-alt mr-2"></i> Đăng xuất</a>
                             </div>
                         </li>
-
                     <?php else: ?>
                         <li class="nav-item"><a class="nav-link font-weight-bold" href="login.php">Đăng nhập</a></li>
-                        <li class="nav-item ml-2"><a class="btn btn-primary btn-sm px-3 btn-rounded" href="signup.php">Đăng ký</a></li>
+                        <li class="nav-item ml-2"><a class="btn btn-primary btn-sm px-3 btn-rounded" href="signup.php">Đăng
+                                ký</a></li>
                     <?php endif; ?>
 
                 </ul>
-
             </div>
+
         </div>
     </nav>
 

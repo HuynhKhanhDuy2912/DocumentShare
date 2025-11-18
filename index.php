@@ -40,7 +40,7 @@
     <div class="row">
 
         <!-- Tài liệu 1 -->
-        <div class="col-md-4 mb-3">
+        <!-- <div class="col-md-3 mb-3">
             <div class="card h-100">
                 <img src="assets/img/bg.jpg" class="card-img-top" alt="Doc 1">
                 <div class="card-body">
@@ -49,31 +49,53 @@
                     <a href="#" class="btn btn-primary btn-sm">Xem chi tiết</a>
                 </div>
             </div>
+        </div> -->
+        <?php
+        // Lấy dữ liệu từ bảng document
+        $sql = "SELECT document_id, title, description, file_path FROM documents";
+        $result = mysqli_query($conn, $sql);
+        ?>
+
+        <div class="row">
+            <?php while ($row = mysqli_fetch_assoc($result)): ?>
+
+                <div class="col-md-3 mb-3">
+                    <div class="card h-100">
+
+                        <!-- Ảnh tài liệu -->
+                        <?php
+                        // Nếu file_path NULL hoặc không phải ảnh → dùng ảnh mặc định
+                        $image = (!empty($row['file_path']) && preg_match('/\.(jpg|jpeg|png|gif)$/i', $row['file_path']))
+                            ? $row['file_path']
+                            : "assets/img/bg.jpg";
+                        ?>
+
+                        <img src="<?= $image ?>" class="card-img-top" alt="Document Image">
+
+                        <div class="card-body">
+                            <!-- Tiêu đề -->
+                            <h5 class="card-title">
+                                <?= htmlspecialchars($row['title']) ?>
+                            </h5>
+
+                            <!-- Mô tả -->
+                            <p class="card-text">
+                                <?= htmlspecialchars($row['description']) ?>
+                            </p>
+
+                            <!-- Link chi tiết -->
+                            <a href="document_detail.php?id=<?= $row['document_id'] ?>" class="btn btn-primary btn-sm">
+                                Xem chi tiết
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+
+            <?php endwhile; ?>
         </div>
 
-        <!-- Tài liệu 2 -->
-        <div class="col-md-4 mb-3">
-            <div class="card h-100">
-                <img src="assets/img/bg.jpg" class="card-img-top card-img-small" alt="Doc 2">
-                <div class="card-body">
-                    <h5 class="card-title">Lập trình C++</h5>
-                    <p class="card-text">Bài giảng C++ cơ bản và nâng cao, kèm bài tập thực hành.</p>
-                    <a href="#" class="btn btn-primary btn-sm">Xem chi tiết</a>
-                </div>
-            </div>
-        </div>
 
-        <!-- Tài liệu 3 -->
-        <div class="col-md-4 mb-3">
-            <div class="card h-100">
-                <img src="assets/img/bg.jpg" class="card-img-top card-img-small" alt="Doc 3">
-                <div class="card-body">
-                    <h5 class="card-title">Hóa học đại cương</h5>
-                    <p class="card-text">Tài liệu đầy đủ các chương Hóa học đại cương cho sinh viên mới nhập học.</p>
-                    <a href="#" class="btn btn-primary btn-sm">Xem chi tiết</a>
-                </div>
-            </div>
-        </div>
 
     </div>
 
