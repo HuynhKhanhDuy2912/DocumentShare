@@ -91,7 +91,10 @@ if (isset($_REQUEST['sbSubmit'])) {
         $_SESSION['username'] = $tendangnhap;
         $_SESSION['emailUser'] = $row['email'];
         $_SESSION['role'] = $row['role'];
-        header("Location: index.php");
+        echo "<script>
+            alert('Bạn đã đăng nhập thành công!');
+            window.location.assign('index.php');
+        </script>";
     } else {
         echo "<script> alert('Tên đăng nhập hoặc email không đúng!');";
         echo "</script>";
