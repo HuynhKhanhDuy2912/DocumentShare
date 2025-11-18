@@ -1,0 +1,300 @@
+.register-box,
+.login-box {
+  max-width: 550px;
+  margin: 40px auto;
+  background: #fff;
+  padding: 35px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+.form-label {
+  font-weight: 600;
+}
+
+/* Container để căn giữa nút và chữ */
+.upload-container {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  padding: 10px;
+  border: 1px dashed #ced4da; /* Viền nét đứt tạo cảm giác vùng upload */
+  border-radius: 10px;
+}
+
+/* Style cho nút bấm (Label) */
+.btn-upload {
+  display: inline-block;
+  background-color: #ffffff;
+  color: #0d6efd;
+  padding: 8px 20px;
+  border-radius: 50px; /* Bo tròn hay còn gọi là Pill shape */
+  cursor: pointer;
+  border: 1px solid #0d6efd;
+  transition: all 0.3s ease;
+  margin-bottom: 0; /* Reset margin mặc định của label */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* Hiệu ứng khi di chuột vào nút */
+.btn-upload:hover {
+  background-color: #0d6efd;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(13, 110, 253, 0.2);
+}
+
+/* Style cho dòng chữ tên file */
+.file-name {
+  font-size: 14px;
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+/*Login*/
+.card {
+  border-radius: 14px !important;
+}
+
+.input-group-text {
+  background: #f8f9fa;
+}
+
+input.form-control:focus {
+  box-shadow: none !important;
+  border-color: #007bff;
+}
+.login-box {
+  max-width: 550px;
+  margin: 40px auto;
+  background: #fff;
+  padding: 35px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+body {
+  background: #f5f6fa;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* --- Navbar Styles --- */
+.navbar {
+  background: #ffffff !important;
+  border-bottom: 1px solid #eef2f6;
+}
+
+/* Logo */
+.navbar-brand img {
+  transition: all 0.3s ease;
+}
+
+/* Menu Items */
+.navbar-nav .nav-item .nav-link {
+  font-size: 15px;
+  font-weight: 600;
+  color: #4a5568 !important;
+  padding: 0.5rem 1rem;
+  transition: color 0.2s;
+}
+
+.navbar-nav .nav-item .nav-link:hover {
+  color: #0d6efd !important; /* Màu xanh chủ đạo */
+}
+
+/* --- Thanh tìm kiếm --- */
+
+/* --- Thanh tìm kiếm --- */
+
+/* 1. Mặc định cho Mobile và Laptop nhỏ (dưới 1200px) */
+/* Ở chế độ này, thanh tìm kiếm sẽ nằm tự nhiên (không đè lên menu) */
+.search-box {
+  width: 100%;
+  margin: 10px 0;
+}
+
+/* 2. Chỉ áp dụng cho Màn hình lớn (Desktop rộng trên 1200px) */
+/* Lúc này mới kích hoạt chế độ "Đóng đinh ở giữa" */
+@media (min-width: 1200px) {
+  .search-box {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 400px; /* Giảm từ 40% xuống cố định 350px để không bị va chạm */
+    margin: 0;
+    z-index: 10;
+  }
+}
+
+/* --- Tinh chỉnh lại Menu để tiết kiệm diện tích --- */
+.navbar-nav .nav-item .nav-link {
+  padding-left: 0.8rem !important; /* Giảm khoảng cách giữa các chữ menu một chút */
+  padding-right: 0.8rem !important;
+  white-space: nowrap; /* Chống xuống dòng chữ menu */
+}
+
+/* Các đoạn trang trí bên trong giữ nguyên */
+.search-box .input-group {
+  width: 100%;
+  background-color: #f1f3f5;
+  border-radius: 50px;
+  padding: 2px;
+  border: 1px solid transparent;
+  transition: all 0.3s;
+  margin-left: 70px;
+}
+
+.search-box .input-group:focus-within {
+  background-color: #fff;
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.search-box input {
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  padding-left: 20px;
+  height: 38px;
+}
+
+.search-box input:focus {
+  background: transparent;
+  box-shadow: none;
+}
+
+.search-box button {
+  background: transparent;
+  border: none;
+  border-radius: 0 50px 50px 0;
+  padding-right: 20px;
+}
+
+.search-box button:hover {
+  background: transparent;
+  color: #0d6efd;
+}
+
+/* Button Đăng tài liệu / Đăng ký */
+.btn-rounded {
+  border-radius: 50px;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(13, 110, 253, 0.2);
+}
+
+.btn-rounded:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3);
+}
+
+/* Responsive Mobile */
+@media (max-width: 991px) {
+  .navbar {
+    height: auto !important;
+    padding: 15px;
+  }
+  .search-box {
+    width: 100%;
+    margin: 15px 0;
+  }
+  .navbar-nav.ml-4 {
+    margin-left: 0 !important;
+  }
+}
+
+/* --- User Dropdown Styles --- */
+
+/* Xử lý hiệu ứng Hover cho Desktop (màn hình lớn hơn 992px) */
+@media (min-width: 992px) {
+  .user-dropdown:hover .dropdown-menu {
+    display: block;
+    margin-top: 0; /* Sát vào menu cha */
+    animation: fadeIn 0.3s ease; /* Hiệu ứng hiện ra nhẹ nhàng */
+  }
+}
+
+/* Hiệu ứng Fade In */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Tùy chỉnh Dropdown Menu */
+.dropdown-menu {
+  border-radius: 8px;
+  padding: 10px 0;
+  min-width: 200px; /* Độ rộng tối thiểu của menu con */
+}
+
+.dropdown-item {
+  padding: 8px 20px;
+  font-weight: 500;
+  color: #555;
+  transition: all 0.2s;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+  color: #0d6efd; /* Màu xanh khi hover vào mục con */
+  padding-left: 25px; /* Hiệu ứng đẩy chữ sang phải nhẹ */
+}
+
+.dropdown-item i {
+  width: 20px; /* Cố định chiều rộng icon để chữ thẳng hàng */
+  text-align: center;
+}
+
+/* Giới hạn tên user hiển thị trên menu cha để không bị quá dài */
+.text-truncate {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Tăng kích thước vùng bấm của user */
+.user-dropdown .nav-link {
+  padding-left: 15px !important;
+  padding-right: 15px !important;
+  border-radius: 30px; /* Bo tròn vùng hover */
+  transition: background 0.3s;
+}
+
+/* Hiệu ứng nền nhẹ khi hover vào vùng tên user */
+.user-dropdown .nav-link:hover {
+  background-color: #f0f2f5;
+}
+
+.card-img-small {
+  height: 150px;
+  object-fit: cover;
+}
+
+/* Avatar user trên thanh menu */
+.nav-user-avatar {
+  width: 35px; /* Kích thước bằng với icon fa-2x */
+  height: 35px;
+  border-radius: 50%; /* Bo tròn hoàn toàn */
+  object-fit: cover; /* Cắt ảnh vừa khung mà không bị méo */
+  border: 2px solid #e9ecef; /* Viền nhẹ cho nổi bật */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+/* --- Chỉnh chiều cao Carousel Slide --- */
+.carousel-item img {
+  height: 400px; /* Chiều cao bạn muốn (có thể sửa thành 400px hoặc 500px) */
+  object-fit: cover; /* Quan trọng: Giúp ảnh tự cắt để vừa khung, không bị méo */
+  object-position: center; /* Luôn lấy trung tâm bức ảnh */
+}
+
+/* Tùy chỉnh cho màn hình điện thoại (nếu muốn slide thấp hơn trên mobile) */
+@media (max-width: 768px) {
+  .carousel-item img {
+    height: 250px; /* Chiều cao trên điện thoại */
+  }
+}
