@@ -7,7 +7,7 @@ require_once 'vendor/autoload.php'; // Gọi thư viện bạn vừa cài
 // Cấu hình Client ID và Secret (Lấy từ Google Console điền vào đây)
 $clientID = '483642035448-o4gcrpg5vd9knnu8av8j70mip7sklbul.apps.googleusercontent.com';
 $clientSecret = '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';
-$redirectUri = 'http://localhost/chiasetailieu/login.php'; // Sửa lại đúng đường dẫn dự án của bạn
+$redirectUri = 'http://localhost/chiasetailieu/login.php';
 
 $client = new Google_Client();
 $client->setClientId($clientID);
@@ -90,7 +90,7 @@ if (isset($_REQUEST['sbSubmit'])) {
         $row = $result->fetch_assoc();
         $_SESSION['username'] = $tendangnhap;
         $_SESSION['emailUser'] = $row['email'];
-        $_SESSION['role'] = $row['role'];
+        $_SESSION['role'] = $row['role']; 
         echo "<script>
             alert('Bạn đã đăng nhập thành công!');
             window.location.assign('index.php');
