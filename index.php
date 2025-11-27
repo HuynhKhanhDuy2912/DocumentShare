@@ -2,24 +2,24 @@
 
 <div class="container mt-4">
 
-    <!-- CAROUSEL SLIDE -->
+    <!-- CAROUSEL -->
     <div id="carouselDocs" class="carousel slide mb-4" data-ride="carousel">
         <ol class="carousel-indicators">
             <li data-target="#carouselDocs" data-slide-to="0" class="active"></li>
             <li data-target="#carouselDocs" data-slide-to="1"></li>
-            <li data-target="#carouselDocs" data-slide-to="2"></li>
         </ol>
 
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <img src="assets/img/bg.jpg" class="d-block w-100" alt="Slide 2">
+                <img src="assets/img/bg.jpg" class="d-block w-100" alt="Slide 1">
                 <div class="carousel-caption d-none d-md-block">
                     <h5>Bài giảng lập trình PHP</h5>
                     <p>Học từ cơ bản đến nâng cao.</p>
                 </div>
             </div>
+
             <div class="carousel-item">
-                <img src="assets/img/bg1.jpg" class="d-block w-100" alt="Slide 3">
+                <img src="assets/img/bg1.jpg" class="d-block w-100" alt="Slide 2">
                 <div class="carousel-caption d-none d-md-block">
                     <h5>Thư viện tài liệu miễn phí</h5>
                     <p>Tìm kiếm tài liệu nhanh chóng, dễ dàng.</p>
@@ -35,70 +35,44 @@
         </a>
     </div>
 
-    <!-- DANH SÁCH TÀI LIỆU MỚI NHẤT -->
+    <!-- TÀI LIỆU MỚI NHẤT -->
     <h3 class="mb-3">Tài liệu mới nhất</h3>
-    <div class="row">
 
-        <!-- Tài liệu 1 -->
-        <!-- <div class="col-md-3 mb-3">
-            <div class="card h-100">
-                <img src="assets/img/bg.jpg" class="card-img-top" alt="Doc 1">
-                <div class="card-body">
-                    <h5 class="card-title">Toán Cao Cấp</h5>
-                    <p class="card-text">Tài liệu tổng hợp các chương Toán Cao Cấp dành cho sinh viên.</p>
-                    <a href="#" class="btn btn-primary btn-sm">Xem chi tiết</a>
-                </div>
-            </div>
-        </div> -->
+    <div class="row">
         <?php
-        // Lấy dữ liệu từ bảng document
-        $sql = "SELECT document_id, title, description, file_path FROM documents";
+        $sql = "SELECT document_id, title, description, file_path 
+                FROM documents ORDER BY document_id DESC LIMIT 8";
         $result = mysqli_query($conn, $sql);
+
+        while ($row = mysqli_fetch_assoc($result)):
+            $image = (!empty($row['file_path']) && preg_match('/\.(jpg|jpeg|png|gif)$/i', $row['file_path']))
+                ? $row['file_path']
+                : "assets/img/bg.jpg";
         ?>
 
-        <div class="row">
-            <?php while ($row = mysqli_fetch_assoc($result)): ?>
+            <div class="col-md-3 mb-3">
+                <div class="card h-100 shadow-sm">
 
-                <div class="col-md-3 mb-3">
-                    <div class="card h-100">
+                    <img src="<?= $image ?>" class="card-img-top" alt="Document">
 
-                        <!-- Ảnh tài liệu -->
-                        <?php
-                        // Nếu file_path NULL hoặc không phải ảnh → dùng ảnh mặc định
-                        $image = (!empty($row['file_path']) && preg_match('/\.(jpg|jpeg|png|gif)$/i', $row['file_path']))
-                            ? $row['file_path']
-                            : "assets/img/bg.jpg";
-                        ?>
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <?= htmlspecialchars($row['title']) ?>
+                        </h5>
 
-                        <img src="<?= $image ?>" class="card-img-top" alt="Document Image">
+                        <p class="card-text text-truncate">
+                            <?= htmlspecialchars($row['description']) ?>
+                        </p>
 
-                        <div class="card-body">
-                            <!-- Tiêu đề -->
-                            <h5 class="card-title">
-                                <?= htmlspecialchars($row['title']) ?>
-                            </h5>
-
-                            <!-- Mô tả -->
-                            <p class="card-text">
-                                <?= htmlspecialchars($row['description']) ?>
-                            </p>
-
-                            <!-- Link chi tiết -->
-                            <a href="document_detail.php?id=<?= $row['document_id'] ?>" class="btn btn-primary btn-sm">
-                                Xem chi tiết
-                            </a>
-                        </div>
-
+                        <a href="document_detail.php?id=<?= $row['document_id'] ?>"
+                            class="btn btn-primary btn-sm">
+                            Xem chi tiết
+                        </a>
                     </div>
                 </div>
-
-            <?php endwhile; ?>
-        </div>
-
-
-
+            </div>
+        <?php endwhile; ?>
     </div>
-
 </div>
 
 <?php include("footer.php"); ?>

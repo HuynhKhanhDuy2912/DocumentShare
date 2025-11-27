@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th10 20, 2025 lúc 07:07 AM
+-- Thời gian đã tạo: Th10 27, 2025 lúc 04:59 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -107,7 +107,7 @@ INSERT INTO `users` (`username`, `fullname`, `password`, `email`, `avatar`, `rol
 ('duy2912www', '', '9f646ba8eb41b93dfd34dd86b99760b0', 'duy2912www@gmail.com', NULL, 0, '106649780835115078066'),
 ('hanhanjk04', '', 'fae6a936667ff7d63523f90037d4237f', 'hanhanjk04@gmail.com', NULL, 0, '100981230795254291503'),
 ('jungdung2004', '', 'ad52956b53b2fce6bf670a6667cc2de6', 'jungdung2004@gmail.com', NULL, 0, '109039166477257996447'),
-('khanhduy', 'Huỳnh Khánh Duy', 'e10adc3949ba59abbe56e057f20f883e', 'duykhanhwww@gmail.com', 'mangekyou.jpg', 0, NULL);
+('khanhduy', 'Huỳnh Khánh Duy', 'e10adc3949ba59abbe56e057f20f883e', 'duykhanhwww@gmail.com', 'mangekyou.jpg', 1, NULL);
 
 --
 -- Chỉ mục cho các bảng đã đổ

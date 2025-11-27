@@ -1,11 +1,10 @@
-<?php require("auth_check.php"); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DocumentShare | Dashboard</title>
-  <link rel="icon" href="assets/img/logo.png">
+  <title>Hệ thống quản lý</title>
+  <link rel="icon" href="../assets/img/logo.png">
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">

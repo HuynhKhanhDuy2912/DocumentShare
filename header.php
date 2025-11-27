@@ -1,8 +1,10 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require("config.php");
 
-// Kiểm tra tài khoản đăng nhập (Giữ nguyên logic của bạn)
+// Kiểm tra tài khoản đăng nhập
 if (isset($_SESSION['emailUser'])) {
     $email = $_SESSION['emailUser'];
     $sql = "SELECT * FROM users WHERE email='$email'";
@@ -20,13 +22,15 @@ if (isset($_SESSION['emailUser'])) {
     }
 }
 ?>
+
+
 <!DOCTYPE html>
 <html lang="vi">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chia Sẻ Tài Liệu Học Tập</title>
+    <title>DocumentShare</title>
     <link rel="icon" href="assets/img/logo.png">
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -183,7 +187,7 @@ if (isset($_SESSION['emailUser'])) {
                                 $avatarFile = isset($_SESSION['avatar']) ? $_SESSION['avatar'] : '';
                                 $avatarPath = "uploads/" . $avatarFile;
 
-                                // Nếu có tên file VÀ file thực sự tồn tại trên server
+                                // Nếu có tên file và file thực sự tồn tại trên server
                                 if (!empty($avatarFile) && file_exists($avatarPath)) {
                                     echo '<img src="' . $avatarPath . '" alt="Avatar" class="nav-user-avatar mr-2">';
                                 } else {
@@ -205,8 +209,8 @@ if (isset($_SESSION['emailUser'])) {
                             </div>
                         </li>
                     <?php else: ?>
-                        <li class="nav-item"><a class="nav-link font-weight-bold" href="login.php">Đăng nhập</a></li>
-                        <li class="nav-item ml-2"><a class="btn btn-primary btn-sm px-3 btn-rounded" href="signup.php">Đăng
+                        <li class="nav-item"><a class="btn btn-primary btn-sm px-3 btn-rounded" href="login.php">Đăng nhập</a></li>
+                        <li class="nav-item ml-2"><a class="nav-link font-weight-bold" href="signup.php">Đăng
                                 ký</a></li>
                     <?php endif; ?>
 

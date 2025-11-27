@@ -1,5 +1,4 @@
-.register-box,
-.login-box {
+.register-box {
   max-width: 550px;
   margin: 40px auto;
   background: #fff;
@@ -53,33 +52,6 @@
   max-width: 200px;
 }
 
-/*Login*/
-.card {
-  border-radius: 14px !important;
-}
-
-.input-group-text {
-  background: #f8f9fa;
-}
-
-input.form-control:focus {
-  box-shadow: none !important;
-  border-color: #007bff;
-}
-.login-box {
-  max-width: 550px;
-  margin: 40px auto;
-  background: #fff;
-  padding: 35px;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-body {
-  background: #f5f6fa;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-}
-
 /* --- Navbar Styles --- */
 .navbar {
   background: #ffffff !important;
@@ -120,7 +92,7 @@ body {
 @media (min-width: 1200px) {
   .search-box {
     position: absolute;
-    left: 50%;
+    left: 53%;
     transform: translateX(-50%);
     width: 400px; /* Giảm từ 40% xuống cố định 350px để không bị va chạm */
     margin: 0;
@@ -309,11 +281,11 @@ body {
   position: absolute;
   left: 0;
   top: 100%;
-  width: 1000px; /* Mega menu rộng hơn menu chính */
+  width: 1000px;
   background: #fff;
   padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   z-index: 1000;
 }
 
@@ -325,7 +297,7 @@ body {
 /* Grid 4 cột mỗi hàng */
 .mega-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); 
+  grid-template-columns: repeat(4, 1fr);
   gap: 25px;
 }
 
@@ -353,4 +325,171 @@ body {
 .mega-column ul li a:hover {
   color: #0d6efd;
   padding-left: 5px;
+}
+
+.btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 12px 15px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #444;
+  background-color: var(--white);
+  border: 1px solid #cdd1d4;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  margin-bottom: 1.5rem;
+}
+
+.btn-google:hover {
+  background-color: #f8f9fa;
+  border-color: #b2b6b9;
+}
+
+.btn-google svg {
+  width: 20px;
+  height: 20px;
+  margin-right: 12px;
+}
+
+/*===========================LOGIN===========================*/
+.login-card {
+  max-width: 450px;
+  width: 100%;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  padding: 40px;
+  background: #fff;
+  margin: 50px auto;
+}
+.login-header h3 {
+  font-weight: 700;
+  color: #333;
+}
+.form-floating label {
+  color: #999;
+}
+.btn-primary {
+  background: #0d6efd;
+  border: none;
+  padding: 12px;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+.btn-primary:hover {
+  background: #0b5ed7;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+}
+.btn-google {
+  background: #fff;
+  border: 1px solid #ddd;
+  color: #555;
+  font-weight: 500;
+  padding: 10px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; 
+  transition: all 0.3s;
+}
+.btn-google:hover {
+  background: #f8f9fa;
+  border-color: #ccc;
+}
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 20px 0;
+  color: #999;
+}
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #eee;
+}
+.divider::before {
+  margin-right: 0.5em;
+}
+.divider::after {
+  margin-left: 0.5em;
+}
+
+/* Icon mắt trong password */
+.password-wrapper {
+  position: relative;
+}
+.toggle-password {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #999;
+  z-index: 10;
+}
+body {
+  background: #f5f6fa;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/*===========================REGISTER===========================*/
+.register-box {
+  max-width: 500px;
+  width: 100%;
+  margin: 30px auto;
+  background: #fff;
+  padding: 40px;
+  border-radius: 15px; 
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+.upload-container {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  padding: 10px;
+  border: 1px dashed #ced4da;
+  border-radius: 10px;
+  transition: border-color 0.3s;
+}
+.upload-container:hover {
+  border-color: #0d6efd;
+}
+.btn-upload {
+  display: inline-block;
+  background-color: #ffffff;
+  color: #0d6efd;
+  padding: 8px 20px;
+  border-radius: 50px;
+  cursor: pointer;
+  border: 1px solid #0d6efd;
+  transition: all 0.3s ease;
+  margin-bottom: 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  font-weight: 600;
+  font-size: 14px;
+}
+.btn-upload:hover {
+  background-color: #0d6efd;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(13, 110, 253, 0.2);
+}
+.file-name {
+  font-size: 14px;
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+  margin-left: 15px;
 }
