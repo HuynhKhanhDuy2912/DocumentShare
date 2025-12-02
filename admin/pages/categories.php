@@ -142,21 +142,27 @@ if (isset($_GET['action'])) {
 $is_edit_mode = !empty($data['category_id']);
 ?>
 
+<?php
+if ($current_view == 'list') {
+    $header_title = "Danh mục";
+} elseif ($current_view == 'form') {
+    if (!empty($data['category_id'])) {
+        $header_title = "Sửa danh mục";
+    } else {
+        $header_title = "Thêm danh mục";
+    }
+} else {
+    $header_title = "Danh mục";
+}
+?>
+
 <div class="card shadow">
     <div class="card-header bg-gradient-<?php echo ($current_view == 'list') ? 'dark' : 'primary'; ?> 
-        text-white d-flex align-items-center">
-
-        <h4 class="mb-0"><?php echo $page_title; ?></h4>
-
+    text-white d-flex justify-content-between align-items-center">
+        <h4 class="mb-0"><?php echo $header_title; ?></h4>
         <?php if ($current_view == 'list'): ?>
-            <a href="?p=categories&action=add" 
-               class="btn btn-warning btn-sm ms-auto">
+            <a href="?p=categories&action=add" class="btn btn-warning btn-sm">
                 <i class="fas fa-plus-circle"></i> Thêm mới
-            </a>
-        <?php else: ?>
-            <a href="?p=categories" 
-               class="btn btn-light btn-sm ms-auto">
-                <i class="fas fa-arrow-left"></i> Quay lại
             </a>
         <?php endif; ?>
     </div>
@@ -186,27 +192,26 @@ $is_edit_mode = !empty($data['category_id']);
 
                 <div class="mb-3">
                     <label class="form-label fw-bold">Trạng thái</label>
-                    <select name="status" class="form-select">
-                        <option value="0" <?php echo ($data['status'] == 0) ? 'selected' : ''; ?>>0 - Hoạt động (Hiển thị)</option>
-                        <option value="1" <?php echo ($data['status'] == 1) ? 'selected' : ''; ?>>1 - Ẩn (Không hiển thị)</option>
+                    <select name="status" class="form-select pt-2 pb-2 pl-2 ml-2" style="width: 110px;">
+                        <option value="0" <?php echo ($data['status'] == 0) ? 'selected' : ''; ?>>Hiển thị</option>
+                        <option value="1" <?php echo ($data['status'] == 1) ? 'selected' : ''; ?>>Ẩn</option>
                     </select>
                 </div>
 
                 <div class="text-end pt-3">
-                    <a href="?p=categories" class="btn btn-secondary me-2">Hủy</a>
                     <button type="submit" name="save_category" class="btn btn-success px-4">
                         <i class="fas fa-save"></i> <?php echo $is_edit_mode ? 'Cập nhật' : 'Thêm mới'; ?>
                     </button>
+                    <a href="?p=categories" class="btn btn-secondary me-2">Quay lại</a>
                 </div>
             </form>
 
-            <!-- VIEW: DANH SÁCH (READ all) -->
+            <!-- VIEW: DANH SÁCH -->
         <?php else: ?>
             <div class="table-responsive">
                 <table class="table table-bordered table-striped table-hover mb-0 align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th width="80">Thứ tự</th>
                             <th>Tên danh mục</th>
                             <th>Mô tả</th>
                             <th width="120">Trạng thái</th>
@@ -233,7 +238,6 @@ $is_edit_mode = !empty($data['category_id']);
                                 $name_val = htmlspecialchars($row['name']);
                             ?>
                                 <tr>
-                                    <td><?= $id_val ?></td>
                                     <td><strong><?= $name_val ?></strong></td>
                                     <td><?= htmlspecialchars($row['description']) ?></td>
 
@@ -257,7 +261,7 @@ $is_edit_mode = !empty($data['category_id']);
 
                                         <a href="?p=categories&action=delete&id=<?= urlencode($id_val) ?>"
                                             class="btn btn-danger btn-sm"
-                                            onclick="return confirm('Bạn có chắc muốn xóa danh mục: <?= $name_val ?> (ID: <?= $id_val ?>)?');"
+                                            onclick="return confirm('Bạn có chắc muốn xóa danh mục: <?= $name_val ?> này không?');"
                                             title="Xóa">
                                             <i class="fas fa-trash-alt"></i>
                                         </a>

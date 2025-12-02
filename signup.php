@@ -34,8 +34,8 @@ if (isset($_REQUEST['sbDangky'])) {
             if (in_array($fileType, $allowTypes)) {
                 if (move_uploaded_file($_FILES["fileAnh"]["tmp_name"], $targetFilePath)) {
 
-                    $sql = "insert into users(username, password, fullname, email, avatar, role) 
-                            values('$tendangnhap', '$matkhau', '$tendaydu', '$email', '$fileName', 0)";
+                    $sql = "insert into users(username, password, fullname, email, avatar, role, status) 
+                            values('$tendangnhap', '$matkhau', '$tendaydu', '$email', '$fileName', 0, 0)";
 
                     if ($conn->query($sql)) {
                         echo "<script> alert('Đăng ký tài khoản thành công!'); window.location.assign('login.php'); </script>";
@@ -47,8 +47,8 @@ if (isset($_REQUEST['sbDangky'])) {
                 echo "<script> alert('Chỉ chấp nhận file ảnh (JPG, PNG, JPEG, GIF)'); </script>";
             }
         } else {
-            $sql = "insert into users(username, password, fullname, email, role) 
-                    values('$tendangnhap', '$matkhau', '$tendaydu', '$email', 0)";
+            $sql = "insert into users(username, password, fullname, email, role, status) 
+                    values('$tendangnhap', '$matkhau', '$tendaydu', '$email', 0, 0)";
             if ($conn->query($sql)) {
                 echo "<script> alert('Đăng ký tài khoản thành công!'); window.location.assign('login.php'); </script>";
             }

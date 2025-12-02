@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th10 27, 2025 lúc 04:59 PM
--- Phiên bản máy phục vụ: 10.4.32-MariaDB
--- Phiên bản PHP: 8.2.12
+-- Host: 127.0.0.1
+-- Generation Time: Nov 25, 2025 at 10:27 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Cơ sở dữ liệu: `db_sharedocument`
+-- Database: `db_sharedocument`
 --
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `categories`
+-- Table structure for table `categories`
 --
 
 CREATE TABLE `categories` (
@@ -37,7 +37,7 @@ CREATE TABLE `categories` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `comments`
+-- Table structure for table `comments`
 --
 
 CREATE TABLE `comments` (
@@ -51,7 +51,7 @@ CREATE TABLE `comments` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `documents`
+-- Table structure for table `documents`
 --
 
 CREATE TABLE `documents` (
@@ -72,7 +72,7 @@ CREATE TABLE `documents` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `slideshows`
+-- Table structure for table `slideshows`
 --
 
 CREATE TABLE `slideshows` (
@@ -86,7 +86,7 @@ CREATE TABLE `slideshows` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `users`
+-- Table structure for table `users`
 --
 
 CREATE TABLE `users` (
@@ -96,80 +96,81 @@ CREATE TABLE `users` (
   `email` varchar(50) NOT NULL,
   `avatar` varchar(255) DEFAULT NULL,
   `role` int(10) NOT NULL,
-  `google_id` varchar(255) DEFAULT NULL
+  `google_id` varchar(255) DEFAULT NULL,
+  `status` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `users`
+-- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`username`, `fullname`, `password`, `email`, `avatar`, `role`, `google_id`) VALUES
-('duy2912www', '', '9f646ba8eb41b93dfd34dd86b99760b0', 'duy2912www@gmail.com', NULL, 0, '106649780835115078066'),
-('hanhanjk04', '', 'fae6a936667ff7d63523f90037d4237f', 'hanhanjk04@gmail.com', NULL, 0, '100981230795254291503'),
-('jungdung2004', '', 'ad52956b53b2fce6bf670a6667cc2de6', 'jungdung2004@gmail.com', NULL, 0, '109039166477257996447'),
-('khanhduy', 'Huỳnh Khánh Duy', 'e10adc3949ba59abbe56e057f20f883e', 'duykhanhwww@gmail.com', 'mangekyou.jpg', 1, NULL);
+INSERT INTO `users` (`username`, `fullname`, `password`, `email`, `avatar`, `role`, `google_id`, `status`) VALUES
+('duy2912www', 'Huỳnh Khánh Duy', '$2y$10$ojNoZ8UWx7q9jXsSkOTyF.9dLHUaVbnws71k11urj4s', 'duy2912www@gmail.com', '', 0, '106649780835115078066', 0),
+('hanhanjk04', '', 'fae6a936667ff7d63523f90037d4237f', 'hanhanjk04@gmail.com', NULL, 0, '100981230795254291503', NULL),
+('jungdung2004', '', 'ad52956b53b2fce6bf670a6667cc2de6', 'jungdung2004@gmail.com', NULL, 0, '109039166477257996447', NULL),
+('khanhduy', 'Huỳnh Khánh Duy', 'e10adc3949ba59abbe56e057f20f883e', 'duykhanhwww@gmail.com', 'mangekyou.jpg', 1, NULL, NULL);
 
 --
--- Chỉ mục cho các bảng đã đổ
+-- Indexes for dumped tables
 --
 
 --
--- Chỉ mục cho bảng `categories`
+-- Indexes for table `categories`
 --
 ALTER TABLE `categories`
   ADD PRIMARY KEY (`category_id`);
 
 --
--- Chỉ mục cho bảng `comments`
+-- Indexes for table `comments`
 --
 ALTER TABLE `comments`
   ADD PRIMARY KEY (`comment_id`),
   ADD KEY `document_id` (`document_id`);
 
 --
--- Chỉ mục cho bảng `documents`
+-- Indexes for table `documents`
 --
 ALTER TABLE `documents`
   ADD PRIMARY KEY (`document_id`),
   ADD KEY `category_id` (`category_id`,`username`);
 
 --
--- Chỉ mục cho bảng `slideshows`
+-- Indexes for table `slideshows`
 --
 ALTER TABLE `slideshows`
   ADD PRIMARY KEY (`slideshow_id`);
 
 --
--- Chỉ mục cho bảng `users`
+-- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`username`),
   ADD KEY `email` (`email`);
 
 --
--- AUTO_INCREMENT cho các bảng đã đổ
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT cho bảng `categories`
+-- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
   MODIFY `category_id` int(10) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT cho bảng `comments`
+-- AUTO_INCREMENT for table `comments`
 --
 ALTER TABLE `comments`
   MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT cho bảng `documents`
+-- AUTO_INCREMENT for table `documents`
 --
 ALTER TABLE `documents`
   MODIFY `document_id` int(10) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT cho bảng `slideshows`
+-- AUTO_INCREMENT for table `slideshows`
 --
 ALTER TABLE `slideshows`
   MODIFY `slideshow_id` int(10) NOT NULL AUTO_INCREMENT;

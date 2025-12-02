@@ -61,8 +61,8 @@ if (isset($_GET['code'])) {
             $random_pass = md5(uniqid(rand(), true)); // Tạo mật khẩu ngẫu nhiên (vì login Google ko cần pass)
 
             // Lưu vào DB
-            $insert_sql = "INSERT INTO users (username, password, email, role, google_id) 
-                           VALUES ('$new_username', '$random_pass', '$email', '$default_role', '$google_id')";
+            $insert_sql = "INSERT INTO users (username, password, email, role, google_id, status) 
+                           VALUES ('$new_username', '$random_pass', '$email', '$default_role', '$google_id', 0)";
 
             if ($conn->query($insert_sql) === TRUE) {
                 $_SESSION['username'] = $new_username;
@@ -106,7 +106,7 @@ if (isset($_REQUEST['sbSubmit'])) {
             echo "<script>window.location.assign('index.php');</script>";
         }
     } else {
-        echo "<script> alert('Tên đăng nhập hoặc email không đúng!');";
+        echo "<script> alert('Tên đăng nhập hoặc mật khẩu không đúng!');";
         echo "</script>";
     }
 }
