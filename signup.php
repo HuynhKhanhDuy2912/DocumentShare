@@ -84,7 +84,7 @@ if (isset($_REQUEST['sbDangky'])) {
 
             <div class="form-floating mb-3">
                 <input type="email" class="form-control" name="txtEmail" id="txtEmail" placeholder="Email" required>
-                <label for="txtEmail"><i class="fa fa-envelope me-2"></i> Địa chỉ Email</label>
+                <label for="txtEmail"><i class="fa fa-envelope me-2"></i> Email</label>
             </div>
 
             <div class="mb-3 password-wrapper">
@@ -135,7 +135,7 @@ if (isset($_REQUEST['sbDangky'])) {
                         <path fill="none" d="M0 0h48v48H0z"></path>
                     </g>
                 </svg>
-                Đăng nhập với Google
+                Đăng ký với Google
             </a>
         <?php else: ?>
             <a href="login.php" class="btn w-100 btn-google">
