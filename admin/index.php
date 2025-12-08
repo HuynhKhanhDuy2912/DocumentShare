@@ -1,14 +1,14 @@
   <?php
   if (session_status() === PHP_SESSION_NONE) {
-      session_start();
+    session_start();
   }
 
   require("../config.php");
 
   // --- Kiểm tra đăng nhập ---
   if (!isset($_SESSION['emailUser'])) {
-      header("Location: ../login.php");
-      exit();
+    header("Location: ../login.php");
+    exit();
   }
 
   // --- Lấy thông tin user từ database ---
@@ -17,9 +17,9 @@
   $result = $conn->query($sql);
 
   if ($result->num_rows == 0) {
-      session_destroy();
-      header("Location: ../login.php");
-      exit();
+    session_destroy();
+    header("Location: ../login.php");
+    exit();
   }
 
   $user = $result->fetch_assoc();
@@ -31,8 +31,8 @@
 
   // --- Chặn user thường ---
   if ($_SESSION['role'] != 1) {
-      echo "<h2 style='color:red; text-align:center; margin-top:50px;'>Bạn không có quyền truy cập trang Admin</h2>";
-      exit();
+    echo "<h2 style='color:red; text-align:center; margin-top:50px;'>Bạn không có quyền truy cập trang Admin</h2>";
+    exit();
   }
 
   // --- Logic tải trang ---
@@ -44,13 +44,13 @@
   $logged_in_name = $_SESSION['username'];
   $avatar_filename = isset($_SESSION['avatar']) ? $_SESSION['avatar'] : '';
 
-  // Mặc định dùng ảnh có sẵn của AdminLTE nếu chưa có avatar
-  $avatar_display_path = "dist/img/avatar5.png"; 
-
   // Kiểm tra: Vì file này nằm trong folder admin, nên cần dùng ../ để ra ngoài tìm folder uploads
-  if (!empty($avatar_filename) && file_exists("../uploads/" . $avatar_filename)) {
-      $avatar_display_path = "../uploads/" . $avatar_filename;
+  $avatar_display_path = "dist/img/avatar5.png";
+
+  if (!empty($avatar_filename)) {
+    $avatar_display_path = "../uploads/" . $avatar_filename;
   }
+
   ?>
 
   <?php include("includes/header.php"); ?>
@@ -90,7 +90,7 @@
       </nav>
       <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <a href="index.php?p=dashboard" class="brand-link text-center">
-          <span class="brand-text font-weight-light">DocumentShare xin chào!</span>
+          <span class="brand-text font-weight-light">DocumentShare</span>
         </a>
 
         <div class="sidebar">
@@ -99,9 +99,9 @@
               <img src="<?php echo $avatar_display_path; ?>" class="img-circle elevation-2" alt="User Image" style="width: 34px; height: 34px; object-fit: cover;">
             </div>
             <div class="info">
-              <a href="#" class="d-block"><?php echo $logged_in_name; ?></a>
+              <a href="#" class="d-block">Xin chào, <?php echo $logged_in_name; ?>!</a>
             </div>
-        </div>
+          </div>
 
           <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">

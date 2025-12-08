@@ -12,7 +12,6 @@ if (!isset($conn) || $conn === false) {
 mysqli_report(MYSQLI_REPORT_OFF);
 
 // --- CẤU HÌNH TÊN TRANG (SLUG) ---
-// Thay 'users' bằng tên tham số trên URL của bạn (ví dụ: index.php?p=users)
 $base_url = '?p=users';
 
 // Khởi tạo biến
@@ -66,15 +65,17 @@ if (isset($_POST['save_user'])) {
 
         $avatar_path = $default_avatar;
         if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] == 0) {
-            $target_dir = "uploads/";
+            $target_dir = "../uploads/";
             if (!file_exists($target_dir)) mkdir($target_dir, 0777, true);
-            $avatar_path = $target_dir . time() . "_" . basename($_FILES["avatar"]["name"]);
-            move_uploaded_file($_FILES["avatar"]["tmp_name"], $avatar_path);
+            $filename = time() . "_" . basename($_FILES["avatar"]["name"]);
+            move_uploaded_file($_FILES["avatar"]["tmp_name"], $target_dir . $filename);
+            // lưu vào DB
+            $avatar_path = $filename;
         }
 
         $check = mysqli_query($conn, "SELECT username FROM users WHERE username = '$username'");
         if (mysqli_num_rows($check) > 0) {
-            $message = "Lỗi: Username '<strong>$username</strong>' đã tồn tại!";
+            $message = "Lỗi: Tên đăng nhập '<strong>$username</strong>' đã tồn tại!";
             $current_view = 'form';
             $data = $_POST;
             $data['avatar'] = $avatar_path;
@@ -108,7 +109,7 @@ if (isset($_GET['action'])) {
 
         if ($stmt && mysqli_stmt_execute($stmt)) {
             // SỬA: Thêm $base_url
-            echo "<script>alert('Đã xóa user thành công!'); window.location.href='$base_url';</script>";
+            echo "<script>alert('Đã xóa tài khoản thành công!'); window.location.href='$base_url';</script>";
             exit;
         } else {
             $message = "Lỗi xóa: " . mysqli_error($conn);
@@ -129,7 +130,7 @@ if (isset($_GET['action'])) {
             if ($row = mysqli_fetch_assoc($res)) {
                 $data = $row;
             } else {
-                $message = "Không tìm thấy username này!";
+                $message = "Không tìm thấy tài khoản này!";
                 $current_view = 'list';
             }
         }
@@ -145,12 +146,8 @@ $is_edit_mode = ($current_view == 'form' && !empty($data['username']));
         <h4 class="mb-0"><?php echo $page_title; ?></h4>
 
         <?php if ($current_view == 'list'): ?>
-            <a href="<?php echo $base_url; ?>&action=add" class="btn btn-warning btn-sm ms-auto">
-                <i class="fas fa-plus-circle"></i> Thêm mới
-            </a>
-        <?php else: ?>
-            <a href="<?php echo $base_url; ?>" class="btn btn-light btn-sm ms-auto">
-                <i class="fas fa-arrow-left"></i> Quay lại
+            <a href="<?php echo $base_url; ?>&action=add" class="btn btn-warning ms-auto px-3">
+                <i class="fas fa-plus-circle me-1"></i> Thêm mới
             </a>
         <?php endif; ?>
     </div>
@@ -168,7 +165,7 @@ $is_edit_mode = ($current_view == 'form' && !empty($data['username']));
             <?php if ($is_edit_mode): ?>
                 <div class="alert alert-warning border-0 bg-warning bg-opacity-10 mb-3">
                     <i class="fas fa-info-circle me-1"></i>
-                    Đang xem thông tin user: <strong><?php echo htmlspecialchars($data['username']); ?></strong>
+                    Đang xem thông tin tài khoản: <strong><?php echo htmlspecialchars($data['username']); ?></strong>
                 </div>
             <?php endif; ?>
 
@@ -177,7 +174,7 @@ $is_edit_mode = ($current_view == 'form' && !empty($data['username']));
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Username <span class="text-danger">*</span></label>
+                        <label class="form-label fw-bold">Tên đăng nhập <span class="text-danger">*</span></label>
                         <input type="text" name="username" class="form-control"
                             value="<?php echo htmlspecialchars($data['username']); ?>"
                             required <?php echo $is_edit_mode ? 'readonly' : ''; ?>>
@@ -212,7 +209,7 @@ $is_edit_mode = ($current_view == 'form' && !empty($data['username']));
                             <input type="password" name="password" class="form-control" required placeholder="Nhập mật khẩu...">
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Avatar</label>
+                            <label class="form-label fw-bold">Ảnh đại diện</label>
                             <input type="file" name="avatar" class="form-control">
                         </div>
                     </div>
@@ -227,7 +224,7 @@ $is_edit_mode = ($current_view == 'form' && !empty($data['username']));
                         </select>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label fw-bold text-primary">Trạng thái</label>
+                        <label class="form-label fw-bold text-primary me-2">Trạng thái: </label>
                         <select name="status" class="form-select border-primary">
                             <option value="0" <?php echo ($data['status'] == 0) ? 'selected' : ''; ?>>Hoạt động</option>
                             <option value="1" <?php echo ($data['status'] == 1) ? 'selected' : ''; ?>>Bị chặn</option>
@@ -235,11 +232,11 @@ $is_edit_mode = ($current_view == 'form' && !empty($data['username']));
                     </div>
                 </div>
 
-                <div class="text-end pt-3">
-                    <a href="<?php echo $base_url; ?>" class="btn btn-secondary me-2">Hủy</a>
+                <div class="text-end pt-3">                    
                     <button type="submit" name="save_user" class="btn btn-success px-4">
                         <i class="fas fa-save"></i> <?php echo $is_edit_mode ? 'Cập nhật' : 'Thêm mới'; ?>
                     </button>
+                    <a href="<?php echo $base_url; ?>" class="btn btn-secondary me-2">Quay lại</a>
                 </div>
             </form>
 
@@ -249,7 +246,7 @@ $is_edit_mode = ($current_view == 'form' && !empty($data['username']));
                     <thead class="table-light">
                         <tr>
                             <th width="60" class="text-center">Avatar</th>
-                            <th>Username</th>
+                            <th>Tên đăng nhập</th>
                             <th>Email</th>
                             <th>Họ tên</th>
                             <th>Role</th>
@@ -259,50 +256,60 @@ $is_edit_mode = ($current_view == 'form' && !empty($data['username']));
                     </thead>
                     <tbody>
                         <?php
-                        $sql = "SELECT * FROM users ORDER BY username ASC";
-                        $result = mysqli_query($conn, $sql);
+                            $sql = "SELECT * FROM users ORDER BY username ASC";
+                            $result = mysqli_query($conn, $sql);
 
-                        if (!$result):
-                            echo '<tr><td colspan="7" class="text-danger p-4">Lỗi truy vấn: ' . mysqli_error($conn) . '</td></tr>';
+                            if (!$result):
+                                echo '<tr><td colspan="7" class="text-danger p-4">Lỗi truy vấn: ' . mysqli_error($conn) . '</td></tr>';
+                            elseif (mysqli_num_rows($result) > 0):
+                                while ($row = mysqli_fetch_assoc($result)):
+                                    $avatarSrc = $default_avatar; 
 
-                        elseif (mysqli_num_rows($result) > 0):
-                            while ($row = mysqli_fetch_assoc($result)):
-                                $avatar = !empty($row['avatar']) ? $row['avatar'] : $default_avatar;
+                                    if (!empty($row['avatar'])) {
+                                        if (filter_var($row['avatar'], FILTER_VALIDATE_URL)) {
+                                            $avatarSrc = $row['avatar'];
+                                        }else {
+                                            $avatarSrc = "../uploads/" . $row['avatar'];
+                                        }
+                                    }
                         ?>
-                                <tr>
-                                    <td class="text-center">
-                                        <img src="<?php echo $avatar; ?>" class="rounded-circle border" width="40" height="40" style="object-fit: cover;">
-                                    </td>
-                                    <td><strong><?php echo $row['username']; ?></strong></td>
-                                    <td><?php echo $row['email']; ?></td>
-                                    <td><?php echo $row['fullname']; ?></td>
-                                    <td>
-                                        <span class="badge <?php echo ($row['role'] == 'admin') ? 'bg-danger' : 'bg-primary'; ?>">
-                                            <?php echo ucfirst($row['role']); ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <?php if ($row['status'] == 1): ?>
-                                            <span class="badge bg-secondary"><i class="fas fa-ban"></i> Bị chặn</span>
-                                        <?php else: ?>
-                                            <span class="badge bg-success"><i class="fas fa-check-circle"></i> Hoạt động</span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td class="text-center">
+                            <tr>
+                                <td class="text-center">
+                                    <img src="<?php echo $avatarSrc; ?>" class="rounded-circle border" width="40" height="40" style="object-fit: cover;">
+                                </td>
+                                <td><strong><?php echo $row['username']; ?></strong></td>
+                                <td><?php echo $row['email']; ?></td>
+                                <td><?php echo $row['fullname']; ?></td>
+                                <td>
+                                    <span class="badge <?php echo ($row['role'] == 'admin') ? 'bg-danger' : 'bg-primary'; ?>">
+                                        <?php echo ucfirst($row['role']); ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <?php if ($row['status'] == 1): ?>
+                                        <span class="badge bg-secondary"><i class="fas fa-ban"></i> Bị chặn</span>
+                                    <?php else: ?>
+                                        <span class="badge bg-success"><i class="fas fa-check-circle"></i> Hoạt động</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="text-center">
+                                    <?php if ($row['role'] !== '1'): ?>
                                         <a href="<?php echo $base_url; ?>&action=edit&username=<?php echo urlencode($row['username']); ?>"
                                             class="btn btn-info btn-sm" title="Sửa">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <a href="<?php echo $base_url; ?>&action=delete&username=<?php echo urlencode($row['username']); ?>"
                                             class="btn btn-danger btn-sm"
-                                            onclick="return confirm('Bạn chắc chắn muốn xóa: <?php echo $row['username']; ?>?');"
+                                            onclick="return confirm('Bạn chắc chắn muốn xóa tài khoản: <?php echo $row['username']; ?>?');"
                                             title="Xóa">
                                             <i class="fas fa-trash-alt"></i>
                                         </a>
-                                    </td>
-                                </tr>
-                            <?php endwhile; ?>
-
+                                    <?php else: ?>
+                                        <span class="text-muted">Không thể thao tác</span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                        <?php endwhile; ?>
                         <?php else: ?>
                             <tr>
                                 <td colspan="7" class="text-center py-4 text-muted">Chưa có thành viên nào.</td>
@@ -312,6 +319,5 @@ $is_edit_mode = ($current_view == 'form' && !empty($data['username']));
                 </table>
             </div>
         <?php endif; ?>
-
     </div>
 </div>
