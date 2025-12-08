@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Nov 25, 2025 at 10:27 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Máy chủ: 127.0.0.1
+-- Thời gian đã tạo: Th12 08, 2025 lúc 01:34 PM
+-- Phiên bản máy phục vụ: 10.4.32-MariaDB
+-- Phiên bản PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `db_sharedocument`
+-- Cơ sở dữ liệu: `db_sharedocument`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `categories`
+-- Cấu trúc bảng cho bảng `categories`
 --
 
 CREATE TABLE `categories` (
@@ -37,7 +37,7 @@ CREATE TABLE `categories` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `comments`
+-- Cấu trúc bảng cho bảng `comments`
 --
 
 CREATE TABLE `comments` (
@@ -51,7 +51,7 @@ CREATE TABLE `comments` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `documents`
+-- Cấu trúc bảng cho bảng `documents`
 --
 
 CREATE TABLE `documents` (
@@ -72,7 +72,7 @@ CREATE TABLE `documents` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `slideshows`
+-- Cấu trúc bảng cho bảng `slideshows`
 --
 
 CREATE TABLE `slideshows` (
@@ -86,7 +86,7 @@ CREATE TABLE `slideshows` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Cấu trúc bảng cho bảng `users`
 --
 
 CREATE TABLE `users` (
@@ -101,76 +101,74 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `users`
+-- Đang đổ dữ liệu cho bảng `users`
 --
 
 INSERT INTO `users` (`username`, `fullname`, `password`, `email`, `avatar`, `role`, `google_id`, `status`) VALUES
-('duy2912www', 'Huỳnh Khánh Duy', '$2y$10$ojNoZ8UWx7q9jXsSkOTyF.9dLHUaVbnws71k11urj4s', 'duy2912www@gmail.com', '', 0, '106649780835115078066', 0),
-('hanhanjk04', '', 'fae6a936667ff7d63523f90037d4237f', 'hanhanjk04@gmail.com', NULL, 0, '100981230795254291503', NULL),
-('jungdung2004', '', 'ad52956b53b2fce6bf670a6667cc2de6', 'jungdung2004@gmail.com', NULL, 0, '109039166477257996447', NULL),
-('khanhduy', 'Huỳnh Khánh Duy', 'e10adc3949ba59abbe56e057f20f883e', 'duykhanhwww@gmail.com', 'mangekyou.jpg', 1, NULL, NULL);
+('jungdung2004', '', '9e9f7516c369a15cc8d08f5eb6849d42', 'jungdung2004@gmail.com', NULL, 0, '109039166477257996447', 0),
+('khanhduy', 'Huỳnh Khánh Duy', 'e10adc3949ba59abbe56e057f20f883e', 'duykhanhwww@gmail.com', 'mangekyou.jpg', 1, NULL, 0);
 
 --
--- Indexes for dumped tables
+-- Chỉ mục cho các bảng đã đổ
 --
 
 --
--- Indexes for table `categories`
+-- Chỉ mục cho bảng `categories`
 --
 ALTER TABLE `categories`
   ADD PRIMARY KEY (`category_id`);
 
 --
--- Indexes for table `comments`
+-- Chỉ mục cho bảng `comments`
 --
 ALTER TABLE `comments`
   ADD PRIMARY KEY (`comment_id`),
   ADD KEY `document_id` (`document_id`);
 
 --
--- Indexes for table `documents`
+-- Chỉ mục cho bảng `documents`
 --
 ALTER TABLE `documents`
   ADD PRIMARY KEY (`document_id`),
   ADD KEY `category_id` (`category_id`,`username`);
 
 --
--- Indexes for table `slideshows`
+-- Chỉ mục cho bảng `slideshows`
 --
 ALTER TABLE `slideshows`
   ADD PRIMARY KEY (`slideshow_id`);
 
 --
--- Indexes for table `users`
+-- Chỉ mục cho bảng `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`username`),
   ADD KEY `email` (`email`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT cho các bảng đã đổ
 --
 
 --
--- AUTO_INCREMENT for table `categories`
+-- AUTO_INCREMENT cho bảng `categories`
 --
 ALTER TABLE `categories`
   MODIFY `category_id` int(10) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `comments`
+-- AUTO_INCREMENT cho bảng `comments`
 --
 ALTER TABLE `comments`
   MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `documents`
+-- AUTO_INCREMENT cho bảng `documents`
 --
 ALTER TABLE `documents`
   MODIFY `document_id` int(10) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `slideshows`
+-- AUTO_INCREMENT cho bảng `slideshows`
 --
 ALTER TABLE `slideshows`
   MODIFY `slideshow_id` int(10) NOT NULL AUTO_INCREMENT;

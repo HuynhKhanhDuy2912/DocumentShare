@@ -57,7 +57,7 @@ if (isset($_GET['code'])) {
         } else {
             // --> Trường hợp B: Chưa có tài khoản -> Tự động Đăng ký
             $new_username = explode('@', $email)[0]; // Tạo username lấy phần trước @ của email
-            $default_role = 'user';            
+            $default_role = 0;            
             $random_pass = md5(uniqid(rand(), true)); // Tạo mật khẩu ngẫu nhiên (vì login Google ko cần pass)
 
             // Lưu vào DB
@@ -86,8 +86,8 @@ if (isset($_SESSION['emailUser'])) {
 
 // --- 4. LOGIC CŨ CỦA BẠN (XỬ LÝ FORM THƯỜNG) ---
 if (isset($_REQUEST['sbSubmit'])) {
-    $tendangnhap = $_REQUEST['txtUsername'];
-    $matkhau = md5($_REQUEST['txtPassword']);
+    $tendangnhap = $_REQUEST['txtTendangnhap'];
+    $matkhau = md5($_REQUEST['txtMatkhau']);
     $sql = "select * from users where username='$tendangnhap' and password='$matkhau'";
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
@@ -112,54 +112,6 @@ if (isset($_REQUEST['sbSubmit'])) {
 }
 ?>
 
-<!-- <div class="login-box">
-    <h3 class="text-center mb-4"><i class="fa fa-sign-in-alt"></i> Đăng nhập</h3>
-
-    <form action="" method="post" name="f1">
-
-        <div class="mb-3">
-            <label class="form-label fw-bold">Tên đăng nhập</label>
-            <input type="text" class="form-control" name="txtUsername" placeholder="Nhập tên đăng nhập..." required>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label fw-bold">Mật khẩu</label>
-            <input type="password" class="form-control" name="txtPassword" placeholder="Nhập mật khẩu..." required>
-        </div>
-
-        <button type="submit" name="sbSubmit" class="btn btn-primary w-100 mt-2">
-            Đăng nhập
-        </button>
-
-    </form>
-
-    <div class="text-center mt-3">
-        <p class="text-muted small">- Hoặc -</p>
-        <a href="<?php echo $client->createAuthUrl(); ?>" class="btn w-100 btn-google">
-            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-                <g>
-                    <path fill="#EA4335"
-                        d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z">
-                    </path>
-                    <path fill="#4285F4"
-                        d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.13 5.51C44.38 38.37 46.98 32.07 46.98 24.55z">
-                    </path>
-                    <path fill="#FBBC05"
-                        d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z">
-                    </path>
-                    <path fill="#34A853"
-                        d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.13-5.51c-2.18 1.45-5.04 2.3-8.76 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z">
-                    </path>
-                    <path fill="none" d="M0 0h48v48H0z"></path>
-                </g>
-            </svg> Đăng nhập bằng Google
-        </a>
-    </div>
-    <p class="text-center mt-3 mb-0">
-        Chưa có tài khoản? <a href="signup.php">Đăng ký ngay</a>
-    </p>
-</div> -->
-
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
     <div class="login-card">
         <div class="text-center mb-4 login-header">
@@ -174,16 +126,16 @@ if (isset($_REQUEST['sbSubmit'])) {
 
         <form action="" method="post" name="f1">
             <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="txtUsername" name="txtUsername" placeholder="Tên đăng nhập" required>
-                <label for="txtUsername"><i class="fa fa-user me-2"></i> Tên đăng nhập</label>
+                <input type="text" class="form-control" id="txtTendangnhap" name="txtTendangnhap" placeholder="Tên đăng nhập" required>
+                <label for="txtTendangnhap"><i class="fa fa-user me-2"></i> Tên đăng nhập</label>
             </div>
 
             <div class="mb-3 password-wrapper">
                 <div class="form-floating">
-                    <input type="password" class="form-control" id="txtPassword" name="txtPassword" placeholder="Mật khẩu" required>
-                    <label for="txtPassword"><i class="fa fa-lock me-2"></i> Mật khẩu</label>
+                    <input type="password" class="form-control" id="txtMatkhau" name="txtMatkhau" placeholder="Mật khẩu" required>
+                    <label for="txtMatkhau"><i class="fa fa-lock me-2"></i> Mật khẩu</label>
                 </div>
-                <i class="fa fa-eye toggle-password" onclick="togglePassword('txtPassword',this)"></i>
+                <i class="fa fa-eye toggle-password" onclick="togglePassword('txtMatkhau',this)"></i>
             </div>
 
             <div class="d-flex justify-content-between align-items-center mb-4">

@@ -2,55 +2,77 @@
 
 <?php
 if (isset($_SESSION['emailUser'])) {
-    echo "<script> alert('Bạn đã đăng nhập rồi!');";
-    echo "window.location.assign('index.php');";
-    echo "</script>";
+    echo "<script>
+        alert('Bạn đã đăng nhập rồi!');
+        window.location.assign('index.php');
+    </script>";
+    exit();
 }
 
-if (isset($_REQUEST['sbDangky'])) {
-    $tendangnhap = $_REQUEST['txtTendangnhap'];
-    $matkhau = md5($_REQUEST['txtMatkhau']);
-    $tendaydu = $_REQUEST['txtTendaydu'];
-    $email = $_REQUEST['txtEmail'];
+if (isset($_POST['sbDangky'])) {
+
+    // LẤY ĐÚNG TÊN FIELD TRONG HTML
+    $tendangnhap = $_POST['txtTendangnhap'];
+    $matkhau     = md5($_POST['txtMatkhau']);
+    $tendaydu    = $_POST['txtTendaydu'];
+    $email       = $_POST['txtEmail'];
+
     $tm = "uploads/";
     $fileName = basename($_FILES["fileAnh"]["name"]);
     $targetFilePath = $tm . $fileName;
     $fileType = strtolower(pathinfo($targetFilePath, PATHINFO_EXTENSION));
 
-    // Kiểm tra trùng lặp
-    $sqlcheck1 = "select * from users where username='$tendangnhap'";
+    // Kiểm tra trùng username
+    $sqlcheck1 = "SELECT * FROM users WHERE username = '$tendangnhap'";
     $result1 = $conn->query($sqlcheck1);
-    $sqlcheck2 = "select * from users where email='$email'";
+
+    // Kiểm tra trùng email
+    $sqlcheck2 = "SELECT * FROM users WHERE email = '$email'";
     $result2 = $conn->query($sqlcheck2);
 
     if ($result1->num_rows > 0) {
-        echo "<script> alert('Tên đăng nhập đã tồn tại'); </script>";
-    } else if ($result2->num_rows > 0) {
-        echo "<script> alert('Email đã tồn tại'); </script>";
+        echo "<script>alert('Tên đăng nhập đã tồn tại');</script>";
+    } elseif ($result2->num_rows > 0) {
+        echo "<script>alert('Email đã tồn tại');</script>";
     } else {
-        // Xử lý upload ảnh
+
+        // Nếu có upload avatar
         if (!empty($_FILES["fileAnh"]["name"])) {
-            $allowTypes = array('jpg', 'png', 'jpeg', 'gif');
+            $allowTypes = ['jpg', 'png', 'jpeg', 'gif'];
+
             if (in_array($fileType, $allowTypes)) {
+
                 if (move_uploaded_file($_FILES["fileAnh"]["tmp_name"], $targetFilePath)) {
 
-                    $sql = "insert into users(username, password, fullname, email, avatar, role, status) 
-                            values('$tendangnhap', '$matkhau', '$tendaydu', '$email', '$fileName', 0, 0)";
+                    $sql = "INSERT INTO users(username, password, fullname, email, avatar, role, status)
+                            VALUES('$tendangnhap', '$matkhau', '$tendaydu', '$email', '$fileName', 0, 0)";
 
                     if ($conn->query($sql)) {
-                        echo "<script> alert('Đăng ký tài khoản thành công!'); window.location.assign('login.php'); </script>";
+                        echo "<script>
+                            alert('Đăng ký tài khoản thành công!');
+                            window.location.assign('login.php');
+                        </script>";
                     }
+
                 } else {
-                    echo "<script> alert('Upload tập tin avatar bị lỗi (Kiểm tra quyền thư mục)'); </script>";
+                    echo "<script>alert('Lỗi upload ảnh! Kiểm tra quyền thư mục');</script>";
                 }
+
             } else {
-                echo "<script> alert('Chỉ chấp nhận file ảnh (JPG, PNG, JPEG, GIF)'); </script>";
+                echo "<script>alert('Chỉ chấp nhận file ảnh JPG, PNG, JPEG, GIF');</script>";
             }
+
         } else {
-            $sql = "insert into users(username, password, fullname, email, role, status) 
-                    values('$tendangnhap', '$matkhau', '$tendaydu', '$email', 0, 0)";
+
+            // Không upload avatar
+            $sql = "INSERT INTO users(username, password, fullname, email, role, status)
+                    VALUES('$tendangnhap', '$matkhau', '$tendaydu', '$email', 0, 0)";
+
             if ($conn->query($sql)) {
-                echo "<script> alert('Đăng ký tài khoản thành công!'); window.location.assign('login.php'); </script>";
+                echo "<script>
+                    alert('Đăng ký tài khoản thành công!');
+                    window.location.assign('login.php');
+                </script>";
             }
         }
     }
@@ -89,18 +111,18 @@ if (isset($_REQUEST['sbDangky'])) {
 
             <div class="mb-3 password-wrapper">
                 <div class="form-floating">
-                    <input type="password" class="form-control" name="txtPassword" id="txtPassword" placeholder="Mật khẩu" required>
-                    <label for="txtPassword"><i class="fa fa-lock me-2"></i> Mật khẩu</label>
+                    <input type="password" class="form-control" name="txtMatkhau" id="txtMatkhau" placeholder="Mật khẩu" required>
+                    <label for="txtMatkhau"><i class="fa fa-lock me-2"></i> Mật khẩu</label>
                 </div>
-                <i class="fa fa-eye toggle-password" onclick="togglePassword('txtPassword',this)"></i>
+                <i class="fa fa-eye toggle-password" onclick="togglePassword('txtMatkhau',this)"></i>
             </div>
 
             <div class="mb-3 password-wrapper">
                 <div class="form-floating">
-                    <input type="password" class="form-control" name="txtrePassword" id="txtrePassword" placeholder="Nhập lại mật khẩu" required>
-                    <label for="txtrePassword"><i class="fa fa-lock me-2"></i> Xác nhận mật khẩu</label>
+                    <input type="password" class="form-control" name="txtNLMatkhau" id="txtNLMatkhau" placeholder="Nhập lại mật khẩu" required>
+                    <label for="txtNLMatkhau"><i class="fa fa-lock me-2"></i> Xác nhận mật khẩu</label>
                 </div>
-                <i class="fa fa-eye toggle-password" onclick="togglePassword('txtrePassword', this)"></i>
+                <i class="fa fa-eye toggle-password" onclick="togglePassword('txtNLMatkhau', this)"></i>
             </div>
 
             <div class="mb-4">
@@ -148,7 +170,7 @@ if (isset($_REQUEST['sbDangky'])) {
                         <path fill="none" d="M0 0h48v48H0z"></path>
                     </g>
                 </svg>
-                Đăng nhập với Google
+                Đăng ký với Google
             </a>
         <?php endif; ?>
 
