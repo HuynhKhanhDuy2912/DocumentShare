@@ -1,39 +1,45 @@
 <?php include("header.php"); ?>
 
+<?php
+include 'config.php'; // file chứa $conn
+
+$sql = "SELECT * FROM slideshows WHERE status = 1";
+$result = mysqli_query($conn, $sql);
+
+$banners = [];
+while ($row = mysqli_fetch_assoc($result)) {
+    $banners[] = $row;
+}
+?>
+
 <div class="container mt-4">
 
     <!-- CAROUSEL -->
-    <div id="carouselDocs" class="carousel slide mb-4" data-ride="carousel">
-        <ol class="carousel-indicators">
-            <li data-target="#carouselDocs" data-slide-to="0" class="active"></li>
-            <li data-target="#carouselDocs" data-slide-to="1"></li>
-        </ol>
-
+    <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img src="assets/img/bg.jpg" class="d-block w-100" alt="Slide 1">
-                <div class="carousel-caption d-none d-md-block">
-                    <h5>Bài giảng lập trình PHP</h5>
-                    <p>Học từ cơ bản đến nâng cao.</p>
-                </div>
-            </div>
 
-            <div class="carousel-item">
-                <img src="assets/img/bg1.jpg" class="d-block w-100" alt="Slide 2">
-                <div class="carousel-caption d-none d-md-block">
-                    <h5>Thư viện tài liệu miễn phí</h5>
-                    <p>Tìm kiếm tài liệu nhanh chóng, dễ dàng.</p>
+            <?php foreach ($banners as $index => $banner): ?>
+                <div class="carousel-item <?= $index == 0 ? 'active' : '' ?>">
+                    <img src="uploads/slideshows/<?= $banner['imageurl'] ?>" class="d-block w-100" alt="Slide">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5><?= $banner['title'] ?></h5>
+                        <p><?= $banner['description'] ?></p>
+                    </div>
                 </div>
-            </div>
+            <?php endforeach; ?>
+
         </div>
 
-        <a class="carousel-control-prev" href="#carouselDocs" role="button" data-slide="prev">
+        <!-- Nút điều hướng -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
             <span class="carousel-control-prev-icon"></span>
-        </a>
-        <a class="carousel-control-next" href="#carouselDocs" role="button" data-slide="next">
+        </button>
+
+        <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
             <span class="carousel-control-next-icon"></span>
-        </a>
+        </button>
     </div>
+
 
     <!-- TÀI LIỆU MỚI NHẤT -->
     <h3 class="mb-3">Tài liệu mới nhất</h3>

@@ -28,22 +28,33 @@ if (isset($_POST['save_slide'])) {
 
     $slideshow_id = $_POST['slideshow_id'] ?? '';
 
-    // ➤ Nếu UPDATE
+    // Nếu CẬP NHẬT
     if (!empty($slideshow_id)) {
 
         $title = $_POST['title'];
         $description = $_POST['description'];
         $status = (int)$_POST['status'];
-        $imageurl = $_POST['old_image']; // giữ ảnh cũ
+        $imageurl = $_POST['old_image']; // mặc định giữ ảnh cũ
 
         // Xử lý upload ảnh mới
         if (isset($_FILES['imageurl']) && $_FILES['imageurl']['error'] == 0) {
-            $folder = "../uploads_slideshow/";
+
+            $folder = "../uploads/slideshows/";
             if (!file_exists($folder)) mkdir($folder, 0777, true);
 
+            // Xóa ảnh cũ nếu tồn tại
+            if (!empty($_POST['old_image']) && file_exists($folder . $_POST['old_image'])) {
+                unlink($folder . $_POST['old_image']);
+            }
+
+            // Tạo tên file mới
             $filename = time() . "_" . basename($_FILES["imageurl"]["name"]);
+
+            // Lưu file vào thư mục
             move_uploaded_file($_FILES["imageurl"]["tmp_name"], $folder . $filename);
-            $imageurl = $filename; 
+
+            // Gán tên mới vào database
+            $imageurl = $filename;
         }
 
         $sql = "UPDATE slideshows SET title=?, description=?, imageurl=?, status=? WHERE slideshow_id=?";
@@ -56,10 +67,9 @@ if (isset($_POST['save_slide'])) {
         } else {
             $message = "Lỗi sửa: " . mysqli_error($conn);
         }
-
     } else {
 
-        // ➤ INSERT mới
+        // THÊM mới
 
         $title = $_POST['title'];
         $description = $_POST['description'];
@@ -68,7 +78,7 @@ if (isset($_POST['save_slide'])) {
 
         // Upload ảnh
         if (isset($_FILES['imageurl']) && $_FILES['imageurl']['error'] == 0) {
-            $folder = "../uploads_slideshow/";
+            $folder = "../uploads/slideshows/";
             if (!file_exists($folder)) mkdir($folder, 0777, true);
 
             $filename = time() . "_" . basename($_FILES["imageurl"]["name"]);
@@ -98,11 +108,25 @@ if (isset($_GET['action'])) {
     // XÓA
     if ($action == 'delete' && isset($_GET['id'])) {
         $id = intval($_GET['id']);
+
+        // Lấy ảnh
+        $row = mysqli_fetch_assoc(mysqli_query(
+            $conn,
+            "SELECT imageurl FROM slideshows WHERE slideshow_id=$id"
+        ));
+
+        // Xóa file
+        if ($row && !empty($row['imageurl'])) {
+            @unlink("uploads/slideshows/" . $row['imageurl']);
+        }
+
+        // Xóa DB
         mysqli_query($conn, "DELETE FROM slideshows WHERE slideshow_id=$id");
 
         echo "<script>alert('Đã xóa slideshow!'); window.location.href='$base_url';</script>";
         exit;
     }
+
 
     // MỞ FORM EDIT / ADD
     if ($action == 'add' || $action == 'edit') {
@@ -176,7 +200,7 @@ $is_edit_mode = ($current_view == 'form' && !empty($data['slideshow_id']));
 
                     <?php if (!empty($data['imageurl'])): ?>
                         <div class="mt-2">
-                            <img src="../uploads_slideshow/<?php echo $data['imageurl']; ?>" height="70" class="border">
+                            <img src="../uploads/slideshows/<?php echo $data['imageurl']; ?>" height="70" class="border">
                         </div>
                     <?php endif; ?>
                 </div>
@@ -184,8 +208,8 @@ $is_edit_mode = ($current_view == 'form' && !empty($data['slideshow_id']));
                 <div class="mb-3">
                     <label class="form-label fw-bold">Trạng thái</label>
                     <select name="status" class="form-select">
-                        <option value="1" <?php echo ($data['status']==1?'selected':''); ?>>Hiển thị</option>
-                        <option value="0" <?php echo ($data['status']==0?'selected':''); ?>>Ẩn</option>
+                        <option value="1" <?php echo ($data['status'] == 1 ? 'selected' : ''); ?>>Hiển thị</option>
+                        <option value="0" <?php echo ($data['status'] == 0 ? 'selected' : ''); ?>>Ẩn</option>
                     </select>
                 </div>
 
@@ -203,63 +227,63 @@ $is_edit_mode = ($current_view == 'form' && !empty($data['slideshow_id']));
 
         <?php else: ?>
 
-        <!-- ====================== DANH SÁCH ====================== -->
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th width="80">Ảnh</th>
-                        <th>Tiêu đề</th>
-                        <th>Mô tả</th>
-                        <th width="120">Trạng thái</th>
-                        <th width="150" class="text-center">Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                <?php
-                $res = mysqli_query($conn, "SELECT * FROM slideshows ORDER BY slideshow_id DESC");
-                if (mysqli_num_rows($res) > 0):
-                    while ($row = mysqli_fetch_assoc($res)):
-                ?>
-                    <tr>
-                        <td>
-                            <?php if (!empty($row['imageurl'])): ?>
-                                <img src="../uploads_slideshow/<?php echo $row['imageurl']; ?>" height="55" class="border">
-                            <?php endif; ?>
-                        </td>
+            <!-- ====================== DANH SÁCH ====================== -->
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="80">Ảnh</th>
+                            <th>Tiêu đề</th>
+                            <th>Mô tả</th>
+                            <th width="120">Trạng thái</th>
+                            <th width="150" class="text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $res = mysqli_query($conn, "SELECT * FROM slideshows ORDER BY slideshow_id DESC");
+                        if (mysqli_num_rows($res) > 0):
+                            while ($row = mysqli_fetch_assoc($res)):
+                        ?>
+                                <tr>
+                                    <td>
+                                        <?php if (!empty($row['imageurl'])): ?>
+                                            <img src="../uploads/slideshows/<?php echo $row['imageurl']; ?>" height="55" class="border">
+                                        <?php endif; ?>
+                                    </td>
 
-                        <td><strong><?php echo $row['title']; ?></strong></td>
-                        <td><?php echo $row['description']; ?></td>
+                                    <td><strong><?php echo $row['title']; ?></strong></td>
+                                    <td><?php echo $row['description']; ?></td>
 
-                        <td>
-                            <?php if ($row['status']==1): ?>
-                                <span class="badge bg-success">Hiển thị</span>
-                            <?php else: ?>
-                                <span class="badge bg-secondary">Ẩn</span>
-                            <?php endif; ?>
-                        </td>
+                                    <td>
+                                        <?php if ($row['status'] == 1): ?>
+                                            <span class="badge bg-success"><i class="fas fa-check-circle"></i> Hiển thị</span>
+                                        <?php else: ?>
+                                            <span class="badge bg-secondary"><i class="fas fa-eye-slash"></i> Ẩn</span>
+                                        <?php endif; ?>
+                                    </td>
 
-                        <td class="text-center">
-                            <a href="<?php echo $base_url; ?>&action=edit&id=<?php echo $row['slideshow_id']; ?>"
-                               class="btn btn-info btn-sm"><i class="fas fa-edit"></i></a>
+                                    <td class="text-center">
+                                        <a href="<?php echo $base_url; ?>&action=edit&id=<?php echo $row['slideshow_id']; ?>"
+                                            class="btn btn-info btn-sm" title="Chỉnh sửa"><i class="fas fa-edit"></i></a>
 
-                            <a href="<?php echo $base_url; ?>&action=delete&id=<?php echo $row['slideshow_id']; ?>"
-                               class="btn btn-danger btn-sm"
-                               onclick="return confirm('Bạn chắc chắn muốn xóa slideshow này?');">
-                                <i class="fas fa-trash"></i>
-                            </a>
-                        </td>
-                    </tr>
+                                        <a href="<?php echo $base_url; ?>&action=delete&id=<?php echo $row['slideshow_id']; ?>"
+                                            class="btn btn-danger btn-sm" title="Xóa"
+                                            onclick="return confirm('Bạn chắc chắn muốn xóa slideshow này?');">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
 
-                <?php endwhile; else: ?>
-                    <tr>
-                        <td colspan="5" class="text-center text-muted py-4">Chưa có slideshow nào</td>
-                    </tr>
-                <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
-
+                            <?php endwhile;
+                        else: ?>
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">Chưa có slideshow nào</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
         <?php endif; ?>
     </div>
 </div>

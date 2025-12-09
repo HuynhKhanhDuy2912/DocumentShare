@@ -23,6 +23,20 @@ if (isset($_SESSION['emailUser'])) {
 }
 ?>
 
+<?php
+// Lấy danh sách category đang hiển thị
+$sql = "SELECT category_id, name FROM categories WHERE status = 0 ORDER BY category_id ASC";
+$result = mysqli_query($conn, $sql);
+
+$categories = [];
+if ($result && mysqli_num_rows($result) > 0) {
+    while ($row = mysqli_fetch_assoc($result)) {
+        $categories[] = $row;
+    }
+}
+?>
+
+
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -32,6 +46,8 @@ if (isset($_SESSION['emailUser'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DocumentShare</title>
     <link rel="icon" href="assets/img/logo.png">
+    <!-- Boostrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
@@ -74,85 +90,35 @@ if (isset($_SESSION['emailUser'])) {
                         <div class="mega-menu">
                             <div class="mega-grid">
 
-                                <!-- Cột danh mục 1 -->
-                                <div class="mega-column">
-                                    <h4 class="mega-title">Lập trình Web</h4>
-                                    <ul>
-                                        <li><a href="#">Tài liệu HTML</a></li>
-                                        <li><a href="#">Tài liệu CSS</a></li>
-                                        <li><a href="#">Tài liệu JavaScript</a></li>
-                                    </ul>
-                                </div>
+                                <?php
+                                $cols_per_row = 4;
+                                $count = 0;
+                                $categories_count = count($categories);
 
-                                <!-- Cột danh mục 2 -->
-                                <div class="mega-column">
-                                    <h4 class="mega-title">Lập trình Mobile</h4>
-                                    <ul>
-                                        <li><a href="#">Tài liệu Android</a></li>
-                                        <li><a href="#">Tài liệu iOS</a></li>
-                                        <li><a href="#">Tài liệu Flutter</a></li>
-                                    </ul>
-                                </div>
+                                for ($i = 0; $i < $categories_count; $i++) {
+                                    // Mở row mới nếu là cột đầu tiên của hàng
+                                    if ($count % $cols_per_row == 0) {
+                                        echo '<div class="mega-row">';
+                                    }
 
-                                <!-- Cột danh mục 3 -->
-                                <div class="mega-column">
-                                    <h4 class="mega-title">Cơ sở dữ liệu</h4>
-                                    <ul>
-                                        <li><a href="#">Tài liệu MySQL</a></li>
-                                        <li><a href="#">Tài liệu MongoDB</a></li>
-                                        <li><a href="#">Tài liệu SQL Server</a></li>
-                                    </ul>
-                                </div>
+                                    $category = $categories[$i];
+                                    echo '<div class="mega-column">';
+                                    echo '<h4 class="mega-title">' . htmlspecialchars($category['name']) . '</h4>';
+                                    echo '</div>';
 
-                                <!-- Cột danh mục 4 -->
-                                <div class="mega-column">
-                                    <h4 class="mega-title">AI & Data Science</h4>
-                                    <ul>
-                                        <li><a href="#">Python cơ bản</a></li>
-                                        <li><a href="#">Machine Learning</a></li>
-                                        <li><a href="#">Xử lý dữ liệu</a></li>
-                                    </ul>
-                                </div>
+                                    $count++;
 
-                                <!-- HÀNG 2 Cũng 4 danh mục -->
-                                <div class="mega-column">
-                                    <h4 class="mega-title">Mạng máy tính</h4>
-                                    <ul>
-                                        <li><a href="#">Tài liệu CCNA</a></li>
-                                        <li><a href="#">Mạng nâng cao</a></li>
-                                        <li><a href="#">An ninh mạng</a></li>
-                                    </ul>
-                                </div>
+                                    // Đóng row khi đủ 4 cột hoặc hết dữ liệu
+                                    if ($count % $cols_per_row == 0 || $i == $categories_count - 1) {
+                                        echo '</div>';
+                                    }
+                                }
+                                ?>
 
-                                <div class="mega-column">
-                                    <h4 class="mega-title">Tin học văn phòng</h4>
-                                    <ul>
-                                        <li><a href="#">Word nâng cao</a></li>
-                                        <li><a href="#">Excel chuyên sâu</a></li>
-                                        <li><a href="#">PowerPoint</a></li>
-                                    </ul>
-                                </div>
-
-                                <div class="mega-column">
-                                    <h4 class="mega-title">Thiết kế đồ họa</h4>
-                                    <ul>
-                                        <li><a href="#">Photoshop</a></li>
-                                        <li><a href="#">Illustrator</a></li>
-                                        <li><a href="#">Figma</a></li>
-                                    </ul>
-                                </div>
-
-                                <div class="mega-column">
-                                    <h4 class="mega-title">Kỹ năng mềm</h4>
-                                    <ul>
-                                        <li><a href="#">Giao tiếp</a></li>
-                                        <li><a href="#">Thuyết trình</a></li>
-                                        <li><a href="#">Quản lý thời gian</a></li>
-                                    </ul>
-                                </div>
 
                             </div>
                         </div>
+
                     </li>
                     <li class="nav-item"><a class="nav-link" href="contact.php"><i class="fa fa-envelope mr-1"></i> Liên hệ</a></li>
                 </ul>
@@ -175,7 +141,7 @@ if (isset($_SESSION['emailUser'])) {
                     <?php if (isset($_SESSION["emailUser"])): ?>
                         <li class="nav-item" style="margin-right: 40px">
                             <a class="btn btn-primary btn-sm btn-rounded text-white px-4 py-2" href="upload.php">
-                                <i class="fa fa-upload mr-2"></i> Đăng tài liệu
+                                <i class="fa fa-upload mr-2"></i> Đăng tải tài liệu
                             </a>
                         </li>
 
@@ -210,8 +176,7 @@ if (isset($_SESSION['emailUser'])) {
                         </li>
                     <?php else: ?>
                         <li class="nav-item"><a class="btn btn-primary btn-sm px-3 btn-rounded" href="login.php">Đăng nhập</a></li>
-                        <li class="nav-item ml-2"><a class="nav-link font-weight-bold" href="signup.php">Đăng
-                                ký</a></li>
+                        <li class="nav-item ml-2"><a class="nav-link font-weight-bold" href="signup.php">Đăng ký</a></li>
                     <?php endif; ?>
 
                 </ul>

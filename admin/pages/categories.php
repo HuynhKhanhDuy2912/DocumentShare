@@ -16,7 +16,7 @@ $data = ['category_id' => null, 'name' => '', 'description' => '', 'status' => 0
 $action = $_GET['action'] ?? '';
 $current_view = ($action === 'add' || $action === 'edit') ? 'form' : 'list';
 
-$page_title = match($action) {
+$page_title = match ($action) {
     'add' => 'Thêm danh mục mới',
     'edit' => 'Cập nhật danh mục',
     default => 'Danh mục'
@@ -26,7 +26,10 @@ $page_title = match($action) {
 // A. XỬ LÝ FORM SUBMIT (THÊM / SỬA)
 // ------------------------------------------------------
 if (isset($_POST['save_category'])) {
-    $id = $_POST['category_id'] ?? null;
+
+    $id = $_POST['category_id'] ?? '';
+    $id = ($id === '' || $id === null) ? 0 : (int)$id;
+
     $name = trim($_POST['name']);
     $description = trim($_POST['description']);
     $status = (int)$_POST['status'];
@@ -34,21 +37,23 @@ if (isset($_POST['save_category'])) {
     // KIỂM TRA TRÙNG TÊN
     $check_sql = "SELECT category_id FROM categories WHERE name = ? AND category_id != ?";
     $check_stmt = mysqli_prepare($conn, $check_sql);
-    mysqli_stmt_bind_param($check_stmt, "si", $name, $id ?? 0);
+
+    mysqli_stmt_bind_param($check_stmt, "si", $name, $id);
     mysqli_stmt_execute($check_stmt);
     mysqli_stmt_store_result($check_stmt);
 
     if (mysqli_stmt_num_rows($check_stmt) > 0) {
         $message = "Tên danh mục <strong>$name</strong> đã tồn tại!";
         $data = ['category_id' => $id, 'name' => $name, 'description' => $description, 'status' => $status];
-        $current_view = 'form';
+        $current_view = "form";
     }
+
     mysqli_stmt_close($check_stmt);
 
     // NẾU KHÔNG LỖI THÌ THÊM / SỬA
     if (empty($message)) {
 
-        if ($id) {
+        if ($id > 0) {
             // SỬA
             $sql = "UPDATE categories SET name=?, description=?, status=? WHERE category_id=?";
             $stmt = mysqli_prepare($conn, $sql);
@@ -68,6 +73,7 @@ if (isset($_POST['save_category'])) {
         } else {
             $message = "Lỗi SQL: " . mysqli_stmt_error($stmt);
         }
+
         mysqli_stmt_close($stmt);
     }
 }
@@ -134,7 +140,7 @@ $is_edit = !empty($data['category_id']);
         <!-- ================= FORM ================= -->
         <?php if ($current_view == 'form'): ?>
 
-            <form method="POST">
+            <form method="POST" action="">
 
                 <input type="hidden" name="category_id" value="<?= htmlspecialchars($data['category_id']) ?>">
 
@@ -152,8 +158,8 @@ $is_edit = !empty($data['category_id']);
                 <div class="mb-3">
                     <label class="form-label fw-bold">Trạng thái</label>
                     <select name="status" class="form-select" style="width:130px;">
-                        <option value="0" <?= $data['status']==0 ? 'selected':'' ?>>Hiển thị</option>
-                        <option value="1" <?= $data['status']==1 ? 'selected':'' ?>>Ẩn</option>
+                        <option value="0" <?= $data['status'] == 0 ? 'selected' : '' ?>>Hiển thị</option>
+                        <option value="1" <?= $data['status'] == 1 ? 'selected' : '' ?>>Ẩn</option>
                     </select>
                 </div>
 
@@ -186,7 +192,9 @@ $is_edit = !empty($data['category_id']);
                         ?>
 
                         <?php if (!$result || mysqli_num_rows($result) == 0): ?>
-                            <tr><td colspan="4" class="text-center py-4">Chưa có danh mục</td></tr>
+                            <tr>
+                                <td colspan="4" class="text-center py-4">Chưa có danh mục</td>
+                            </tr>
 
                         <?php else: ?>
                             <?php while ($row = mysqli_fetch_assoc($result)): ?>
@@ -195,7 +203,7 @@ $is_edit = !empty($data['category_id']);
                                     <td><?= htmlspecialchars($row['description']) ?></td>
 
                                     <td>
-                                        <?= $row['status']==1
+                                        <?= $row['status'] == 1
                                             ? '<span class="badge bg-secondary"><i class="fas fa-eye-slash"></i> Ẩn</span>'
                                             : '<span class="badge bg-success"><i class="fas fa-check-circle"></i> Hiển thị</span>' ?>
                                     </td>
