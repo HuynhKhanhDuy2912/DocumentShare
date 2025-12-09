@@ -116,13 +116,19 @@
               <li class="nav-item">
                 <a href="index.php?p=users" class="nav-link <?php if ($page == 'users') echo 'active'; ?>">
                   <i class="nav-icon fas fa-user"></i>
-                  <p>Quản lý người dùng</p>
+                  <p>Quản lý tài khoản</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="index.php?p=categories" class="nav-link <?php if ($page == 'categories') echo 'active'; ?>">
                   <i class="nav-icon fas fa-th"></i>
                   <p>Quản lý danh mục</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="index.php?p=subcategories" class="nav-link <?php if ($page == 'subcategories') echo 'active'; ?>">
+                  <i class="nav-icon fas fa-list"></i>
+                  <p>Quản lý danh mục con</p>
                 </a>
               </li>
               <li class="nav-item">

@@ -19,7 +19,7 @@ $current_view = ($action === 'add' || $action === 'edit') ? 'form' : 'list';
 $page_title = match ($action) {
     'add' => 'Thêm danh mục mới',
     'edit' => 'Cập nhật danh mục',
-    default => 'Danh mục'
+    default => 'Danh sách danh mục'
 };
 
 // ------------------------------------------------------

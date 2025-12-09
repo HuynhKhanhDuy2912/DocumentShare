@@ -15,7 +15,7 @@ mysqli_report(MYSQLI_REPORT_OFF);
 $base_url = '?p=users';
 
 // Khởi tạo biến
-$page_title = "Quản lý Người Dùng";
+$page_title = "Danh sách tài khoản";
 $message = "";
 $current_view = 'list';
 
@@ -119,7 +119,7 @@ if (isset($_GET['action'])) {
     // --> CHUYỂN FORM
     if ($action == 'add' || $action == 'edit') {
         $current_view = 'form';
-        $page_title = ($action == 'add') ? "Thêm thành viên mới" : "Cập nhật thành viên";
+        $page_title = ($action == 'add') ? "Thêm tài khoản mới" : "Cập nhật tài khoản";
 
         if ($action == 'edit' && isset($_GET['username'])) {
             $u_edit = $_GET['username'];

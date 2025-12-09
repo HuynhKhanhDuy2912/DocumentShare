@@ -8,7 +8,7 @@ if (!isset($conn) || $conn === false) {
 
 $base_url = '?p=slideshows';
 
-$page_title = "Quản lý Slideshow";
+$page_title = "Quản lý slideshow";
 $message = "";
 $current_view = "list";
 

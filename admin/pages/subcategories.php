@@ -1,0 +1,197 @@
+<?php
+// ------------------------------------------------------
+// KIỂM TRA KẾT NỐI DB
+// ------------------------------------------------------
+if (!isset($conn) || $conn === false) {
+    die('<div class="alert alert-danger">LỖI KẾT NỐI: Biến $conn không tồn tại.</div>');
+}
+
+// ------------------------------------------------------
+// BIẾN CẦN THIẾT
+// ------------------------------------------------------
+$message = "";
+$data = ['subcategory_id' => null, 'name' => '', 'status' => 0, 'category_id' => null];
+
+// Xác định chế độ view
+$action = $_GET['action'] ?? '';
+$current_view = ($action === 'add' || $action === 'edit') ? 'form' : 'list';
+
+$page_title = match ($action) {
+    'add' => 'Thêm danh mục con mới',
+    'edit' => 'Cập nhật danh mục con',
+    default => 'Danh sách danh mục con'
+};
+
+// ------------------------------------------------------
+// A. XỬ LÝ FORM SUBMIT (THÊM / SỬA)
+// ------------------------------------------------------
+if (isset($_POST['save_subcategory'])) {
+
+    $id = $_POST['subcategory_id'] ?? 0;
+    $id = (int)$id;
+    $name = trim($_POST['name']);
+    $status = (int)($_POST['status'] ?? 0);
+    $category_id = (int)($_POST['category_id'] ?? 0);
+
+    // KIỂM TRA TRÙNG TÊN
+    $check_sql = "SELECT subcategory_id FROM subcategories WHERE name=? AND category_id=? AND subcategory_id!=?";
+    $stmt_check = mysqli_prepare($conn, $check_sql);
+    mysqli_stmt_bind_param($stmt_check, "sii", $name, $category_id, $id);
+    mysqli_stmt_execute($stmt_check);
+    mysqli_stmt_store_result($stmt_check);
+
+    if (mysqli_stmt_num_rows($stmt_check) > 0) {
+        $message = "Danh mục con <strong>$name</strong> đã tồn tại trong danh mục này!";
+        $data = ['subcategory_id'=>$id,'name'=>$name,'status'=>$status,'category_id'=>$category_id];
+        $current_view = 'form';
+    }
+    mysqli_stmt_close($stmt_check);
+
+    if (empty($message)) {
+        if ($id > 0) {
+            // Cập nhật
+            $sql = "UPDATE subcategories SET name=?, status=?, category_id=? WHERE subcategory_id=?";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "siii", $name, $status, $category_id, $id);
+            $success_msg = "Cập nhật danh mục con thành công!";
+        } else {
+            // Thêm mới
+            $sql = "INSERT INTO subcategories (name, status, category_id) VALUES (?, ?, ?)";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "sii", $name, $status, $category_id);
+            $success_msg = "Thêm danh mục con thành công!";
+        }
+
+        if (mysqli_stmt_execute($stmt)) {
+            echo "<script>alert('$success_msg'); window.location.href='?p=subcategories';</script>";
+            exit;
+        } else {
+            $message = "Lỗi SQL: ".mysqli_stmt_error($stmt);
+        }
+        mysqli_stmt_close($stmt);
+    }
+}
+
+// ------------------------------------------------------
+// B. XỬ LÝ DELETE
+// ------------------------------------------------------
+if ($action == 'delete' && isset($_GET['id'])) {
+    $id = (int)$_GET['id'];
+    $stmt = mysqli_prepare($conn, "DELETE FROM subcategories WHERE subcategory_id=?");
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    if (mysqli_stmt_execute($stmt)) {
+        echo "<script>alert('Xóa danh mục con thành công!'); window.location.href='?p=subcategories';</script>";
+        exit;
+    } else {
+        $message = "Lỗi xóa: ".mysqli_stmt_error($stmt);
+    }
+    mysqli_stmt_close($stmt);
+}
+
+// ------------------------------------------------------
+// C. XỬ LÝ EDIT
+// ------------------------------------------------------
+if ($action == 'edit' && isset($_GET['id'])) {
+    $id = (int)$_GET['id'];
+    $stmt = mysqli_prepare($conn, "SELECT * FROM subcategories WHERE subcategory_id=?");
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_execute($stmt);
+    $rs = mysqli_stmt_get_result($stmt);
+    if ($row = mysqli_fetch_assoc($rs)) {
+        $data = $row;
+    } else {
+        $message = "Không tìm thấy danh mục con!";
+        $current_view = 'list';
+    }
+    mysqli_stmt_close($stmt);
+}
+
+$is_edit = !empty($data['subcategory_id']);
+?>
+
+<!-- ================= HTML ================= -->
+<div class="card shadow">
+    <div class="card-header bg-gradient-<?php echo ($current_view=='list')?'dark':'primary'; ?> text-white d-flex align-items-center">
+        <h4 class="mb-0"><?= $page_title ?></h4>
+        <?php if ($current_view=='list'): ?>
+            <a href="?p=subcategories&action=add" class="btn btn-warning ms-auto px-3"><i class="fas fa-plus-circle me-1"></i> Thêm mới</a>
+        <?php endif; ?>
+    </div>
+    <div class="card-body">
+        <?php if ($message): ?>
+            <div class="alert alert-danger"><?= $message ?></div>
+        <?php endif; ?>
+
+        <?php if ($current_view=='form'): ?>
+        <form method="POST" action="">
+            <input type="hidden" name="subcategory_id" value="<?= htmlspecialchars($data['subcategory_id']) ?>">
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Tên danh mục con *</label>
+                <input type="text" name="name" class="form-control" value="<?= htmlspecialchars($data['name']) ?>" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Danh mục cha *</label>
+                <select name="category_id" class="form-select" required>
+                    <option value="">-- Chọn danh mục --</option>
+                    <?php
+                    $cats = mysqli_query($conn, "SELECT * FROM categories ORDER BY name ASC");
+                    while ($c = mysqli_fetch_assoc($cats)):
+                    ?>
+                    <option value="<?= $c['category_id'] ?>" <?= $c['category_id']==$data['category_id']?'selected':'' ?>>
+                        <?= htmlspecialchars($c['name']) ?>
+                    </option>
+                    <?php endwhile; ?>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Trạng thái</label>
+                <select name="status" class="form-select" style="width:130px;">
+                    <option value="0" <?= $data['status']==0?'selected':'' ?>>Hiển thị</option>
+                    <option value="1" <?= $data['status']==1?'selected':'' ?>>Ẩn</option>
+                </select>
+            </div>
+
+            <div class="text-end pt-3">
+                <button class="btn btn-success px-4" name="save_subcategory"><i class="fas fa-save"></i> <?= $is_edit?'Cập nhật':'Thêm mới' ?></button>
+                <a href="?p=subcategories" class="btn btn-secondary px-3">Quay lại</a>
+            </div>
+        </form>
+
+        <?php else: ?>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Tên danh mục con</th>
+                        <th>Danh mục cha</th>
+                        <th width="110">Trạng thái</th>
+                        <th width="140" class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    $res = mysqli_query($conn, "SELECT s.*, c.name as category_name FROM subcategories s LEFT JOIN categories c ON s.category_id=c.category_id ORDER BY s.subcategory_id DESC");
+                    if(!$res || mysqli_num_rows($res)==0):
+                    ?>
+                    <tr><td colspan="4" class="text-center py-4">Chưa có danh mục con</td></tr>
+                    <?php else: ?>
+                    <?php while($r = mysqli_fetch_assoc($res)): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($r['name']) ?></td>
+                            <td><?= htmlspecialchars($r['category_name']) ?></td>
+                            <td><?= $r['status']==1?'<span class="badge bg-secondary">Ẩn</span>':'<span class="badge bg-success">Hiển thị</span>' ?></td>
+                            <td class="text-center">
+                                <a href="?p=subcategories&action=edit&id=<?= $r['subcategory_id'] ?>" class="btn btn-info btn-sm"><i class="fas fa-edit"></i></a>
+                                <a href="?p=subcategories&action=delete&id=<?= $r['subcategory_id'] ?>" onclick="return confirm('Xóa danh mục con này?');" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></a>
+                            </td>
+                        </tr>
+                    <?php endwhile; endif; ?>
+                </tbody>
+            </table>
+        </div>
+        <?php endif; ?>
+    </div>
+</div>

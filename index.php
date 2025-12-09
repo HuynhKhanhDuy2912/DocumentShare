@@ -1,7 +1,7 @@
 <?php include("header.php"); ?>
 
 <?php
-include 'config.php'; // file chứa $conn
+include 'config.php';
 
 $sql = "SELECT * FROM slideshows WHERE status = 1";
 $result = mysqli_query($conn, $sql);
