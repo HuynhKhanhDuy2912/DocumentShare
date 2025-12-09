@@ -7,7 +7,7 @@ require_once 'vendor/autoload.php'; // Gọi thư viện bạn vừa cài
 // Cấu hình Client ID và Secret
 $clientID = '483642035448-o4gcrpg5vd9knnu8av8j70mip7sklbul.apps.googleusercontent.com';
 $clientSecret = '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';
-$redirectUri = 'http://localhost/chiasetailieu/login.php';
+$redirectUri = 'http://localhost:8080/chiasetailieu/login.php';
 
 $client = new Google_Client();
 $client->setClientId($clientID);
