@@ -12,7 +12,7 @@ $redirectUri = 'http://localhost:8080/chiasetailieu/login.php';
 $client = new Google_Client();
 $client->setClientId($clientID);
 $client->setClientSecret($clientSecret);
-$client->setRedirectUri($redirectUri);
+$client->setRedirectUri($redirectUri);  
 $client->addScope("email");
 $client->addScope("profile");
 
@@ -37,6 +37,7 @@ if (isset($_GET['code'])) {
         if ($result->num_rows > 0) {
             // --> Trường hợp A: Đã có tài khoản -> Đăng nhập luôn
             $row = $result->fetch_assoc();
+             $_SESSION['user_id']  = $row['user_id'];
             $_SESSION['username'] = $row['username'];
             $_SESSION['emailUser'] = $row['email'];
             $_SESSION['role'] = $row['role'];
@@ -65,6 +66,7 @@ if (isset($_GET['code'])) {
                            VALUES ('$new_username', '$random_pass', '$email', '$default_role', '$google_id', 0)";
 
             if ($conn->query($insert_sql) === TRUE) {
+                $_SESSION['user_id']  = $conn->insert_id;
                 $_SESSION['username'] = $new_username;
                 $_SESSION['emailUser'] = $email;
                 $_SESSION['role'] = $default_role;
@@ -92,6 +94,7 @@ if (isset($_REQUEST['sbSubmit'])) {
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
+        $_SESSION['user_id']  = $row['user_id'];
         $_SESSION['username'] = $tendangnhap;
         $_SESSION['emailUser'] = $row['email'];
         $_SESSION['role'] = $row['role'];

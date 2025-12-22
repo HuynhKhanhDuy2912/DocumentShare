@@ -38,7 +38,7 @@ function validateRegisterForm() {
 //Show hide passwword
 function togglePassword(inputId, icon) {
   var input = document.getElementById(inputId);
-  
+
   if (input.type === "password") {
     // Chuyển sang hiện chữ
     input.type = "text";
@@ -65,3 +65,57 @@ function updateFileName(input) {
     fileNameSpan.classList.add("text-muted");
   }
 }
+
+// Mega Menu - Xem thêm / Thu gọn
+$(document).ready(function () {
+  // Xử lý logic Xem thêm / Thu gọn
+  $(".btn-toggle-sub").on("click", function (e) {
+    e.preventDefault();
+    e.stopPropagation(); // Ngăn menu bị đóng khi click bên trong
+
+    var $btn = $(this);
+    var $parentUl = $btn.closest(".sub-list");
+    var $extraItems = $parentUl.find(".extra-sub");
+
+    if ($btn.attr("data-state") === "collapsed") {
+      // ĐANG THU GỌN -> MỞ RA
+      $extraItems
+        .removeClass("d-none")
+        .addClass("animate__animated animate__fadeIn");
+      $btn.html("Thu gọn");
+      $btn.attr("data-state", "expanded");
+    } else {
+      // ĐANG MỞ -> THU GỌN LẠI
+      $extraItems.addClass("d-none");
+      $btn.html("Xem thêm...");
+      $btn.attr("data-state", "collapsed");
+    }
+  });
+});
+
+// Xử lý lưu tài liệu
+document.getElementById("btn-save").addEventListener("click", function () {
+  fetch("toggle_save_document.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: "document_id=" + this.dataset.id,
+  })
+    .then((res) => res.text())
+    .then((text) => {
+      try {
+        const data = JSON.parse(text);
+        if (data.status === "login") {
+          alert("Vui lòng đăng nhập để sử dụng chức năng này.");
+        } else if (data.status === "saved") {
+          alert("Đã lưu tài liệu");
+          location.reload();
+        } else if (data.status === "unsaved") {
+          alert("Đã bỏ lưu");
+          location.reload();
+        }
+      } catch (e) {
+        console.error("JSON error:", e);
+        console.log("Server response:", text);
+      }
+    });
+});

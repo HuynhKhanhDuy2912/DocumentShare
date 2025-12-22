@@ -1,5 +1,4 @@
 <?php
-
 // Kiểm tra kết nối DB
 if (!isset($conn) || $conn === false) {
     die('<div class="alert alert-danger">LỖI KẾT NỐI: Biến $conn không tồn tại.</div>');
@@ -8,17 +7,19 @@ if (!isset($conn) || $conn === false) {
 // Khởi tạo biến
 $message = "";
 $data = [
-    'document_id' => null,
+    'document_id' => '',
     'title' => '',
     'description' => '',
+    'thumbnail' => '',
     'file_path' => '',
     'file_type' => '',
-    'subcategory_id' => null,
+    'subcategory_id' => '',
     'status' => 0
 ];
 
 $action = $_GET['action'] ?? '';
 $current_view = ($action === 'add' || $action === 'edit') ? 'form' : 'list';
+$base_url = '?p=documents';
 
 $page_title = match ($action) {
     'add' => 'Thêm tài liệu mới',
@@ -26,7 +27,9 @@ $page_title = match ($action) {
     default => 'Danh sách tài liệu'
 };
 
-// Xử lý form submit
+/* ============================================================
+    1. XỬ LÝ LƯU (THÊM / SỬA)
+============================================================ */
 if (isset($_POST['save_document'])) {
 
     $id = (int)($_POST['document_id'] ?? 0);
@@ -36,22 +39,39 @@ if (isset($_POST['save_document'])) {
     $status = (int)($_POST['status']);
     $username = $_SESSION['username'] ?? 'system';
 
-    // Xử lý upload file
-    $file_path = $data['file_path'];
-    $file_type = $data['file_type'];
-    if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
-        $uploadDir = 'uploads/documents/';
-        if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
-        $filename = time().'_'.basename($_FILES['file']['name']);
-        $target = $uploadDir.$filename;
-        if (move_uploaded_file($_FILES['file']['tmp_name'], $target)) {
-            $file_path = $target;
-            $file_type = pathinfo($filename, PATHINFO_EXTENSION);
-        } else {
-            $message = "Upload file thất bại!";
-            $current_view = 'form';
-            goto end_form; // dừng các bước tiếp theo
+    // A. XỬ LÝ THUMBNAIL (Giống Slideshow)
+    $thumbnail = $_POST['old_thumbnail'] ?? ''; // Giữ tên file cũ
+    if (isset($_FILES['thumbnail']) && $_FILES['thumbnail']['error'] === UPLOAD_ERR_OK) {
+        $folderThumb = '../uploads/thumbnails/';
+        if (!is_dir($folderThumb)) mkdir($folderThumb, 0777, true);
+
+        // Xóa ảnh cũ nếu có
+        if (!empty($_POST['old_thumbnail']) && file_exists($folderThumb . $_POST['old_thumbnail'])) {
+            @unlink($folderThumb . $_POST['old_thumbnail']);
         }
+
+        $thumbName = time() . "_thumb_" . basename($_FILES["thumbnail"]["name"]);
+        move_uploaded_file($_FILES["thumbnail"]["tmp_name"], $folderThumb . $thumbName);
+        $thumbnail = $thumbName; // Chỉ lưu tên file
+    }
+
+    // B. XỬ LÝ FILE TÀI LIỆU (Cũng áp dụng logic giống Slideshow)
+    $file_path = $_POST['old_file'] ?? '';
+    $file_type = $_POST['old_file_type'] ?? '';
+    if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
+        $folderDoc = '../uploads/documents/';
+        if (!is_dir($folderDoc)) mkdir($folderDoc, 0777, true);
+
+        // Xóa file cũ nếu có
+        if (!empty($_POST['old_file']) && file_exists($folderDoc . $_POST['old_file'])) {
+            @unlink($folderDoc . $_POST['old_file']);
+        }
+
+        $fileName = time() . "_" . basename($_FILES["file"]["name"]);
+        move_uploaded_file($_FILES["file"]["tmp_name"], $folderDoc . $fileName);
+
+        $file_path = $fileName; // Chỉ lưu tên file
+        $file_type = pathinfo($fileName, PATHINFO_EXTENSION);
     }
 
     // Kiểm tra trùng title
@@ -63,177 +83,203 @@ if (isset($_POST['save_document'])) {
     if (mysqli_stmt_num_rows($stmt_check) > 0) {
         $message = "Tiêu đề '$title' đã tồn tại!";
         $current_view = 'form';
-        mysqli_stmt_close($stmt_check);
-        goto end_form; // dừng các bước tiếp theo
-    }
-    mysqli_stmt_close($stmt_check);
-
-    // Thêm / Sửa
-    if ($id > 0) {
-        // UPDATE
-        $sql = "UPDATE documents SET title=?, description=?, file_path=?, file_type=?, subcategory_id=?, status=?, username=? WHERE document_id=?";
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "ssssiisi", $title, $description, $file_path, $file_type, $subcategory_id, $status, $username, $id);
-        $success_msg = "Cập nhật tài liệu thành công!";
     } else {
-        // INSERT
-        $sql = "INSERT INTO documents (title, description, file_path, file_type, subcategory_id, status, username, views, shares, share_link) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, 0, 0, ?)";
-        $stmt = mysqli_prepare($conn, $sql);
-        $share_link = $file_path;
-        mysqli_stmt_bind_param($stmt, "sssssiis", $title, $description, $file_path, $file_type, $subcategory_id, $status, $username, $share_link);
-        $success_msg = "Thêm tài liệu thành công!";
-    }
+        if ($id > 0) {
+            // UPDATE
+            $sql = "UPDATE documents SET title=?, description=?, thumbnail=?, file_path=?, file_type=?, subcategory_id=?, status=?, username=? WHERE document_id=?";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "sssssiisi", $title, $description, $thumbnail, $file_path, $file_type, $subcategory_id, $status, $username, $id);
+            $success_msg = "Cập nhật tài liệu thành công!";
+        } else {
+            // INSERT
+            $sql = "INSERT INTO documents (title, description, thumbnail, file_path, file_type, subcategory_id, status, username, views, shares, share_link)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 0, ?)";
+            $stmt = mysqli_prepare($conn, $sql);
+            $share_link = $file_path; // link chia sẻ chỉ lưu tên file
+            mysqli_stmt_bind_param($stmt, "sssssiiss", $title, $description, $thumbnail, $file_path, $file_type, $subcategory_id, $status, $username, $share_link);
+            $success_msg = "Thêm tài liệu thành công!";
+        }
 
-    if (mysqli_stmt_execute($stmt)) {
-        echo "<script>alert('$success_msg'); window.location.href='?p=documents';</script>";
-        exit;
-    } else {
-        $message = "Lỗi SQL: ".mysqli_stmt_error($stmt);
+        if (mysqli_stmt_execute($stmt)) {
+            echo "<script>alert('$success_msg'); window.location.href='$base_url';</script>";
+            exit;
+        } else {
+            $message = "Lỗi SQL: " . mysqli_error($conn);
+        }
     }
-    mysqli_stmt_close($stmt);
-
-    end_form:
-    ;
 }
 
-// Xử lý delete
+/* ============================================================
+    2. XỬ LÝ XÓA (Xóa cả file vật lý)
+============================================================ */
 if ($action == 'delete' && isset($_GET['id'])) {
     $id = (int)$_GET['id'];
+
+    // Lấy thông tin file để xóa vật lý trước khi xóa DB
+    $res = mysqli_query($conn, "SELECT thumbnail, file_path FROM documents WHERE document_id=$id");
+    if ($row = mysqli_fetch_assoc($res)) {
+        if (!empty($row['thumbnail'])) @unlink("../uploads/thumbnails/" . $row['thumbnail']);
+        if (!empty($row['file_path'])) @unlink("../uploads/documents/" . $row['file_path']);
+    }
+
     $stmt = mysqli_prepare($conn, "DELETE FROM documents WHERE document_id=?");
     mysqli_stmt_bind_param($stmt, "i", $id);
     if (mysqli_stmt_execute($stmt)) {
-        echo "<script>alert('Xóa tài liệu thành công!'); window.location.href='?p=documents';</script>";
+        echo "<script>alert('Xóa tài liệu thành công!'); window.location.href='$base_url';</script>";
         exit;
-    } else {
-        $message = "Lỗi xóa: ".mysqli_stmt_error($stmt);
     }
-    mysqli_stmt_close($stmt);
 }
 
-// Xử lý edit
+// Xử lý edit để lấy dữ liệu đổ vào form
 if ($action == 'edit' && isset($_GET['id'])) {
     $id = (int)$_GET['id'];
-    $stmt = mysqli_prepare($conn, "SELECT * FROM documents WHERE document_id=?");
-    mysqli_stmt_bind_param($stmt, "i", $id);
-    mysqli_stmt_execute($stmt);
-    $rs = mysqli_stmt_get_result($stmt);
-    if ($row = mysqli_fetch_assoc($rs)) {
-        $data = $row;
-    } else {
-        $message = "Không tìm thấy tài liệu!";
-        $current_view = 'list';
-    }
-    mysqli_stmt_close($stmt);
+    $res = mysqli_query($conn, "SELECT * FROM documents WHERE document_id=$id");
+    if ($row = mysqli_fetch_assoc($res)) $data = $row;
 }
 $is_edit = !empty($data['document_id']);
+
+$subcategories = [];
+$resSub = mysqli_query($conn, "SELECT subcategory_id, name FROM subcategories ORDER BY name ASC");
+while ($rowSub = mysqli_fetch_assoc($resSub)) {
+    $subcategories[] = $rowSub;
+}
 ?>
 
-<!-- ================= HTML ================= -->
 <div class="card shadow">
-    <div class="card-header bg-gradient-<?php echo ($current_view=='list')?'dark':'primary'; ?> text-white d-flex align-items-center">
+    <div class="card-header bg-gradient-<?php echo ($current_view == 'list') ? 'dark' : 'primary'; ?> text-white d-flex align-items-center">
         <h4 class="mb-0"><?= $page_title ?></h4>
-        <?php if ($current_view=='list'): ?>
-            <a href="?p=documents&action=add" class="btn btn-warning ms-auto px-3"><i class="fas fa-plus-circle me-1"></i> Thêm mới</a>
+        <?php if ($current_view == 'list'): ?>
+            <a href="<?= $base_url ?>&action=add" class="btn btn-warning ms-auto px-3"><i class="fas fa-plus-circle me-1"></i> Thêm mới</a>
         <?php endif; ?>
     </div>
     <div class="card-body">
-
         <?php if ($message): ?>
             <div class="alert alert-danger"><?= $message ?></div>
         <?php endif; ?>
 
-        <?php if ($current_view=='form'): ?>
-        <form method="POST" enctype="multipart/form-data">
-            <input type="hidden" name="document_id" value="<?= htmlspecialchars($data['document_id']) ?>">
+        <?php if ($current_view == 'form'): ?>
+            <form method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="document_id" value="<?= $data['document_id'] ?>">
+                <input type="hidden" name="old_thumbnail" value="<?= $data['thumbnail'] ?>">
+                <input type="hidden" name="old_file" value="<?= $data['file_path'] ?>">
+                <input type="hidden" name="old_file_type" value="<?= $data['file_type'] ?>">
 
-            <div class="mb-3">
-                <label class="form-label fw-bold">Tiêu đề *</label>
-                <input type="text" name="title" class="form-control" value="<?= htmlspecialchars($data['title']) ?>" required>
-            </div>
+                <!-- TIÊU ĐỀ -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Tiêu đề *</label>
+                    <input type="text" name="title" class="form-control"
+                        value="<?= htmlspecialchars($data['title']) ?>" required>
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label fw-bold">Mô tả</label>
-                <textarea name="description" class="form-control" rows="3"><?= htmlspecialchars($data['description']) ?></textarea>
-            </div>
+                <!-- MÔ TẢ -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Mô tả</label>
+                    <textarea name="description" class="form-control" rows="4"
+                        placeholder="Nhập mô tả tài liệu..."><?= htmlspecialchars($data['description']) ?></textarea>
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label fw-bold">Danh mục</label>
-                <select name="subcategory_id" class="form-select">
-                    <option value="">-- Chọn danh mục --</option>
-                    <?php
-                    $cats = mysqli_query($conn, "SELECT * FROM subcategories ORDER BY name ASC");
-                    while ($c=mysqli_fetch_assoc($cats)):
-                    ?>
-                    <option value="<?= $c['subcategory_id'] ?>" <?= $c['subcategory_id']==$data['subcategory_id']?'selected':'' ?>>
-                        <?= htmlspecialchars($c['name']) ?>
-                    </option>
-                    <?php endwhile; ?>
-                </select>
-            </div>
+                <!-- DANH MỤC CON -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Danh mục *</label>
+                    <select name="subcategory_id" class="form-select" required>
+                        <option value="">-- Chọn danh mục --</option>
+                        <?php foreach ($subcategories as $sub): ?>
+                            <option value="<?= $sub['subcategory_id'] ?>"
+                                <?= ($sub['subcategory_id'] == $data['subcategory_id']) ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($sub['name']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label fw-bold">File</label>
-                <input type="file" name="file" class="form-control">
-                <?php if(!empty($data['file_path'])): ?>
-                    <small>Hiện tại: <a href="<?= $data['file_path'] ?>" target="_blank"><?= basename($data['file_path']) ?></a></small>
-                <?php endif; ?>
-            </div>
 
-            <div class="mb-3">
-                <label class="form-label fw-bold">Trạng thái</label>
-                <select name="status" class="form-select" style="width:130px;">
-                    <option value="0" <?= $data['status']==0?'selected':'' ?>>Hiển thị</option>
-                    <option value="1" <?= $data['status']==1?'selected':'' ?>>Ẩn</option>
-                </select>
-            </div>
+                <!-- ẢNH ĐẠI DIỆN -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Ảnh đại diện</label>
+                    <input type="file" name="thumbnail" class="form-control mb-2" accept="image/*">
+                    <?php if (!empty($data['thumbnail'])): ?>
+                        <img src="../uploads/thumbnails/<?= $data['thumbnail'] ?>"
+                            width="100" class="img-thumbnail border">
+                    <?php endif; ?>
+                </div>
 
-            <div class="text-end pt-3">
-                <button class="btn btn-success px-4" name="save_document"><i class="fas fa-save"></i> <?= $is_edit?'Cập nhật':'Thêm mới' ?></button>
-                <a href="?p=documents" class="btn btn-secondary px-3">Quay lại</a>
-            </div>
-        </form>
+                <!-- FILE TÀI LIỆU -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">File tài liệu</label>
+                    <input type="file" name="file" class="form-control mb-2">
+                    <?php if (!empty($data['file_path'])): ?>
+                        <small class="text-muted">
+                            File hiện tại: <strong><?= $data['file_path'] ?></strong>
+                        </small>
+                    <?php endif; ?>
+                </div>
 
+                <!-- TRẠNG THÁI -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Trạng thái</label>
+                    <select name="status" class="form-select">
+                        <option value="0" <?= $data['status'] == 0 ? 'selected' : '' ?>>Hiển thị</option>
+                        <option value="1" <?= $data['status'] == 1 ? 'selected' : '' ?>>Ẩn</option>
+                    </select>
+                </div>
+
+                <!-- BUTTON -->
+                <div class="text-end pt-3">
+                    <button class="btn btn-success px-4" name="save_document">
+                        <i class="fas fa-save me-1"></i> <?= $is_edit ? 'Cập nhật' : 'Thêm mới' ?>
+                    </button>
+                    <a href="<?= $base_url ?>" class="btn btn-secondary px-3">Quay lại</a>
+                </div>
+            </form>
         <?php else: ?>
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped table-hover">
-                <thead class="table-light">
-                    <tr>
-                        <th>Tiêu đề</th>
-                        <th>Mô tả</th>
-                        <th>Danh mục</th>
-                        <th>File</th>
-                        <th>Trạng thái</th>
-                        <th>Người tạo</th>
-                        <th class="text-center">Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    $res = mysqli_query($conn, "SELECT d.*, s.name as category_name FROM documents d LEFT JOIN subcategories s ON d.subcategory_id=s.subcategory_id ORDER BY d.document_id DESC");
-                    if(!$res || mysqli_num_rows($res)==0):
-                    ?>
-                    <tr><td colspan="7" class="text-center py-4">Chưa có tài liệu</td></tr>
-                    <?php else: ?>
-                    <?php while($r=mysqli_fetch_assoc($res)): ?>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-light">
                         <tr>
-                            <td><?= htmlspecialchars($r['title']) ?></td>
-                            <td><?= htmlspecialchars($r['description']) ?></td>
-                            <td><?= htmlspecialchars($r['category_name']) ?></td>
-                            <td><?php if($r['file_path']): ?><a href="<?= $r['file_path'] ?>" target="_blank">Xem file</a><?php endif; ?></td>
-                            <td>
-                                <?= $r['status']==1?'<span class="badge bg-secondary">Ẩn</span>':'<span class="badge bg-success">Hiển thị</span>' ?>
-                            </td>
-                            <td>Admin</td>
-                            <td class="text-center">
-                                <a href="?p=documents&action=edit&id=<?= $r['document_id'] ?>" class="btn btn-info btn-sm"><i class="fas fa-edit"></i></a>
-                                <a href="?p=documents&action=delete&id=<?= $r['document_id'] ?>" onclick="return confirm('Xóa tài liệu này?');" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></a>
-                            </td>
+                            <th width="80">Ảnh</th>
+                            <th>Tiêu đề</th>
+                            <th>Mô tả</th>
+                            <th>Danh mục</th>
+                            <th>File</th>
+                            <th>Trạng thái</th>
+                            <th class="text-center">Thao tác</th>
                         </tr>
-                    <?php endwhile; endif; ?>
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $res = mysqli_query($conn, "SELECT d.*, s.name as category_name FROM documents d LEFT JOIN subcategories s ON d.subcategory_id=s.subcategory_id ORDER BY d.document_id DESC");
+                        while ($r = mysqli_fetch_assoc($res)):
+                        ?>
+                            <tr>
+                                <td>
+                                    <?php if ($r['thumbnail']): ?>
+                                        <img src="../uploads/thumbnails/<?= $r['thumbnail'] ?>" width="55" height="75" style="object-fit: cover;" class="border">
+                                    <?php else: ?>
+                                        <span class="text-muted small">No Image</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td><strong><?= htmlspecialchars($r['title']) ?></strong></td>
+                                <td><?= nl2br(htmlspecialchars($r['description'])) ?></td>
+                                <td>
+                                    <?= $r['category_name']
+                                        ? htmlspecialchars($r['category_name'])
+                                        : '<span class="text-muted small">Chưa phân loại</span>' ?>
+                                </td>
+                                <td>
+                                    <?php if ($r['file_path']): ?>
+                                        <a href="../uploads/documents/<?= $r['file_path'] ?>" target="_blank" class="badge bg-info text-decoration-none">Xem file</a>
+                                    <?php endif; ?>
+                                </td>
+                                <td><?= $r['status'] == 0 ? '<span class="badge bg-success">Hiện</span>' : '<span class="badge bg-secondary">Ẩn</span>' ?></td>
+                                <td class="text-center">
+                                    <a href="<?= $base_url ?>&action=edit&id=<?= $r['document_id'] ?>" class="btn btn-info btn-sm"><i class="fas fa-edit"></i></a>
+                                    <a href="<?= $base_url ?>&action=delete&id=<?= $r['document_id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Xóa tài liệu này?')"><i class="fas fa-trash"></i></a>
+                                </td>
+                            </tr>
+                        <?php endwhile; ?>
+                    </tbody>
+                </table>
+            </div>
         <?php endif; ?>
     </div>
 </div>

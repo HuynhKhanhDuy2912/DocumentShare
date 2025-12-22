@@ -1,84 +1,97 @@
-<?php include("header.php"); ?>
-
 <?php
-include 'config.php'; // file chứa $conn
+include "config.php";
+include "header.php";
 
-$sql = "SELECT * FROM slideshows WHERE status = 1";
-$result = mysqli_query($conn, $sql);
-
-$banners = [];
-while ($row = mysqli_fetch_assoc($result)) {
-    $banners[] = $row;
+// Chưa đăng nhập thì đá về login
+if (!isset($_SESSION['user_id'])) {
+    echo "<script>alert('Vui lòng đăng nhập'); window.location='login.php';</script>";
+    exit;
 }
+
+$user_id = (int)$_SESSION['user_id'];
+
+// Lấy tài liệu đã lưu
+$sql = "
+    SELECT d.*
+    FROM saved_documents s
+    INNER JOIN documents d ON s.document_id = d.document_id
+    WHERE s.user_id = $user_id AND d.status = 0
+    ORDER BY s.created_at DESC
+";
+
+$result = mysqli_query($conn, $sql);
 ?>
 
-<div class="container mt-4">
+<div class="container mt-4 mrt">
 
-    <!-- CAROUSEL -->
-    <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">📌 Tài liệu đã lưu</h3>
+    </div>
 
-            <?php foreach ($banners as $index => $banner): ?>
-                <div class="carousel-item <?= $index == 0 ? 'active' : '' ?>">
-                    <img src="uploads/slideshows/<?= $banner['imageurl'] ?>" class="d-block w-100" alt="Slide">
-                    <div class="carousel-caption d-none d-md-block">
-                        <h5><?= $banner['title'] ?></h5>
-                        <p><?= $banner['description'] ?></p>
+    <?php if ($result && mysqli_num_rows($result) > 0): ?>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-4">
+
+            <?php while ($row = mysqli_fetch_assoc($result)): ?>
+                <?php
+                $thumb = !empty($row['thumbnail'])
+                    ? "uploads/thumbnails/" . $row['thumbnail']
+                    : "assets/img/default-document.jpg";
+
+                $file_ext = strtolower($row['file_type']);
+                $icon_class = ($file_ext == 'pdf') ? 'bg-danger' : 'bg-primary';
+                $icon_text = strtoupper($file_ext);
+                ?>
+
+                <div class="col">
+                    <div class="card h-100 border-0 shadow-sm doc-card">
+
+                        <div class="position-relative p-2">
+                            <span class="badge <?= $icon_class ?> position-absolute top-0 start-0 m-2"
+                                style="font-size: 0.65rem;">
+                                <?= $icon_text ?>
+                            </span>
+
+                            <a href="document_detail.php?id=<?= $row['document_id'] ?>">
+                                <div class="doc-thumb border rounded-2">
+                                    <img src="<?= $thumb ?>" alt="">
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="card-body p-2 pt-0 d-flex flex-column">
+                            <h6 class="fw-semibold text-truncate-2 mb-2"
+                                style="font-size: 0.85rem;">
+                                <a href="document_detail.php?id=<?= $row['document_id'] ?>"
+                                    class="text-decoration-none text-dark">
+                                    <?= htmlspecialchars($row['title']) ?>
+                                </a>
+                            </h6>
+
+                            <div class="mt-auto d-flex justify-content-between align-items-center text-muted"
+                                style="font-size: 0.75rem;">
+                                <span>
+                                    <i class="far fa-eye me-1"></i><?= $row['views'] ?>
+                                </span>
+
+                                <a href="unsave_document.php?id=<?= $row['document_id'] ?>"
+                                    class="text-danger"
+                                    onclick="return confirm('Bỏ lưu tài liệu này?')">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
-            <?php endforeach; ?>
+            <?php endwhile; ?>
 
         </div>
+    <?php else: ?>
+        <div class="alert alert-info">
+            Bạn chưa lưu tài liệu nào.
+        </div>
+    <?php endif; ?>
 
-        <!-- Nút điều hướng -->
-        <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-        </button>
-
-        <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon"></span>
-        </button>
-    </div>
-
-
-    <!-- TÀI LIỆU MỚI NHẤT -->
-    <h3 class="mb-3">Tài liệu đã lưu</h3>
-
-    <div class="row">
-        <?php
-        $sql = "SELECT document_id, title, description, file_path 
-                FROM documents ORDER BY document_id DESC LIMIT 8";
-        $result = mysqli_query($conn, $sql);
-
-        while ($row = mysqli_fetch_assoc($result)):
-            $image = (!empty($row['file_path']) && preg_match('/\.(jpg|jpeg|png|gif)$/i', $row['file_path']))
-                ? $row['file_path']
-                : "assets/img/bg.jpg";
-        ?>
-
-            <div class="col-md-3 mb-3">
-                <div class="card h-100 shadow-sm">
-
-                    <img src="<?= $image ?>" class="card-img-top" alt="Document">
-
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            <?= htmlspecialchars($row['title']) ?>
-                        </h5>
-
-                        <p class="card-text text-truncate">
-                            <?= htmlspecialchars($row['description']) ?>
-                        </p>
-
-                        <a href="document_detail.php?id=<?= $row['document_id'] ?>"
-                            class="btn btn-primary btn-sm">
-                            Xem chi tiết
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <?php endwhile; ?>
-    </div>
 </div>
 
-<?php include("footer.php"); ?>
+<?php include "footer.php"; ?>

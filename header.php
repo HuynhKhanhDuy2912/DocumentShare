@@ -10,7 +10,7 @@ if (isset($_SESSION['emailUser'])) {
     $sql = "SELECT * FROM users WHERE email='$email'";
     $result = $conn->query($sql);
 
-    if ($result->num_rows > 0) {
+    if ($result && $result->num_rows > 0) {
         $user = $result->fetch_assoc();
         $_SESSION['username'] = $user['username'];
         $_SESSION['role'] = $user['role'];
@@ -24,7 +24,7 @@ if (isset($_SESSION['emailUser'])) {
 ?>
 
 <?php
-// Lấy danh sách category đang hiển thị
+// Lấy danh sách categories đang hiển thị (status = 0)
 $sql = "SELECT category_id, name FROM categories WHERE status = 0 ORDER BY category_id ASC";
 $result = mysqli_query($conn, $sql);
 
@@ -36,8 +36,6 @@ if ($result && mysqli_num_rows($result) > 0) {
 }
 ?>
 
-
-
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -46,15 +44,10 @@ if ($result && mysqli_num_rows($result) > 0) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DocumentShare</title>
     <link rel="icon" href="assets/img/logo.png">
-    <!-- Boostrap 5 -->
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <link rel="stylesheet" href="assets/css/custom.css">
 </head>
 
@@ -66,8 +59,7 @@ if ($result && mysqli_num_rows($result) > 0) {
             <a class="navbar-brand d-flex align-items-center" href="index.php">
                 <img src="assets/img/logo.png" alt="Logo" style="height: 40px; margin-right: 10px;">
                 <div class="d-flex flex-column">
-                    <span
-                        style="font-weight: 700; font-size: 18px; line-height: 1.2; color: #0d6efd;">DocumentShare</span>
+                    <span style="font-weight: 700; font-size: 18px; line-height: 1.2; color: #0d6efd;">DocumentShare</span>
                     <span style="font-size: 12px; color: #6c757d; font-weight: 500;">Học Tập & Chia Sẻ</span>
                 </div>
             </a>
@@ -78,52 +70,81 @@ if ($result && mysqli_num_rows($result) > 0) {
 
             <div class="collapse navbar-collapse" id="navbarMenu">
 
-                <!-- MENU TRÁI -->
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item"><a class="nav-link" href="index.php"><i class="fa fa-home mr-1"></i> Trang chủ</a></li>
+
                     <li class="nav-item mega-dropdown">
-                        <a class="nav-link" href="danhmuc.php">
+                        <a class="nav-link" href="javascript:void(0);">
                             <i class="fa fa-tag mr-1"></i> Danh mục tài liệu
+                            <i class="fas fa-chevron-down ml-1" style="font-size: 10px;"></i>
                         </a>
 
-                        <!-- Mega Menu -->
+                        <!-- MEGA MENU (CHỈ 1 CÁI) -->
                         <div class="mega-menu">
                             <div class="mega-grid">
 
-                                <?php
-                                $cols_per_row = 4;
-                                $count = 0;
-                                $categories_count = count($categories);
+                                <?php foreach ($categories as $category): ?>
+                                    <?php $cat_id = $category['category_id']; ?>
 
-                                for ($i = 0; $i < $categories_count; $i++) {
-                                    // Mở row mới nếu là cột đầu tiên của hàng
-                                    if ($count % $cols_per_row == 0) {
-                                        echo '<div class="mega-row">';
-                                    }
+                                    <div class="mega-column">
+                                        <h4 class="mega-title">
+                                            <a href="javascript:void(0)" style="color: inherit; text-decoration: none;">
+                                                <?= htmlspecialchars($category['name']) ?>
+                                            </a>
+                                        </h4>
 
-                                    $category = $categories[$i];
-                                    echo '<div class="mega-column">';
-                                    echo '<h4 class="mega-title">' . htmlspecialchars($category['name']) . '</h4>';
-                                    echo '</div>';
+                                        <ul class="list-unstyled sub-list">
+                                            <?php
+                                            $sql_sub = "SELECT subcategory_id, name FROM subcategories 
+                                                WHERE category_id = $cat_id AND status = 0";
+                                            $res_sub = mysqli_query($conn, $sql_sub);
 
-                                    $count++;
+                                            if ($res_sub && mysqli_num_rows($res_sub) > 0):
+                                                $sub_count = 0;
+                                                while ($sub = mysqli_fetch_assoc($res_sub)):
+                                                    $sub_count++;
+                                                    // Ẩn từ mục thứ 5 trở đi
+                                                    $hidden_class = ($sub_count > 4) ? 'extra-sub d-none' : '';
+                                            ?>
+                                                    <li class="<?= $hidden_class ?>">
+                                                        <a href="subcategory_detail.php?id=<?= $sub['subcategory_id'] ?>"
+                                                            class="text-dark small py-1 d-block text-decoration-none">
+                                                            <i class="fas fa-angle-right me-1" style="font-size: 10px;"></i>
+                                                            <?= htmlspecialchars($sub['name']) ?>
+                                                        </a>
+                                                    </li>
+                                                <?php
+                                                endwhile;
 
-                                    // Đóng row khi đủ 4 cột hoặc hết dữ liệu
-                                    if ($count % $cols_per_row == 0 || $i == $categories_count - 1) {
-                                        echo '</div>';
-                                    }
-                                }
-                                ?>
+                                                // HIỆN NÚT XEM THÊM
+                                                if ($sub_count > 4):
+                                                ?>
+                                                    <li class="toggle-link">
+                                                        <a href="javascript:void(0)"
+                                                            class="text-dark small fw-bold btn-toggle-sub"
+                                                            data-state="collapsed">
+                                                            Xem thêm...
+                                                        </a>
+                                                    </li>
+                                            <?php
+                                                endif;
+                                            else:
+                                                echo '<li><span class="text-muted small">Đang cập nhật...</span></li>';
+                                            endif;
+                                            ?>
+                                        </ul>
+                                    </div>
 
+                                <?php endforeach; ?>
 
                             </div>
                         </div>
-
                     </li>
+
+
                     <li class="nav-item"><a class="nav-link" href="contact.php"><i class="fa fa-envelope mr-1"></i> Liên hệ</a></li>
                 </ul>
 
-                <!-- Ô tìm kiếm -->
                 <form class="form-inline search-box mx-auto" action="search.php" method="get">
                     <div class="input-group">
                         <input class="form-control" type="search" name="q" placeholder="Tìm kiếm tài liệu...">
@@ -135,39 +156,32 @@ if ($result && mysqli_num_rows($result) > 0) {
                     </div>
                 </form>
 
-                <!-- MENU PHẢI (Đăng nhập / Đăng ký hoặc User) -->
                 <ul class="navbar-nav ml-auto align-items-center">
-
                     <?php if (isset($_SESSION["emailUser"])): ?>
-                        <li class="nav-item" style="margin-right: 40px">
+                        <li class="nav-item" style="margin-right: 20px">
                             <a class="btn btn-primary btn-sm btn-rounded text-white px-4 py-2" href="upload.php">
                                 <i class="fa fa-upload mr-2"></i> Đăng tải tài liệu
                             </a>
                         </li>
 
-                        <li class="nav-item dropdown user-dropdown" style="margin-right: 1.5rem;">
+                        <li class="nav-item dropdown user-dropdown">
                             <a class="nav-link dropdown-toggle font-weight-bold text-dark d-flex align-items-center" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-
                                 <?php
-                                // Kiểm tra avatar
                                 $avatarFile = isset($_SESSION['avatar']) ? $_SESSION['avatar'] : '';
                                 $avatarPath = "uploads/" . $avatarFile;
 
-                                // Nếu có tên file và file thực sự tồn tại trên server
                                 if (!empty($avatarFile) && file_exists($avatarPath)) {
                                     echo '<img src="' . $avatarPath . '" alt="Avatar" class="nav-user-avatar mr-2">';
                                 } else {
-                                    // Nếu không có thì dùng Icon mặc định
                                     echo '<i class="fa fa-user-circle fa-2x text-primary mr-2"></i>';
                                 }
                                 ?>
-
-                                <span class="text-truncate" style="max-width: 200px;">
+                                <span class="text-truncate" style="max-width: 150px;">
                                     <?php echo $_SESSION['username']; ?>
                                 </span>
                             </a>
 
-                            <div class="dropdown-menu dropdown-menu-right shadow border-0" aria-labelledby="userDropdown" style="right: -36px;">
+                            <div class="dropdown-menu dropdown-menu-right shadow border-0" aria-labelledby="userDropdown">
                                 <a class="dropdown-item" href="profile.php"><i class="fa fa-id-card mr-2 text-muted"></i> Thông tin tài khoản</a>
                                 <a class="dropdown-item" href="saved_documents.php"><i class="fa fa-bookmark mr-2 text-muted"></i> Tài liệu đã lưu</a>
                                 <div class="dropdown-divider"></div>
@@ -178,22 +192,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                         <li class="nav-item"><a class="btn btn-primary btn-sm px-3 btn-rounded" href="login.php">Đăng nhập</a></li>
                         <li class="nav-item ml-2"><a class="nav-link font-weight-bold" href="signup.php">Đăng ký</a></li>
                     <?php endif; ?>
-
                 </ul>
             </div>
-
         </div>
     </nav>
-
-    <div style="height: 100px;"></div>
-
-    <div class="container">
-    </div>
-
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-</body>
-
-</html>
