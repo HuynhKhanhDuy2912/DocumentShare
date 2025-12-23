@@ -17,7 +17,7 @@ if (isset($_POST['sbDangky'])) {
     $tendaydu    = $_POST['txtTendaydu'];
     $email       = $_POST['txtEmail'];
 
-    $tm = "uploads/";
+    $tm = "uploads/users/";
     $fileName = basename($_FILES["fileAnh"]["name"]);
     $targetFilePath = $tm . $fileName;
     $fileType = strtolower(pathinfo($targetFilePath, PATHINFO_EXTENSION));

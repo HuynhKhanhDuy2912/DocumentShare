@@ -168,7 +168,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                             <a class="nav-link dropdown-toggle font-weight-bold text-dark d-flex align-items-center" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <?php
                                 $avatarFile = isset($_SESSION['avatar']) ? $_SESSION['avatar'] : '';
-                                $avatarPath = "uploads/" . $avatarFile;
+                                $avatarPath = "uploads/users/" . $avatarFile;
 
                                 if (!empty($avatarFile) && file_exists($avatarPath)) {
                                     echo '<img src="' . $avatarPath . '" alt="Avatar" class="nav-user-avatar mr-2">';
@@ -182,8 +182,18 @@ if ($result && mysqli_num_rows($result) > 0) {
                             </a>
 
                             <div class="dropdown-menu dropdown-menu-right shadow border-0" aria-labelledby="userDropdown" style="left: -35px;">
-                                <a class="dropdown-item" href="profile.php"><i class="fa fa-id-card mr-2 text-muted"></i> Thông tin tài khoản</a>
-                                <a class="dropdown-item" href="saved_documents.php"><i class="fa fa-bookmark mr-2 text-muted"></i> Tài liệu đã lưu</a>
+                                <a class="dropdown-item" href="profile.php"><i class="fa fa-id-card mr-2"></i> Thông tin tài khoản</a>
+                                <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 1): ?>
+                                    <!-- ADMIN -->
+                                    <a class="dropdown-item" href="admin/index.php">
+                                        <i class="fa fa-tools mr-2"></i> Trang quản trị
+                                    </a>
+                                <?php else: ?>
+                                    <!-- CUSTOMER -->
+                                    <a class="dropdown-item" href="saved_documents.php">
+                                        <i class="fa fa-bookmark mr-2"></i> Tài liệu đã lưu
+                                    </a>
+                                <?php endif; ?>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item text-danger" href="logout.php"><i class="fa fa-sign-out-alt mr-2"></i> Đăng xuất</a>
                             </div>

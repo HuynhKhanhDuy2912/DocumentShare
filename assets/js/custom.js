@@ -1,12 +1,26 @@
-// Validate form đăng ký
-function validateRegisterForm() {
-  let username = document.querySelector("[name='txtTendangnhap']").value.trim();
-  let pass1 = document.querySelector("[name='txtMatkhau']").value;
-  let pass2 = document.querySelector("[name='txtreMatkhau']").value;
-  let email = document.querySelector("[name='txtEmail']").value.trim();
+/* ==================================================
+   HELPER CHUNG
+================================================== */
+function qs(selector) {
+  return document.querySelector(selector);
+}
 
-  // Validate username
-  let usernameRegex = /^[a-zA-Z0-9_]{4,20}$/;
+function qsa(selector) {
+  return document.querySelectorAll(selector);
+}
+
+/* ==================================================
+   VALIDATE FORM ĐĂNG KÝ (signup.php)
+================================================== */
+function validateRegisterForm() {
+  const username = qs("[name='txtTendangnhap']")?.value.trim();
+  const pass1 = $("[name='txtMatkhau']")?.value;
+  const pass2 = $("[name='txtreMatkhau']")?.value;
+  const email = $("[name='txtEmail']")?.value.trim();
+
+  if (!username || !pass1 || !pass2 || !email) return false;
+
+  const usernameRegex = /^[a-zA-Z0-9_]{4,20}$/;
   if (!usernameRegex.test(username)) {
     alert(
       "Tên đăng nhập chỉ được chứa chữ, số, dấu gạch dưới và dài 4-20 ký tự."
@@ -14,19 +28,17 @@ function validateRegisterForm() {
     return false;
   }
 
-  // Validate password
   if (pass1.length < 6) {
     alert("Mật khẩu phải ít nhất 6 ký tự!");
     return false;
   }
 
   if (pass1 !== pass2) {
-    alert("Mật khẩu nhập lại khôngkhớp!");
+    alert("Mật khẩu nhập lại không khớp!");
     return false;
   }
 
-  // Validate email
-  let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     alert("Email không hợp lệ!");
     return false;
@@ -35,26 +47,31 @@ function validateRegisterForm() {
   return true;
 }
 
-//Show hide passwword
+/* ==================================================
+   SHOW / HIDE PASSWORD (login.php, signup.php)
+================================================== */
 function togglePassword(inputId, icon) {
-  var input = document.getElementById(inputId);
+  const input = document.getElementById(inputId);
+  if (!input) return;
 
   if (input.type === "password") {
-    // Chuyển sang hiện chữ
     input.type = "text";
     icon.classList.remove("fa-eye");
     icon.classList.add("fa-eye-slash");
   } else {
-    // Chuyển lại thành ẩn
     input.type = "password";
     icon.classList.remove("fa-eye-slash");
     icon.classList.add("fa-eye");
   }
 }
 
-//Hiển thị tên file
+/* ==================================================
+   HIỂN THỊ TÊN FILE UPLOAD
+================================================== */
 function updateFileName(input) {
-  var fileNameSpan = document.getElementById("fileName");
+  const fileNameSpan = document.getElementById("fileName");
+  if (!fileNameSpan) return;
+
   if (input.files && input.files[0]) {
     fileNameSpan.innerText = input.files[0].name;
     fileNameSpan.classList.add("text-primary");
@@ -66,26 +83,25 @@ function updateFileName(input) {
   }
 }
 
-// Mega Menu - Xem thêm / Thu gọn
+/* ==================================================
+   MEGA MENU – XEM THÊM / THU GỌN
+================================================== */
 $(document).ready(function () {
-  // Xử lý logic Xem thêm / Thu gọn
   $(".btn-toggle-sub").on("click", function (e) {
     e.preventDefault();
-    e.stopPropagation(); // Ngăn menu bị đóng khi click bên trong
+    e.stopPropagation();
 
-    var $btn = $(this);
-    var $parentUl = $btn.closest(".sub-list");
-    var $extraItems = $parentUl.find(".extra-sub");
+    const $btn = $(this);
+    const $parentUl = $btn.closest(".sub-list");
+    const $extraItems = $parentUl.find(".extra-sub");
 
     if ($btn.attr("data-state") === "collapsed") {
-      // ĐANG THU GỌN -> MỞ RA
       $extraItems
         .removeClass("d-none")
         .addClass("animate__animated animate__fadeIn");
       $btn.html("Thu gọn");
       $btn.attr("data-state", "expanded");
     } else {
-      // ĐANG MỞ -> THU GỌN LẠI
       $extraItems.addClass("d-none");
       $btn.html("Xem thêm...");
       $btn.attr("data-state", "collapsed");
@@ -93,39 +109,58 @@ $(document).ready(function () {
   });
 });
 
-// Xử lý lưu tài liệu
-document.getElementById("btn-save").addEventListener("click", function () {
-  const docId = this.dataset.id;
+/* ==================================================
+   LƯU / BỎ LƯU TÀI LIỆU (document_detail.php)
+================================================== */
+document.addEventListener("DOMContentLoaded", function () {
+  const btnSave = document.getElementById("btn-save");
 
-  fetch("toggle_save_document.php", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: "document_id=" + docId,
-  })
-    .then((res) => {
-      // Kiểm tra nếu server trả về lỗi 500 hoặc 404
-      if (!res.ok) throw new Error("Network response was not ok");
-      return res.text(); // Đọc dạng text trước để kiểm tra
+  if (!btnSave) return; 
+
+  btnSave.addEventListener("click", function () {
+    const docId = this.dataset.id;
+    if (!docId) return;
+
+    fetch("toggle_save_document.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: "document_id=" + docId,
     })
-    .then((text) => {
-      try {
-        const data = JSON.parse(text);
-        if (data.status === "login") {
-          alert("Vui lòng đăng nhập để sử dụng chức năng này.");
-          window.location.href = "login.php";
-        } else if (data.status === "saved") {
-          alert("Đã lưu tài liệu thành công!");
-          location.reload();
-        } else if (data.status === "unsaved") {
-          alert("Đã bỏ lưu tài liệu!");
-          location.reload();
-        } else {
-          console.error("Server error:", data.message);
+      .then((res) => {
+        if (!res.ok) throw new Error("Network response was not ok");
+        return res.text();
+      })
+      .then((text) => {
+        try {
+          const data = JSON.parse(text);
+
+          if (data.status === "login") {
+            alert("Vui lòng đăng nhập để sử dụng chức năng này.");
+            window.location.href = "login.php";
+          } else if (data.status === "saved") {
+            alert("Đã lưu tài liệu thành công!");
+            location.reload();
+          } else if (data.status === "unsaved") {
+            alert("Đã bỏ lưu tài liệu!");
+            location.reload();
+          }
+        } catch (e) {
+          console.error("Lỗi parse JSON:", text);
+          alert("Có lỗi xảy ra từ phía server.");
         }
-      } catch (e) {
-        console.error("Lỗi parse JSON. Nội dung server trả về:", text);
-        alert("Có lỗi xảy ra từ phía server.");
-      }
-    })
-    .catch((err) => console.error("Fetch error:", err));
+      })
+      .catch((err) => console.error("Fetch error:", err));
+  });
 });
+
+/* ==================================================
+   PROFILE – HIỂN THỊ FORM ĐỔI MẬT KHẨU
+================================================== */
+function togglePasswordForm() {
+    const wrapper = document.getElementById("profileWrapper");
+    if (!wrapper) return;
+
+    wrapper.classList.toggle("show-password");
+    wrapper.classList.toggle("justify-center");
+}
+

@@ -48,7 +48,7 @@
   $avatar_display_path = "dist/img/avatar5.png";
 
   if (!empty($avatar_filename)) {
-    $avatar_display_path = "../uploads/" . $avatar_filename;
+    $avatar_display_path = "../uploads/users/" . $avatar_filename;
   }
 
   ?>
@@ -89,7 +89,7 @@
         </ul>
       </nav>
       <aside class="main-sidebar sidebar-dark-primary elevation-4">
-        <a href="index.php?p=dashboard" class="brand-link text-center">
+        <a href="../index.php" class="brand-link text-center">
           <span class="brand-text font-weight-light">DocumentShare</span>
         </a>
 

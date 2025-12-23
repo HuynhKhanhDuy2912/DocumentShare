@@ -570,3 +570,38 @@ body {
   padding: 5px 8px;
   text-transform: uppercase;
 }
+
+/*===========================PROFILE===========================*/
+.profile-wrapper {
+  display: flex;
+  gap: 24px;
+  transition: all 0.4s ease;
+}
+
+/* Mặc định: form nằm giữa */
+.profile-wrapper.justify-center {
+  justify-content: center;
+}
+
+/* Khi mở đổi mật khẩu */
+.profile-wrapper.show-password {
+  justify-content: space-between;
+}
+
+/* Box chung */
+.profile-box,
+.password-box {
+  width: 100%;
+  max-width: 700px;
+  transition: all 0.4s ease;
+}
+
+/* Ẩn form đổi mật khẩu */
+.password-box {
+  display: none;
+}
+
+/* Khi bật */
+.profile-wrapper.show-password .password-box {
+  display: block;
+}

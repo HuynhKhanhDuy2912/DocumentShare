@@ -65,7 +65,7 @@ if (isset($_POST['save_user'])) {
 
         $avatar_path = $default_avatar;
         if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] == 0) {
-            $target_dir = "../uploads/";
+            $target_dir = "../uploads/users/";
             if (!file_exists($target_dir)) mkdir($target_dir, 0777, true);
             $filename = time() . "_" . basename($_FILES["avatar"]["name"]);
             move_uploaded_file($_FILES["avatar"]["tmp_name"], $target_dir . $filename);
@@ -232,7 +232,7 @@ $is_edit_mode = ($current_view == 'form' && !empty($data['username']));
                     </div>
                 </div>
 
-                <div class="text-end pt-3">                    
+                <div class="text-end pt-3">
                     <button type="submit" name="save_user" class="btn btn-success px-4">
                         <i class="fas fa-save"></i> <?php echo $is_edit_mode ? 'Cập nhật' : 'Thêm mới'; ?>
                     </button>
@@ -249,67 +249,64 @@ $is_edit_mode = ($current_view == 'form' && !empty($data['username']));
                             <th>Tên đăng nhập</th>
                             <th>Email</th>
                             <th>Họ tên</th>
-                            <th>Role</th>
+                            <th>Vai trò</th>
                             <th>Trạng thái</th>
                             <th class="text-center" width="140">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
-                            $sql = "SELECT * FROM users ORDER BY username ASC";
-                            $result = mysqli_query($conn, $sql);
+                        $sql = "SELECT * FROM users ORDER BY username ASC";
+                        $result = mysqli_query($conn, $sql);
 
-                            if (!$result):
-                                echo '<tr><td colspan="7" class="text-danger p-4">Lỗi truy vấn: ' . mysqli_error($conn) . '</td></tr>';
-                            elseif (mysqli_num_rows($result) > 0):
-                                while ($row = mysqli_fetch_assoc($result)):
-                                    $avatarSrc = $default_avatar; 
+                        if (!$result):
+                            echo '<tr><td colspan="7" class="text-danger p-4">Lỗi truy vấn: ' . mysqli_error($conn) . '</td></tr>';
+                        elseif (mysqli_num_rows($result) > 0):
+                            while ($row = mysqli_fetch_assoc($result)):
+                                $avatarSrc = $default_avatar;
 
-                                    if (!empty($row['avatar'])) {
-                                        if (filter_var($row['avatar'], FILTER_VALIDATE_URL)) {
-                                            $avatarSrc = $row['avatar'];
-                                        }else {
-                                            $avatarSrc = "../uploads/" . $row['avatar'];
-                                        }
+                                if (!empty($row['avatar'])) {
+                                    if (filter_var($row['avatar'], FILTER_VALIDATE_URL)) {
+                                        $avatarSrc = $row['avatar'];
+                                    } else {
+                                        $avatarSrc = "../uploads/users/" . $row['avatar'];
                                     }
+                                }
                         ?>
-                            <tr>
-                                <td class="text-center">
-                                    <img src="<?php echo $avatarSrc; ?>" class="rounded-circle border" width="40" height="40" style="object-fit: cover;">
-                                </td>
-                                <td><strong><?php echo $row['username']; ?></strong></td>
-                                <td><?php echo $row['email']; ?></td>
-                                <td><?php echo $row['fullname']; ?></td>
-                                <td>
-                                    <span class="badge <?php echo ($row['role'] == 'admin') ? 'bg-danger' : 'bg-primary'; ?>">
-                                        <?php echo ucfirst($row['role']); ?>
-                                    </span>
-                                </td>
-                                <td>
-                                    <?php if ($row['status'] == 1): ?>
-                                        <span class="badge bg-secondary"><i class="fas fa-ban"></i> Bị chặn</span>
-                                    <?php else: ?>
-                                        <span class="badge bg-success"><i class="fas fa-check-circle"></i> Hoạt động</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td class="text-center">
-                                    <?php if ($row['role'] !== '1'): ?>
-                                        <a href="<?php echo $base_url; ?>&action=edit&username=<?php echo urlencode($row['username']); ?>"
-                                            class="btn btn-info btn-sm" title="Sửa">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <a href="<?php echo $base_url; ?>&action=delete&username=<?php echo urlencode($row['username']); ?>"
-                                            class="btn btn-danger btn-sm"
-                                            onclick="return confirm('Bạn chắc chắn muốn xóa tài khoản: <?php echo $row['username']; ?>?');"
-                                            title="Xóa">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </a>
-                                    <?php else: ?>
-                                        <span class="text-muted">Không thể thao tác</span>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                        <?php endwhile; ?>
+                                <tr>
+                                    <td class="text-center">
+                                        <img src="<?php echo $avatarSrc; ?>" class="rounded-circle border" width="40" height="40" style="object-fit: cover;">
+                                    </td>
+                                    <td><strong><?php echo $row['username']; ?></strong></td>
+                                    <td><?php echo $row['email']; ?></td>
+                                    <td><?php echo $row['fullname']; ?></td>
+                                    <td><?php echo ($row['role'] == 1) ? 'Admin' : 'Người dùng'; ?>
+                                    </td>
+                                    <td>
+                                        <?php if ($row['status'] == 1): ?>
+                                            <span class="badge bg-secondary"><i class="fas fa-ban"></i> Bị chặn</span>
+                                        <?php else: ?>
+                                            <span class="badge bg-success"><i class="fas fa-check-circle"></i> Hoạt động</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="text-center">
+                                        <?php if ($row['role'] !== '1'): ?>
+                                            <a href="<?php echo $base_url; ?>&action=edit&username=<?php echo urlencode($row['username']); ?>"
+                                                class="btn btn-info btn-sm" title="Sửa">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="<?php echo $base_url; ?>&action=delete&username=<?php echo urlencode($row['username']); ?>"
+                                                class="btn btn-danger btn-sm"
+                                                onclick="return confirm('Bạn chắc chắn muốn xóa tài khoản: <?php echo $row['username']; ?>?');"
+                                                title="Xóa">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </a>
+                                        <?php else: ?>
+                                            <span class="text-muted">Không thể thao tác</span>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endwhile; ?>
                         <?php else: ?>
                             <tr>
                                 <td colspan="7" class="text-center py-4 text-muted">Chưa có thành viên nào.</td>
