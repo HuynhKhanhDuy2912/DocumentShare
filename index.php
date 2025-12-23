@@ -60,7 +60,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-4">
         <?php
-        $sql = "SELECT * FROM documents WHERE status = 0 ORDER BY document_id DESC LIMIT 18";
+        $sql = "SELECT * FROM documents WHERE status = 0 ORDER BY document_id DESC LIMIT 15";
         $result = mysqli_query($conn, $sql);
 
         while ($row = mysqli_fetch_assoc($result)):

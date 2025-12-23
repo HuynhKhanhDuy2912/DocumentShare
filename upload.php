@@ -78,12 +78,11 @@ function formatSizeUnits($bytes) {
 
 <?php include("header.php"); ?>
 
-<div class="container mt-4">
+<div class="container mrt">
     
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
             <h2 class="text-primary"><i class="bi bi-folder2-open"></i> Quản lý tài liệu cá nhân</h2>
-            <small class="text-muted">User: <strong><?= htmlspecialchars($current_user) ?></strong></small>
         </div>
         <a href="upload_document.php" class="btn btn-success shadow-sm">
             <i class="bi bi-cloud-upload"></i> Đăng tài liệu mới
@@ -95,12 +94,12 @@ function formatSizeUnits($bytes) {
             <form action="" method="GET" class="row g-2">
                 <div class="col-md-10">
                     <div class="input-group">
-                        <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                        <span class="input-group-text bg-white"><i class="fa fa-search"></i></span>
                         <input type="text" name="search" class="form-control" placeholder="Nhập tên tài liệu..." value="<?= htmlspecialchars($search) ?>">
                     </div>
                 </div>
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
+                    <button type="submit" class="btn btn-primary btn-small w-100" style="height: 38px; padding: 0;">Tìm kiếm</button>
                 </div>
                 <?php if(!empty($search)): ?>
                     <div class="col-12 mt-2">
@@ -117,7 +116,7 @@ function formatSizeUnits($bytes) {
                 <table class="table table-hover table-striped align-middle mb-0">
                     <thead class="bg-primary text-white">
                         <tr>
-                            <th scope="col" class="py-3 ps-3">ID</th>
+                            <th scope="col" class="py-3 ps-3">STT</th>
                             <th scope="col" class="py-3" style="width: 30%;">Tài liệu</th>
                             <th scope="col" class="py-3">Danh mục</th>
                             <th scope="col" class="py-3">Thống kê</th>

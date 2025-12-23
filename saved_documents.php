@@ -2,20 +2,20 @@
 include "config.php";
 include "header.php";
 
-// Chưa đăng nhập thì đá về login
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['username'])) {
     echo "<script>alert('Vui lòng đăng nhập'); window.location='login.php';</script>";
     exit;
 }
 
-$user_id = (int)$_SESSION['user_id'];
+$username = $_SESSION['username'];
+
 
 // Lấy tài liệu đã lưu
 $sql = "
     SELECT d.*
     FROM saved_documents s
     INNER JOIN documents d ON s.document_id = d.document_id
-    WHERE s.user_id = $user_id AND d.status = 0
+    WHERE s.username = '$username' AND d.status = 0
     ORDER BY s.created_at DESC
 ";
 
@@ -25,7 +25,7 @@ $result = mysqli_query($conn, $sql);
 <div class="container mt-4 mrt">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold">📌 Tài liệu đã lưu</h3>
+        <h3 class="fw-bold">Tài liệu đã lưu</h3>
     </div>
 
     <?php if ($result && mysqli_num_rows($result) > 0): ?>

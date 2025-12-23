@@ -42,17 +42,20 @@ $doc = mysqli_fetch_assoc($result);
 // Kiểm tra tài liệu đã được lưu chưa
 $isSaved = false;
 
-if (isset($_SESSION['user_id'])) {
-    $uid = (int)$_SESSION['user_id'];
+if (isset($_SESSION['username'])) {
+    $username = mysqli_real_escape_string($conn, $_SESSION['username']);
+
     $checkSave = mysqli_query($conn, "
         SELECT id FROM saved_documents 
-        WHERE user_id = $uid AND document_id = $document_id
+        WHERE username = '$username' AND document_id = $document_id
         LIMIT 1
     ");
+
     if ($checkSave && mysqli_num_rows($checkSave) > 0) {
         $isSaved = true;
     }
 }
+
 
 // Tăng lượt xem
 mysqli_query($conn, "UPDATE documents SET views = views + 1 WHERE document_id = $document_id");

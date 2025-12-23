@@ -148,7 +148,7 @@ if (isset($_POST['btn_upload'])) {
                         </div>
 
                         <div class="d-flex justify-content-end mt-4">
-                            <a href="manage_documents.php" class="btn btn-secondary me-2">
+                            <a href="upload.php" class="btn btn-secondary me-2">
                                 <i class="bi bi-arrow-left"></i> Quay lại
                             </a>
                             <button type="submit" name="btn_upload" class="btn btn-success">

@@ -177,7 +177,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                                 }
                                 ?>
                                 <span class="text-truncate" style="max-width: 150px;">
-                                    <?php echo $_SESSION['username']; ?>
+                                    <?php echo $user['fullname']; ?>
                                 </span>
                             </a>
 

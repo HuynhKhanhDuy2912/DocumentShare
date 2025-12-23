@@ -17,10 +17,11 @@ if (!isset($_POST['document_id'])) {
 $username = $_SESSION['username'];
 $document_id = (int)$_POST['document_id'];
 
-// Kiểm tra đã lưu chưa
-$check = mysqli_query($conn, "SELECT id FROM saved_documents
+$check = mysqli_query($conn, "
+    SELECT id FROM saved_documents
     WHERE username = '$username' AND document_id = $document_id
-    LIMIT 1");
+    LIMIT 1
+");
 
 if ($check && mysqli_num_rows($check) > 0) {
     mysqli_query($conn, "

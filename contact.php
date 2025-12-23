@@ -1,7 +1,6 @@
-<?php include("header.php"); ?>
-
-<?php
-include 'config.php'; // file chứa $conn
+<?php 
+include("header.php"); 
+include 'config.php';
 ?>
 
 
