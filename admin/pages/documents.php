@@ -92,8 +92,8 @@ if (isset($_POST['save_document'])) {
             $success_msg = "Cập nhật tài liệu thành công!";
         } else {
             // INSERT
-            $sql = "INSERT INTO documents (title, description, thumbnail, file_path, file_type, subcategory_id, status, username, views, shares, share_link)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 0, ?)";
+            $sql = "INSERT INTO documents (title, description, thumbnail, file_path, file_type, subcategory_id, status, username, views, share_link, downloads)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, ?, 0)";
             $stmt = mysqli_prepare($conn, $sql);
             $share_link = $file_path; // link chia sẻ chỉ lưu tên file
             mysqli_stmt_bind_param($stmt, "sssssiiss", $title, $description, $thumbnail, $file_path, $file_type, $subcategory_id, $status, $username, $share_link);

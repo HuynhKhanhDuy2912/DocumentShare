@@ -96,7 +96,7 @@ if (isset($_POST['btn_upload'])) {
 }
 ?>
 
-<div class="container mt-5">
+<div class="container mrt">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow">

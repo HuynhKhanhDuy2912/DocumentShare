@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th12 09, 2025 lúc 09:16 AM
+-- Thời gian đã tạo: Th12 23, 2025 lúc 03:15 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -46,11 +46,7 @@ INSERT INTO `categories` (`category_id`, `name`, `description`, `status`) VALUES
 (5, 'Khoa Học - Xã Hội', '“Tổng hợp tài liệu, giáo trình và khóa học liên quan đến khoa học xã hội, bao gồm tâm lý học, xã hội học, triết học, lịch sử, văn hóa và các lĩnh vực nghiên cứu về con người và xã hội.”', 0),
 (6, 'Khoa Học - Tự Nhiên', '“Tổng hợp tài liệu, giáo trình và khóa học về khoa học tự nhiên, bao gồm toán học, vật lý, hóa học, sinh học, môi trường và các lĩnh vực nghiên cứu quy luật tự nhiên.”', 0),
 (7, 'Y - Dược - Sức Khỏe', '“Tổng hợp tài liệu, giáo trình và khóa học về y học, dược học và chăm sóc sức khỏe, bao gồm kiến thức bệnh học, dược lý, điều dưỡng, dinh dưỡng và các lĩnh vực hỗ trợ y tế.”', 0),
-(8, 'Nông - Lâm - Thủy Sản', '“Tổng hợp tài liệu, giáo trình và khóa học về Nông – Lâm – Thủy Sản, bao gồm trồng trọt, chăn nuôi, lâm nghiệp, nuôi trồng thủy sản, bảo vệ thực vật và các lĩnh vực phục vụ sản xuất nông nghiệp.”', 0),
-(9, 'Kinh Doanh Marketing', '“Tổng hợp tài liệu, giáo trình và khóa học về Kinh Doanh – Marketing, bao gồm quản trị doanh nghiệp, quản lý bán hàng, nghiên cứu thị trường, quảng cáo, thương mại điện tử và các lĩnh vực liên quan đến phát triển kinh doanh và tiếp thị.”', 0),
-(10, 'Kinh Tế - Quản Lý', '“Tổng hợp tài liệu, giáo trình và khóa học về Kinh Tế – Quản Lý, bao gồm quản trị kinh doanh, quản lý nguồn nhân lực, tài chính doanh nghiệp, kinh tế vĩ mô và các lĩnh vực liên quan đến quản lý và phát triển tổ chức.”', 0),
-(11, 'Luật - Kinh Tế Luật', '“Tổng hợp tài liệu, giáo trình và khóa học về Luật – Kinh tế luật, bao gồm luật dân sự, luật thương mại, luật doanh nghiệp, quản lý pháp lý và các lĩnh vực liên quan đến pháp luật và kinh tế.”', 0),
-(12, 'Văn Hoá - Thể thao - Du Lịch', '“Tổng hợp tài liệu, giáo trình và khóa học về Văn Hóa – Thể Thao – Du Lịch, bao gồm văn hóa học, lịch sử, thể thao, quản lý du lịch, hướng dẫn du lịch và các lĩnh vực liên quan đến phát triển văn hóa và dịch vụ du lịch.”', 0);
+(8, 'Nông - Lâm - Thủy Sản', '“Tổng hợp tài liệu, giáo trình và khóa học về Nông – Lâm – Thủy Sản, bao gồm trồng trọt, chăn nuôi, lâm nghiệp, nuôi trồng thủy sản, bảo vệ thực vật và các lĩnh vực phục vụ sản xuất nông nghiệp.”', 0);
 
 -- --------------------------------------------------------
 
@@ -76,15 +72,36 @@ CREATE TABLE `documents` (
   `document_id` int(10) NOT NULL,
   `title` varchar(255) DEFAULT NULL,
   `description` text NOT NULL,
+  `thumbnail` varchar(255) DEFAULT NULL,
   `file_path` varchar(255) DEFAULT NULL,
   `file_type` varchar(255) NOT NULL,
-  `content` text NOT NULL,
   `subcategory_id` int(10) NOT NULL,
   `status` int(10) NOT NULL,
   `username` varchar(50) DEFAULT NULL,
   `views` int(10) NOT NULL,
   `share_link` varchar(255) NOT NULL,
-  `shares` int(11) NOT NULL
+  `downloads` int(11) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `documents`
+--
+
+INSERT INTO `documents` (`document_id`, `title`, `description`, `thumbnail`, `file_path`, `file_type`, `subcategory_id`, `status`, `username`, `views`, `share_link`, `downloads`) VALUES
+(8, 'aaaaa', 'eeeeeeeaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaeeeeedffvvc', '1766417512_thumb_CNTT.jpg', '1766417512_LapTrinhHTML.pdf', 'pdf', 7, 0, 'admin', 58, '1766417512_LapTrinhHTML.pdf', 2),
+(9, 'fefedfdf', 'dfdfdf', '1766419930_thumb_CNTT.jpg', '1766419930_HuynhKhanhDuy_DeCuongChiTiet.pdf', 'pdf', 8, 0, 'admin', 27, '1766419930_HuynhKhanhDuy_DeCuongChiTiet.pdf', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `document_likes`
+--
+
+CREATE TABLE `document_likes` (
+  `id` int(11) NOT NULL,
+  `document_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -103,12 +120,25 @@ CREATE TABLE `document_uploads` (
   `category_id` int(11) NOT NULL,
   `subcategory_id` int(11) DEFAULT NULL,
   `status` tinyint(1) DEFAULT 0,
-  `username` varchar(100) NOT NULL,
+  `username` varchar(100) NOT NULL DEFAULT 'Admin',
   `views` int(11) DEFAULT 0,
   `share_link` varchar(500) DEFAULT NULL,
   `shares` int(11) DEFAULT 0,
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `saved_documents`
+--
+
+CREATE TABLE `saved_documents` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `document_id` int(11) NOT NULL,
+  `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -147,6 +177,23 @@ CREATE TABLE `subcategories` (
   `category_id` int(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `subcategories`
+--
+
+INSERT INTO `subcategories` (`subcategory_id`, `name`, `status`, `category_id`) VALUES
+(5, 'Tin học văn phòng', 0, 1),
+(6, 'Khoa học máy tính', 0, 1),
+(7, 'Khoa học dữ liệu', 0, 1),
+(8, 'Anh toàn thông tin', 0, 1),
+(9, 'Kỹ thuật phần mềm', 0, 1),
+(10, 'Trí tuệ nhân tạo', 0, 1),
+(11, 'Kế toán', 0, 2),
+(12, 'Kiểm toán', 0, 2),
+(13, 'Tài chính doanh nghiệp', 0, 2),
+(14, 'Tiếng anh thông dụng', 0, 3),
+(15, 'Tiếng anh chuyên ngành', 0, 3);
+
 -- --------------------------------------------------------
 
 --
@@ -169,9 +216,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`username`, `fullname`, `password`, `email`, `avatar`, `role`, `google_id`, `status`) VALUES
+('admin', 'Huỳnh Khánh Duy', 'e10adc3949ba59abbe56e057f20f883e', 'admin@gmail.com', 'mangekyou.jpg', 1, NULL, 0),
 ('jungdung2004', '', '9e9f7516c369a15cc8d08f5eb6849d42', 'jungdung2004@gmail.com', NULL, 0, '109039166477257996447', 0),
-('khachhang1', 'Khách Hàng', 'e10adc3949ba59abbe56e057f20f883e', 'duy2912www@gmail.com', 'avt6.jpg', 0, NULL, 0),
-('khanhduy', 'Huỳnh Khánh Duy', 'e10adc3949ba59abbe56e057f20f883e', 'duykhanhwww@gmail.com', 'mangekyou.jpg', 1, NULL, 0);
+('khachhang1', 'Khách Hàng', 'e10adc3949ba59abbe56e057f20f883e', 'duy2912www@gmail.com', 'avt6.jpg', 0, NULL, 0);
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -198,12 +245,26 @@ ALTER TABLE `documents`
   ADD KEY `category_id` (`subcategory_id`,`username`);
 
 --
+-- Chỉ mục cho bảng `document_likes`
+--
+ALTER TABLE `document_likes`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `document_id` (`document_id`,`user_id`);
+
+--
 -- Chỉ mục cho bảng `document_uploads`
 --
 ALTER TABLE `document_uploads`
   ADD PRIMARY KEY (`document_id`),
   ADD KEY `category_id` (`category_id`),
   ADD KEY `subcategory_id` (`subcategory_id`);
+
+--
+-- Chỉ mục cho bảng `saved_documents`
+--
+ALTER TABLE `saved_documents`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `user_id` (`user_id`,`document_id`);
 
 --
 -- Chỉ mục cho bảng `slideshows`
@@ -245,7 +306,13 @@ ALTER TABLE `comments`
 -- AUTO_INCREMENT cho bảng `documents`
 --
 ALTER TABLE `documents`
-  MODIFY `document_id` int(10) NOT NULL AUTO_INCREMENT;
+  MODIFY `document_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT cho bảng `document_likes`
+--
+ALTER TABLE `document_likes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `document_uploads`
@@ -254,16 +321,22 @@ ALTER TABLE `document_uploads`
   MODIFY `document_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT cho bảng `saved_documents`
+--
+ALTER TABLE `saved_documents`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT cho bảng `slideshows`
 --
 ALTER TABLE `slideshows`
-  MODIFY `slideshow_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `slideshow_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT cho bảng `subcategories`
 --
 ALTER TABLE `subcategories`
-  MODIFY `subcategory_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `subcategory_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- Các ràng buộc cho các bảng đã đổ

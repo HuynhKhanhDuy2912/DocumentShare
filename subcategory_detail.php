@@ -33,39 +33,63 @@ $doc_res = mysqli_query($conn, $doc_sql);
 ?>
 
 <div class="container mrt">
-    <h4 class="fw-bold mb-4">
-        <?= htmlspecialchars($subcategory['name']) ?>
-    </h4>
+    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+        <h4 class="fw-bold text-uppercase text-primary m-0">
+            <i class="bi bi-folder2-open me-2"></i><?= htmlspecialchars($subcategory['name']) ?>
+        </h4>
+        <span class="text-muted small">Tổng cộng: <?= mysqli_num_rows($doc_res) ?> tài liệu</span>
+    </div>
 
-    <div class="row">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
         <?php if ($doc_res && mysqli_num_rows($doc_res) > 0): ?>
             <?php while ($doc = mysqli_fetch_assoc($doc_res)): ?>
                 <?php
                 $thumb = !empty($doc['thumbnail'])
                     ? "uploads/thumbnails/" . $doc['thumbnail']
                     : "assets/img/default-document.jpg";
+                
+                // Xác định màu sắc badge dựa trên loại file
+                $badge_class = 'bg-danger'; // Mặc định cho PDF
+                if ($doc['file_type'] == 'docx' || $doc['file_type'] == 'doc') $badge_class = 'bg-primary';
+                if ($doc['file_type'] == 'pptx') $badge_class = 'bg-warning text-dark';
                 ?>
-                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                    <a href="document_detail.php?id=<?= $doc['document_id'] ?>"
-                       class="text-decoration-none text-dark">
-                        <div class="card h-100 shadow-sm">
-                            <img src="<?= $thumb ?>" class="card-img-top"
-                                 style="height:180px;object-fit:cover">
+                <div class="col">
+                    <div class="card h-100 doc-card shadow-sm">
+                        <a href="document_detail.php?id=<?= $doc['document_id'] ?>" class="text-decoration-none">
+                            <div class="doc-thumb-container">
+                                <span class="badge <?= $badge_class ?> badge-file">
+                                    <?= htmlspecialchars($doc['file_type']) ?>
+                                </span>
+                                <img src="<?= $thumb ?>" class="doc-thumb" alt="<?= htmlspecialchars($doc['title']) ?>">
+                            </div>
+                            
                             <div class="card-body">
-                                <h6 class="card-title small fw-bold">
+                                <h6 class="doc-title fw-bold mb-2">
                                     <?= htmlspecialchars($doc['title']) ?>
                                 </h6>
-                                <span class="badge bg-secondary">
-                                    <?= strtoupper($doc['file_type']) ?>
-                                </span>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <div class="text-muted small">
+                                        <i class="fa fa-eye me-1"></i> <?= number_format($doc['views'] ?? 0) ?> lượt xem
+                                    </div>
+                                    <div class="text-muted small">
+                                        <i class="bi bi-calendar3 me-1"></i> <?= date('d/m/Y', strtotime($doc['created_at'] ?? 'now')) ?>
+                                    </div>
+                                </div>
                             </div>
+                        </a>
+                        <div class="card-footer bg-transparent border-0 pb-3 pt-0">
+                            <a href="document_detail.php?id=<?= $doc['document_id'] ?>" 
+                               class="btn btn-outline-primary btn-sm w-100 rounded-pill">
+                               Xem chi tiết
+                            </a>
                         </div>
-                    </a>
+                    </div>
                 </div>
             <?php endwhile; ?>
         <?php else: ?>
-            <div class="col-12 text-muted">
-                Chưa có tài liệu trong danh mục này
+            <div class="col-12 py-5 text-center">
+                <img src="assets/img/empty.png" alt="Empty" style="width: 150px; opacity: 0.5;">
+                <p class="text-muted mt-3">Chưa có tài liệu nào trong danh mục này.</p>
             </div>
         <?php endif; ?>
     </div>

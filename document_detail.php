@@ -167,45 +167,45 @@ $thumbnail = !empty($doc['thumbnail'])
             <h6 class="fw-bold mb-3">Tài liệu liên quan</h6>
 
             <?php
-            $docId = (int)$document_id;
-            $subId = (int)$doc['subcategory_id'];
+                $docId = (int)$document_id;
+                $subId = (int)$doc['subcategory_id'];
 
-            // Lấy tài liệu cùng DANH MỤC LỚN (category)
-            $sqlRelated = " SELECT d.document_id, d.title, d.thumbnail, d.file_type FROM documents d
-                INNER JOIN subcategories s ON d.subcategory_id = s.subcategory_id
-                WHERE s.category_id = (
-                    SELECT category_id
-                    FROM subcategories
-                    WHERE subcategory_id = $subId
-                    LIMIT 1
-                )
-            AND d.document_id != $docId
-            AND d.status = 0
-            ORDER BY RAND()
-            LIMIT 5";
+                // Lấy tài liệu cùng DANH MỤC LỚN (category)
+                $sqlRelated = " SELECT d.document_id, d.title, d.thumbnail, d.file_type FROM documents d
+                    INNER JOIN subcategories s ON d.subcategory_id = s.subcategory_id
+                    WHERE s.category_id = (
+                        SELECT category_id
+                        FROM subcategories
+                        WHERE subcategory_id = $subId
+                        LIMIT 1
+                    )
+                AND d.document_id != $docId
+                AND d.status = 0
+                ORDER BY RAND()
+                LIMIT 7";
 
-            $related = mysqli_query($conn, $sqlRelated);
+                $related = mysqli_query($conn, $sqlRelated);
 
-            if ($related && mysqli_num_rows($related) > 0):
-                while ($r = mysqli_fetch_assoc($related)):
-                    $thumbRel = !empty($r['thumbnail'])
-                        ? "uploads/thumbnails/" . $r['thumbnail']
-                        : "assets/img/default-document.jpg";
+                if ($related && mysqli_num_rows($related) > 0):
+                    while ($r = mysqli_fetch_assoc($related)):
+                        $thumbRel = !empty($r['thumbnail'])
+                            ? "uploads/thumbnails/" . $r['thumbnail']
+                            : "assets/img/default-document.jpg";
             ?>
-                    <a href="document_detail.php?id=<?= $r['document_id'] ?>" class="text-decoration-none text-dark">
-                        <div class="d-flex mb-3">
-                            <img src="<?= $thumbRel ?>" width="80" height="100"
-                                class="border me-2" style="object-fit:cover;">
-                            <div>
-                                <div class="small fw-semibold">
-                                    <?= htmlspecialchars($r['title']) ?>
-                                </div>
-                                <span class="badge bg-secondary">
-                                    <?= strtoupper($r['file_type']) ?>
-                                </span>
+                <a href="document_detail.php?id=<?= $r['document_id'] ?>" class="text-decoration-none text-dark">
+                    <div class="d-flex mb-3">
+                        <img src="<?= $thumbRel ?>" width="80" height="100"
+                            class="border me-2" style="object-fit:cover;">
+                        <div>
+                            <div class="small fw-semibold">
+                                <?= htmlspecialchars($r['title']) ?>
                             </div>
+                            <span class="badge bg-secondary">
+                                <?= strtoupper($r['file_type']) ?>
+                            </span>
                         </div>
-                    </a>
+                    </div>
+                </a>
             <?php
                 endwhile;
             else:

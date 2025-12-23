@@ -1,12 +1,11 @@
-
 body {
-  margin: 0;            
+  margin: 0;
   background: #f5f6fa;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.mrt{
-  margin-top: 5rem !important;
+.mrt {
+  margin-top: 6rem !important;
 }
 
 .register-box {
@@ -87,7 +86,6 @@ body {
   color: #0d6efd !important; /* Màu xanh chủ đạo */
 }
 
-
 /* --- Thanh tìm kiếm --- */
 
 .search-box {
@@ -95,13 +93,12 @@ body {
   margin: 10px 0;
 }
 
-
 @media (min-width: 1200px) {
   .search-box {
     position: absolute;
     left: 53%;
     transform: translateX(-50%);
-    width: 400px; 
+    width: 400px;
     margin: 0;
     z-index: 10;
   }
@@ -109,9 +106,9 @@ body {
 
 /* --- Tinh chỉnh lại Menu để tiết kiệm diện tích --- */
 .navbar-nav .nav-item .nav-link {
-  padding-left: 0.8rem !important; 
+  padding-left: 0.8rem !important;
   padding-right: 0.8rem !important;
-  white-space: nowrap; 
+  white-space: nowrap;
 }
 
 /* Các đoạn trang trí bên trong giữ nguyên */
@@ -189,7 +186,7 @@ body {
   .user-dropdown:hover .dropdown-menu {
     display: block;
     margin-top: 0;
-    animation: fadeIn 0.3s ease; 
+    animation: fadeIn 0.3s ease;
   }
 }
 
@@ -209,7 +206,7 @@ body {
 .dropdown-menu {
   border-radius: 8px;
   padding: 10px 0;
-  min-width: 200px; 
+  min-width: 200px;
 }
 
 .dropdown-item {
@@ -221,11 +218,11 @@ body {
 
 .dropdown-item:hover {
   background-color: #eaecee;
-  padding-left: 25px; 
+  padding-left: 25px;
 }
 
 .dropdown-item i {
-  width: 20px; 
+  width: 20px;
   text-align: center;
 }
 
@@ -255,23 +252,23 @@ body {
 
 /* Avatar user trên thanh menu */
 .nav-user-avatar {
-  width: 35px; 
+  width: 35px;
   height: 35px;
   border-radius: 50%;
-  object-fit: cover; 
-  border: 2px solid #e9ecef; 
+  object-fit: cover;
+  border: 2px solid #e9ecef;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 /* --- Chỉnh chiều cao Carousel Slide --- */
 .carousel-item img {
-  height: 400px; 
-  object-fit: cover; 
-  object-position: center; 
+  height: 400px;
+  object-fit: cover;
+  object-position: center;
 }
 
 @media (max-width: 768px) {
   .carousel-item img {
-    height: 250px; 
+    height: 250px;
   }
 }
 
@@ -501,31 +498,75 @@ body {
 /*===========================HOME===========================*/
 /* Khung ảnh giống Scribd */
 .doc-thumb {
-    height: 220px;
-    background: #fff;
+  height: 220px;
+  background: #fff;
 }
 
 /* Ảnh tài liệu */
 .doc-thumb img {
-    height: 100%;
-    max-width: 100%;
-    object-fit: contain;
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain;
 }
 
 /* Tiêu đề 2 dòng */
 .text-truncate-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* Hover nhẹ giống web tài liệu */
 .doc-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .doc-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
+/*===========================SUBCATEGORY DETAIL===========================*/
+.doc-card {
+  transition: all 0.3s ease;
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+.doc-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+}
+.doc-thumb-container {
+  position: relative;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+}
+.doc-thumb {
+  width: 100%;
+  height: 180px;
+  object-fit: contain; /* Giữ nguyên tỉ lệ ảnh tài liệu */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.doc-title {
+  font-size: 0.95rem;
+  line-height: 1.4;
+  height: 2.8rem; /* Giới hạn 2 dòng tiêu đề */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: #333;
+}
+.badge-file {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 0.7rem;
+  padding: 5px 8px;
+  text-transform: uppercase;
+}

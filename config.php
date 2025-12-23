@@ -1,5 +1,5 @@
 <?php
-session_start();
+// session_start();
 // kết nối csdl
 $hostname     = "localhost";
 $username     = "root";

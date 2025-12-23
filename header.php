@@ -181,7 +181,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                                 </span>
                             </a>
 
-                            <div class="dropdown-menu dropdown-menu-right shadow border-0" aria-labelledby="userDropdown">
+                            <div class="dropdown-menu dropdown-menu-right shadow border-0" aria-labelledby="userDropdown" style="left: -35px;">
                                 <a class="dropdown-item" href="profile.php"><i class="fa fa-id-card mr-2 text-muted"></i> Thông tin tài khoản</a>
                                 <a class="dropdown-item" href="saved_documents.php"><i class="fa fa-bookmark mr-2 text-muted"></i> Tài liệu đã lưu</a>
                                 <div class="dropdown-divider"></div>

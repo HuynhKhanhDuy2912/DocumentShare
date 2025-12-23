@@ -95,27 +95,37 @@ $(document).ready(function () {
 
 // Xử lý lưu tài liệu
 document.getElementById("btn-save").addEventListener("click", function () {
+  const docId = this.dataset.id;
+
   fetch("toggle_save_document.php", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: "document_id=" + this.dataset.id,
+    body: "document_id=" + docId,
   })
-    .then((res) => res.text())
+    .then((res) => {
+      // Kiểm tra nếu server trả về lỗi 500 hoặc 404
+      if (!res.ok) throw new Error("Network response was not ok");
+      return res.text(); // Đọc dạng text trước để kiểm tra
+    })
     .then((text) => {
       try {
         const data = JSON.parse(text);
         if (data.status === "login") {
           alert("Vui lòng đăng nhập để sử dụng chức năng này.");
+          window.location.href = "login.php";
         } else if (data.status === "saved") {
-          alert("Đã lưu tài liệu");
+          alert("Đã lưu tài liệu thành công!");
           location.reload();
         } else if (data.status === "unsaved") {
-          alert("Đã bỏ lưu");
+          alert("Đã bỏ lưu tài liệu!");
           location.reload();
+        } else {
+          console.error("Server error:", data.message);
         }
       } catch (e) {
-        console.error("JSON error:", e);
-        console.log("Server response:", text);
+        console.error("Lỗi parse JSON. Nội dung server trả về:", text);
+        alert("Có lỗi xảy ra từ phía server.");
       }
-    });
+    })
+    .catch((err) => console.error("Fetch error:", err));
 });
