@@ -9,7 +9,7 @@ if (!isset($_SESSION['username'])) {
 }
 $current_user = $_SESSION['username'];
 
-// 2. XỬ LÝ LOGIC XÓA & ẨN/HIỆN
+// 2. XỬ LÝ LOGIC XÓA & ẨN/HIỆN (Giữ nguyên phần Prepared Statement của bạn)
 if (isset($_GET['delete_id'])) {
     $id = intval($_GET['delete_id']);
     $stmt = $conn->prepare("SELECT file_path FROM document_uploads WHERE document_id = ? AND username = ?");
@@ -159,8 +159,11 @@ function formatSizeUnits($bytes) {
 
                                 <td class="text-end pe-3">
                                     <div class="btn-group shadow-sm">
-                                        <a href="<?= $row['file_path'] ?>" target="_blank" class="btn btn-sm btn-outline-secondary" title="Xem/Tải">
-                                            <i class="bi bi-eye"></i> Tải về
+                                        <a href="documentOfUser_detail.php?id=<?= $row['document_id'] ?>" class="btn btn-sm btn-outline-info" title="Xem chi tiết">
+                                            <i class="bi bi-info-circle"></i> Chi tiết
+                                        </a>
+                                        <a href="<?= $row['file_path'] ?>" target="_blank" class="btn btn-sm btn-outline-secondary" title="Tải file">
+                                            <i class="bi bi-download"></i> Tải
                                         </a>
                                         <a href="edit_document.php?id=<?= $row['document_id'] ?>" class="btn btn-sm btn-outline-primary" title="Sửa">
                                             <i class="bi bi-pencil"></i> Sửa
@@ -179,23 +182,6 @@ function formatSizeUnits($bytes) {
             </table>
         </div>
     </div>
-
-    <?php if ($total_pages > 1): ?>
-    <nav class="mt-4"><ul class="pagination justify-content-center">
-        <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>"><a class="page-link" href="?page=<?= $page - 1 ?>&search=<?= urlencode($search) ?>">Trước</a></li>
-        <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-            <li class="page-item <?= ($i == $page) ? 'active' : '' ?>"><a class="page-link" href="?page=<?= $i ?>&search=<?= urlencode($search) ?>"><?= $i ?></a></li>
-        <?php endfor; ?>
-        <li class="page-item <?= ($page >= $total_pages) ? 'disabled' : '' ?>"><a class="page-link" href="?page=<?= $page + 1 ?>&search=<?= urlencode($search) ?>">Sau</a></li>
-    </ul></nav>
-    <?php endif; ?>
-</div>
-
-<style>
-    .bg-primary-subtle { background-color: #cfe2ff !important; }
-    .table-hover tbody tr:hover { background-color: rgba(13, 110, 253, 0.02); transition: 0.2s; }
-    .badge { font-weight: 500; padding: 0.5em 0.8em; }
-    .btn-group .btn { font-size: 0.85rem; padding: 0.4rem 0.7rem; }
-</style>
+    </div>
 
 <?php include("footer.php"); ?>
