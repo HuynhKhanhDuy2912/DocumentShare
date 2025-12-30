@@ -56,44 +56,46 @@ if (isset($_POST['save_user'])) {
         }
     }
     // --- THÊM MỚI (INSERT) ---
-    else {
-        $username   = $_POST['username'];
-        $fullname   = $_POST['fullname'];
-        $email      = $_POST['email'];
-        $google_id  = $_POST['google_id'];
-        $password   = $_POST['password'];
+    // --- THÊM MỚI (INSERT) ---
+else {
+    $username   = $_POST['username'];
+    $fullname   = $_POST['fullname'];
+    $email      = $_POST['email'];
+    $google_id  = $_POST['google_id'];
+    $password   = $_POST['password'];
 
-        $avatar_path = $default_avatar;
-        if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] == 0) {
-            $target_dir = "../uploads/users/";
-            if (!file_exists($target_dir)) mkdir($target_dir, 0777, true);
-            $filename = time() . "_" . basename($_FILES["avatar"]["name"]);
-            move_uploaded_file($_FILES["avatar"]["tmp_name"], $target_dir . $filename);
-            // lưu vào DB
-            $avatar_path = $filename;
-        }
+    $avatar_path = $default_avatar;
+    if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] == 0) {
+        $target_dir = "../uploads/users/";
+        if (!file_exists($target_dir)) mkdir($target_dir, 0777, true);
+        $filename = time() . "_" . basename($_FILES["avatar"]["name"]);
+        move_uploaded_file($_FILES["avatar"]["tmp_name"], $target_dir . $filename);
+        $avatar_path = $filename;
+    }
 
-        $check = mysqli_query($conn, "SELECT username FROM users WHERE username = '$username'");
-        if (mysqli_num_rows($check) > 0) {
-            $message = "Lỗi: Tên đăng nhập '<strong>$username</strong>' đã tồn tại!";
-            $current_view = 'form';
-            $data = $_POST;
-            $data['avatar'] = $avatar_path;
+    $check = mysqli_query($conn, "SELECT username FROM users WHERE username = '$username'");
+    if (mysqli_num_rows($check) > 0) {
+        $message = "Lỗi: Tên đăng nhập '<strong>$username</strong>' đã tồn tại!";
+        $current_view = 'form';
+        $data = $_POST;
+        $data['avatar'] = $avatar_path;
+    } else {
+        // --- SỬA TẠI ĐÂY: Dùng MD5 thay vì password_hash ---
+        $md5_password = md5($password); 
+        
+        $sql = "INSERT INTO users (username, fullname, password, email, avatar, role, status, google_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt = mysqli_prepare($conn, $sql);
+        // Biến truyền vào là $md5_password
+        mysqli_stmt_bind_param($stmt, "ssssssis", $username, $fullname, $md5_password, $email, $avatar_path, $role, $status, $google_id);
+
+        if (mysqli_stmt_execute($stmt)) {
+            echo "<script>alert('Thêm mới thành công!'); window.location.href='$base_url';</script>";
+            exit;
         } else {
-            $hashed_pass = password_hash($password, PASSWORD_DEFAULT);
-            $sql = "INSERT INTO users (username, fullname, password, email, avatar, role, status, google_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            $stmt = mysqli_prepare($conn, $sql);
-            mysqli_stmt_bind_param($stmt, "ssssssis", $username, $fullname, $hashed_pass, $email, $avatar_path, $role, $status, $google_id);
-
-            if (mysqli_stmt_execute($stmt)) {
-                // SỬA: Thêm $base_url
-                echo "<script>alert('Thêm mới thành công!'); window.location.href='$base_url';</script>";
-                exit;
-            } else {
-                $message = "Lỗi thêm mới: " . mysqli_error($conn);
-            }
+            $message = "Lỗi thêm mới: " . mysqli_error($conn);
         }
     }
+}
 }
 
 // B. XỬ LÝ GET ACTION

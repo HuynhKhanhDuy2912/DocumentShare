@@ -90,11 +90,23 @@ if (isset($_REQUEST['sbSubmit'])) {
     $matkhau = md5($_REQUEST['txtMatkhau']);
     $sql = "select * from users where username='$tendangnhap' and password='$matkhau'";
     $result = $conn->query($sql);
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        $_SESSION['username'] = $tendangnhap;
-        $_SESSION['emailUser'] = $row['email'];
-        $_SESSION['role'] = $row['role'];
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $_SESSION['username'] = $tendangnhap;
+    $_SESSION['emailUser'] = $row['email'];
+    $_SESSION['role'] = $row['role'];
+
+    echo "<script>
+        console.log('--- Đăng nhập hệ thống thành công ---');
+        console.log('User: " . $row['username'] . "');
+        console.log('Email: " . $row['email'] . "');
+        // Sử dụng json_encode để tránh lỗi định dạng và hiển thị đúng giá trị (0 hoặc 1)
+        console.log('Role: ' + " . json_encode($row['role']) . ");
+        
+        alert('Bạn đã đăng nhập thành công!');
+        window.location.assign('" . ($row['role'] == 1 ? "admin/index.php" : "index.php") . "');
+    </script>";
+
         echo "<script>
             alert('Bạn đã đăng nhập thành công!');
         </script>";
