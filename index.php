@@ -57,6 +57,21 @@ if (isset($_SESSION['username'])) {
     }
 }
 
+$sqlFeatured = "
+    SELECT * 
+    FROM documents 
+    WHERE status = 0 
+      AND downloads > 0
+    ORDER BY downloads DESC
+";
+
+$rsFeatured = mysqli_query($conn, $sqlFeatured);
+
+$featuredDocs = [];
+while ($row = mysqli_fetch_assoc($rsFeatured)) {
+    $featuredDocs[] = $row;
+}
+
 ?>
 
 <div class="container mt-4 mrt">
@@ -86,13 +101,88 @@ if (isset($_SESSION['username'])) {
             <span class="carousel-control-next-icon"></span>
         </button>
     </div>
+    <?php if (!empty($featuredDocs)): ?>
+        <section class="featured-section mt-5">
+            <div class="featured-header">
+                <h3 class="text-uppercase fw-bold m-0" style="font-size: 1.5rem;">Tài liệu nổi bật</h3>
+            </div>
 
+            <div class="slider-container">
+                <button class="nav-btn prev" onclick="slideFeatured(-1)">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="nav-btn next" onclick="slideFeatured(1)">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+
+                <div class="featured-wrapper">
+                    <div class="featured-track" id="featuredTrack">
+                        <?php foreach ($featuredDocs as $doc):
+
+                            $thumb = !empty($doc['thumbnail']) ? './uploads/thumbnails/' . $doc['thumbnail'] : './assets/img/default-document.jpg';
+
+                            $file_ext = strtolower($doc['file_type']);
+                            $icon_class = ($file_ext == 'pdf') ? 'bg-danger' : 'bg-primary';
+                            $icon_text = ($file_ext == 'pdf') ? 'PDF' : 'W';
+
+                            $filePath = 'uploads/documents/' . $doc['file_path'];
+                            $pageCount = 0;
+                            if ($file_ext === 'pdf') {
+                                $pageCount = countPdfPages($filePath);
+                            }
+
+                            $isSavedFeatured = in_array((int)$doc['document_id'], $savedDocs);
+                        ?>
+                            <div class="featured-item">
+                                <div class="card h-100 border-0 shadow-sm doc-card">
+
+                                    <div class="position-relative p-2">
+                                        <span class="badge <?= $icon_class ?> position-absolute top-0 start-0 m-2 shadow-sm" style="font-size: 0.6rem; z-index: 2;">
+                                            <?= $icon_text ?>
+                                        </span>
+
+                                        <a href="document_detail.php?id=<?= $doc['document_id'] ?>" class="text-decoration-none">
+                                            <div class="doc-thumb rounded-2 border d-flex justify-content-center align-items-center">
+                                                <img src="<?= $thumb ?>" alt="Document Cover">
+                                            </div>
+                                        </a>
+                                    </div>
+
+                                    <div class="card-body p-2 pt-0 d-flex flex-column">
+                                        <h6 class="card-title fw-semibold text-truncate-2 mb-2" style="font-size: 0.85rem; line-height: 1.3; height: 34px;">
+                                            <a href="document_detail.php?id=<?= $doc['document_id'] ?>" class="text-decoration-none text-dark">
+                                                <?= htmlspecialchars($doc['title']) ?>
+                                            </a>
+                                        </h6>
+
+                                        <div class="mt-auto d-flex justify-content-between align-items-center text-muted" style="font-size: 13px;">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <?php if ($pageCount > 0): ?>
+                                                    <span>
+                                                        <i class="fas fa-download me-1"></i><?= (int)$doc['downloads'] ?> lượt tải xuống
+                                                    </span>
+                                                <?php else: ?>
+                                                    <span><i class="fas fa-download me-1"></i><?= (int)$doc['downloads'] ?></span>
+                                                <?php endif; ?>
+                                            </div>
+                                            <button class="btn btn-light border btn-save p-1 px-2" data-id="<?= $doc['document_id'] ?>">
+                                                <i class="<?= $isSavedFeatured ? 'fas' : 'far' ?> fa-bookmark"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+        </section>
+    <?php endif; ?>
 
     <!-- TÀI LIỆU MỚI NHẤT -->
 
     <div class="d-flex justify-content-between align-items-center mb-4 mt-5">
         <h3 class="text-uppercase fw-bold m-0" style="font-size: 1.5rem;">Tài liệu mới</h3>
-        <a href="#" class="text-decoration-none text-muted">Xem thêm</a>
     </div>
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-4">
@@ -155,8 +245,8 @@ if (isset($_SESSION['username'])) {
                             </div>
                             <!-- LƯU -->
                             <button
-                                class="btn btn-light border btn-save" data-id="<?= $row['document_id'] ?>">
-                                <i class="<?= $isSaved ? 'fas' : 'far' ?> fa-bookmark fs-5 d-block mb-1"></i>
+                                class="btn btn-light border btn-save p-1 px-2" data-id="<?= $row['document_id'] ?>">
+                                <i class="<?= $isSaved ? 'fas' : 'far' ?> fa-bookmark fs-5"></i>
                             </button>
                             <!-- LƯU -->
                         </div>

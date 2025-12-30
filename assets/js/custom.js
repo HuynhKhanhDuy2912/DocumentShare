@@ -155,3 +155,67 @@ function togglePasswordForm() {
   wrapper.classList.toggle("show-password");
   wrapper.classList.toggle("justify-center");
 }
+
+/* ==================================================
+
+/* =================================================
+   TÀI LIỆU NỔI BẬT – SLIDER
+================================================== */
+
+// let featuredIndex = 0;
+
+// function slideFeatured(direction) {
+//     const track = document.getElementById('featuredTrack');
+//     const item = track.children[0];
+//     const gap = 16;
+
+//     const itemWidth = item.offsetWidth + gap;
+//     const wrapperWidth = track.parentElement.offsetWidth;
+//     const visibleItems = Math.floor(wrapperWidth / itemWidth);
+//     const maxIndex = track.children.length - visibleItems;
+
+//     featuredIndex += direction;
+
+//     if (featuredIndex < 0) featuredIndex = 0;
+//     if (featuredIndex > maxIndex) featuredIndex = maxIndex;
+
+//     track.style.transform = `translateX(-${featuredIndex * itemWidth}px)`;
+// }
+let featuredIndex = 0;
+
+function slideFeatured(direction) {
+    const track = document.getElementById('featuredTrack');
+    const items = track.children;
+    if (items.length === 0) return;
+
+    const gap = 16;
+    const itemWidth = items[0].offsetWidth + gap;
+    const wrapperWidth = track.parentElement.offsetWidth;
+    
+    // Tính số item hiển thị thực tế
+    const visibleItems = Math.floor(wrapperWidth / itemWidth);
+    const maxIndex = items.length - visibleItems;
+
+    featuredIndex += direction;
+
+    // Logic Vòng lặp (Loop)
+    if (featuredIndex < 0) {
+        featuredIndex = maxIndex; // Quay về cuối
+    } else if (featuredIndex > maxIndex) {
+        featuredIndex = 0; // Quay về đầu
+    }
+
+    track.style.transform = `translateX(-${featuredIndex * itemWidth}px)`;
+}
+
+/* ==================================================
+           SHARE DOCUMENT
+================================================== */
+function copyShareLink() {
+    const input = document.getElementById('shareLink');
+    input.select();
+    input.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(input.value);
+
+    alert("Đã sao chép liên kết!");
+}

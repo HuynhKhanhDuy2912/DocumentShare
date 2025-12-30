@@ -135,11 +135,10 @@ $thumbnail = !empty($doc['thumbnail'])
 
                         <!-- CHIA SẺ -->
                         <button class="btn btn-light border flex-fill mx-1 py-3"
-                            onclick="navigator.clipboard.writeText(window.location.href)">
+                            data-bs-toggle="modal" data-bs-target="#shareModal">
                             <i class="fas fa-share-alt fs-5 d-block mb-1"></i>
                             <span class="small">Chia sẻ</span>
                         </button>
-
                     </div>
 
                 </div>
@@ -216,5 +215,48 @@ $thumbnail = !empty($doc['thumbnail'])
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="shareModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-3">
+
+            <div class="modal-header">
+                <h6 class="modal-title fw-bold">Chia sẻ tài liệu</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body text-center">
+
+                <div class="d-flex justify-content-center gap-3 mb-3">
+
+                    <!-- Facebook -->
+                    <a target="_blank"
+                        href="https://www.facebook.com/sharer/sharer.php?u=<?= urlencode('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']) ?>"
+                        class="btn">
+                         <img src="assets/img/facebook.png" width="45" height="45">
+                    </a>
+
+                    <!-- Zalo -->
+                    <a target="_blank"
+                        href="https://zalo.me/share?url=<?= urlencode($url) ?>"
+                        class="btn d-flex align-items-center justify-content-center">
+                        <img src="assets/img/zalo.png" width="40" height="40">
+                    </a>
+
+                    <!-- Copy link -->
+                    <button class="btn btn-secondary" onclick="copyShareLink()" style="width: 50px; height: 50px; margin-top: 5px;">
+                        <i class="fas fa-link"></i>
+                    </button>
+
+                </div>
+
+                <input type="text" class="form-control text-center" id="shareLink"
+                    value="<?= 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ?>"
+                    readonly>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <?php include "footer.php"; ?>
