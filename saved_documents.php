@@ -52,7 +52,7 @@ $result = mysqli_query($conn, $sql);
                             </span>
 
                             <a href="document_detail.php?id=<?= $row['document_id'] ?>">
-                                <div class="doc-thumb border rounded-2">
+                                <div class="doc-thumb border rounded-2 d-flex justify-content-center align-items-center">
                                     <img src="<?= $thumb ?>" alt="">
                                 </div>
                             </a>
@@ -67,16 +67,15 @@ $result = mysqli_query($conn, $sql);
                                 </a>
                             </h6>
 
-                            <div class="mt-auto d-flex justify-content-between align-items-center text-muted"
-                                style="font-size: 0.75rem;">
-                                <span>
-                                    <i class="far fa-eye me-1"></i><?= $row['views'] ?>
+                            <div class="mt-auto d-flex justify-content-between align-items-center text-muted">
+                                <span style="font-size: 13px;">
+                                    <i class="far fa-eye me-1"></i><?= $row['views'] ?> lượt xem 
                                 </span>
 
                                 <a href="unsave_document.php?id=<?= $row['document_id'] ?>"
-                                    class="text-danger"
-                                    onclick="return confirm('Bỏ lưu tài liệu này?')">
-                                    <i class="fas fa-trash"></i>
+                                    class="text-danger"    
+                                    onclick="return confirm('Bạn có chắc bỏ lưu tài liệu này?')">
+                                    <i class="fas fa-trash" style="font-size: 16px;"></i>
                                 </a>
                             </div>
                         </div>

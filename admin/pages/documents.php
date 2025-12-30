@@ -55,7 +55,7 @@ if (isset($_POST['save_document'])) {
         $thumbnail = $thumbName; // Chỉ lưu tên file
     }
 
-    // B. XỬ LÝ FILE TÀI LIỆU (Cũng áp dụng logic giống Slideshow)
+    // B. XỬ LÝ FILE TÀI LIỆU 
     $file_path = $_POST['old_file'] ?? '';
     $file_type = $_POST['old_file_type'] ?? '';
     if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
@@ -143,6 +143,41 @@ $resSub = mysqli_query($conn, "SELECT subcategory_id, name FROM subcategories OR
 while ($rowSub = mysqli_fetch_assoc($resSub)) {
     $subcategories[] = $rowSub;
 }
+
+// =====================
+// PHÂN TRANG + TÌM KIẾM
+// =====================
+$limit = 10;
+$page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+$offset = ($page - 1) * $limit;
+
+$keyword = trim($_GET['keyword'] ?? '');
+
+$where = '';
+if ($keyword !== '') {
+    $safe_keyword = mysqli_real_escape_string($conn, $keyword);
+    $where = "WHERE d.title LIKE '%$safe_keyword%' 
+              OR d.description LIKE '%$safe_keyword%'";
+}
+
+// ĐẾM TỔNG
+$countSql = "
+    SELECT COUNT(*) AS total 
+    FROM documents d
+    $where
+";
+
+$countRes = mysqli_query($conn, $countSql);
+
+// BẢO VỆ CHỐNG NULL
+$totalDocs = 0;
+if ($countRes) {
+    $totalRow = mysqli_fetch_assoc($countRes);
+    $totalDocs = (int)($totalRow['total'] ?? 0);
+}
+
+$totalPages = ceil($totalDocs / $limit);
+
 ?>
 
 <div class="card shadow">
@@ -232,6 +267,27 @@ while ($rowSub = mysqli_fetch_assoc($resSub)) {
                 </div>
             </form>
         <?php else: ?>
+            <form method="get" class="row g-2 mb-3 justify-content-end">
+                <input type="hidden" name="p" value="documents">
+
+                <div class="col-md-4">
+                    <input type="text"
+                        name="keyword"
+                        class="form-control"
+                        placeholder="Tìm tài liệu..."
+                        value="<?= htmlspecialchars($keyword) ?>">
+                </div>
+
+                <div class="col-md-auto">
+                    <button class="btn btn-primary px-4">
+                        <i class="fas fa-search"></i> Tìm
+                    </button>
+                    <a href="<?= $base_url ?>" class="btn btn-secondary">
+                        <i class="fas fa-sync"></i>
+                    </a>
+                </div>
+            </form>
+
             <div class="table-responsive">
                 <table class="table table-bordered table-hover align-middle">
                     <thead class="table-light">
@@ -247,7 +303,16 @@ while ($rowSub = mysqli_fetch_assoc($resSub)) {
                     </thead>
                     <tbody>
                         <?php
-                        $res = mysqli_query($conn, "SELECT d.*, s.name as category_name FROM documents d LEFT JOIN subcategories s ON d.subcategory_id=s.subcategory_id ORDER BY d.document_id DESC");
+                        $res = mysqli_query($conn, "
+                            SELECT d.*, s.name as category_name 
+                            FROM documents d 
+                            LEFT JOIN subcategories s 
+                                ON d.subcategory_id = s.subcategory_id
+                            $where
+                            ORDER BY d.document_id DESC
+                            LIMIT $limit OFFSET $offset
+                        ");
+
                         while ($r = mysqli_fetch_assoc($res)):
                         ?>
                             <tr>
@@ -270,16 +335,49 @@ while ($rowSub = mysqli_fetch_assoc($resSub)) {
                                         <a href="../uploads/documents/<?= $r['file_path'] ?>" target="_blank" class="badge bg-info text-decoration-none">Xem file</a>
                                     <?php endif; ?>
                                 </td>
-                                <td><?= $r['status'] == 0 ? '<span class="badge bg-success">Hiện</span>' : '<span class="badge bg-secondary">Ẩn</span>' ?></td>
+                                <td><?= $r['status'] == 0 ? '<span class="badge bg-success">Hiển thị</span>' : '<span class="badge bg-secondary">Ẩn</span>' ?></td>
                                 <td class="text-center">
-                                    <a href="<?= $base_url ?>&action=edit&id=<?= $r['document_id'] ?>" class="btn btn-info btn-sm"><i class="fas fa-edit"></i></a>
-                                    <a href="<?= $base_url ?>&action=delete&id=<?= $r['document_id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Xóa tài liệu này?')"><i class="fas fa-trash"></i></a>
+                                    <a href="<?= $base_url ?>&action=edit&id=<?= $r['document_id'] ?>" class="btn btn-info btn-sm" title="Sửa" style="margin-bottom: 10px;"><i class="fas fa-edit"></i></a>
+                                    <a href="<?= $base_url ?>&action=delete&id=<?= $r['document_id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Xóa tài liệu này?')" title="Xóa"><i class="fas fa-trash"></i></a>
                                 </td>
                             </tr>
                         <?php endwhile; ?>
                     </tbody>
                 </table>
             </div>
+            <!-- PHÂN TRANG -->
+            <?php if ($totalPages > 1): ?>
+                <nav class="mt-4">
+                    <ul class="pagination justify-content-center">
+
+                        <!-- PREV -->
+                        <li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
+                            <a class="page-link"
+                                href="<?= $base_url ?>&page=<?= $page - 1 ?>&keyword=<?= urlencode($keyword) ?>">
+                                &laquo;
+                            </a>
+                        </li>
+
+                        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                            <li class="page-item <?= $i == $page ? 'active' : '' ?>">
+                                <a class="page-link"
+                                    href="<?= $base_url ?>&page=<?= $i ?>&keyword=<?= urlencode($keyword) ?>">
+                                    <?= $i ?>
+                                </a>
+                            </li>
+                        <?php endfor; ?>
+
+                        <!-- NEXT -->
+                        <li class="page-item <?= $page >= $totalPages ? 'disabled' : '' ?>">
+                            <a class="page-link"
+                                href="<?= $base_url ?>&page=<?= $page + 1 ?>&keyword=<?= urlencode($keyword) ?>">
+                                &raquo;
+                            </a>
+                        </li>
+
+                    </ul>
+                </nav>
+            <?php endif; ?>
         <?php endif; ?>
     </div>
 </div>

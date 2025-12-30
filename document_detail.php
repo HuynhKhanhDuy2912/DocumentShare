@@ -104,7 +104,7 @@ $thumbnail = !empty($doc['thumbnail'])
                     </h5>
 
                     <!-- MÔ TẢ -->
-                    <p class="text-muted small mb-3">
+                    <p class="text-muted mb-3">
                         <?= nl2br(htmlspecialchars($doc['description'])) ?>
                     </p>
 
@@ -112,21 +112,19 @@ $thumbnail = !empty($doc['thumbnail'])
                     <div class="d-flex justify-content-between text-center mb-3">
 
                         <!-- LƯU -->
-                        <!-- <button class="btn btn-light border flex-fill mx-1 py-3">
-                            <i class="far fa-bookmark fs-5 d-block mb-1"></i>
-                            <span class="small">Lưu</span>
-                        </button> -->
-                        <!-- LƯU -->
                         <button
-                            class="btn btn-light border flex-fill mx-1 py-3"
-                            id="btn-save"
-                            data-id="<?= $document_id ?>">
+                            class="btn btn-light border flex-fill mx-1 py-3 btn-save" data-id="<?= $doc['document_id'] ?>">
                             <i class="<?= $isSaved ? 'fas' : 'far' ?> fa-bookmark fs-5 d-block mb-1"></i>
+
                             <span class="small">
                                 <?= $isSaved ? 'Đã lưu' : 'Lưu' ?>
                             </span>
                         </button>
-
+                        <!-- DEBUG -->
+                        <!-- <div style="font-size:12px;color:red;">
+                            isSaved =
+                            <?= var_export($isSaved, true) ?>
+                        </div> -->
 
                         <!-- TẢI -->
                         <a href="download.php?id=<?= $document_id ?>"
@@ -170,11 +168,11 @@ $thumbnail = !empty($doc['thumbnail'])
             <h6 class="fw-bold mb-3">Tài liệu liên quan</h6>
 
             <?php
-                $docId = (int)$document_id;
-                $subId = (int)$doc['subcategory_id'];
+            $docId = (int)$document_id;
+            $subId = (int)$doc['subcategory_id'];
 
-                // Lấy tài liệu cùng DANH MỤC LỚN (category)
-                $sqlRelated = " SELECT d.document_id, d.title, d.thumbnail, d.file_type FROM documents d
+            // Lấy tài liệu cùng DANH MỤC LỚN (category)
+            $sqlRelated = " SELECT d.document_id, d.title, d.thumbnail, d.file_type FROM documents d
                     INNER JOIN subcategories s ON d.subcategory_id = s.subcategory_id
                     WHERE s.category_id = (
                         SELECT category_id
@@ -187,28 +185,28 @@ $thumbnail = !empty($doc['thumbnail'])
                 ORDER BY RAND()
                 LIMIT 7";
 
-                $related = mysqli_query($conn, $sqlRelated);
+            $related = mysqli_query($conn, $sqlRelated);
 
-                if ($related && mysqli_num_rows($related) > 0):
-                    while ($r = mysqli_fetch_assoc($related)):
-                        $thumbRel = !empty($r['thumbnail'])
-                            ? "uploads/thumbnails/" . $r['thumbnail']
-                            : "assets/img/default-document.jpg";
+            if ($related && mysqli_num_rows($related) > 0):
+                while ($r = mysqli_fetch_assoc($related)):
+                    $thumbRel = !empty($r['thumbnail'])
+                        ? "uploads/thumbnails/" . $r['thumbnail']
+                        : "assets/img/default-document.jpg";
             ?>
-                <a href="document_detail.php?id=<?= $r['document_id'] ?>" class="text-decoration-none text-dark">
-                    <div class="d-flex mb-3">
-                        <img src="<?= $thumbRel ?>" width="80" height="100"
-                            class="border me-2" style="object-fit:cover;">
-                        <div>
-                            <div class="small fw-semibold">
-                                <?= htmlspecialchars($r['title']) ?>
+                    <a href="document_detail.php?id=<?= $r['document_id'] ?>" class="text-decoration-none text-dark">
+                        <div class="d-flex mb-3">
+                            <img src="<?= $thumbRel ?>" width="80" height="100"
+                                class="border me-2" style="object-fit:cover;">
+                            <div>
+                                <div class="small fw-semibold">
+                                    <?= htmlspecialchars($r['title']) ?>
+                                </div>
+                                <span class="badge bg-secondary">
+                                    <?= strtoupper($r['file_type']) ?>
+                                </span>
                             </div>
-                            <span class="badge bg-secondary">
-                                <?= strtoupper($r['file_type']) ?>
-                            </span>
                         </div>
-                    </div>
-                </a>
+                    </a>
             <?php
                 endwhile;
             else:

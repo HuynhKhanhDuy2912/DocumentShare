@@ -35,10 +35,23 @@
     exit();
   }
 
+
   // --- Logic tải trang ---
-  $page = isset($_GET['p']) ? $_GET['p'] : 'dashboard';
+  $page = $_GET['p'] ?? 'dashboard';
   $content_file = "pages/$page.php";
-  $page_title = str_replace('-', ' ', ucfirst($page));
+
+  /* MAP TIÊU ĐỀ TRANG */
+  $page_titles = [
+    'dashboard'     => 'Trang chủ',
+    'users'         => 'Quản lý tài khoản',
+    'categories'    => 'Quản lý danh mục',
+    'subcategories' => 'Quản lý danh mục con',
+    'documents'     => 'Quản lý tài liệu',
+    'slideshows'    => 'Quản lý slideshow',
+  ];
+
+  $page_title = $page_titles[$page] ?? ucfirst($page);
+
 
   // --- Thông tin user hiển thị ---
   $logged_in_name = $_SESSION['username'];

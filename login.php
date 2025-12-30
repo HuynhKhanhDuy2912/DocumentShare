@@ -58,7 +58,7 @@ if (isset($_GET['code'])) {
             // --> Trường hợp B: Chưa có tài khoản -> Tự động Đăng ký
             $new_username = explode('@', $email)[0]; // Tạo username lấy phần trước @ của email
             $default_role = 0;            
-            $random_pass = md5(uniqid(rand(), true)); // Tạo mật khẩu ngẫu nhiên (vì login Google ko cần pass)
+            $random_pass = md5(uniqid(rand(), true)); 
 
             // Lưu vào DB
             $insert_sql = "INSERT INTO users (username, password, email, role, google_id, status) 

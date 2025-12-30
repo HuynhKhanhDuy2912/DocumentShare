@@ -1,6 +1,6 @@
 <?php
-include 'config.php';
-include("header.php");
+include "config.php";
+include "header.php";
 
 function countPdfPages($filePath)
 {
@@ -20,6 +20,43 @@ $banners = [];
 while ($row = mysqli_fetch_assoc($result)) {
     $banners[] = $row;
 }
+
+$document_id = (int)$_GET['id'];
+
+// Kiểm tra tài liệu đã được lưu chưa
+$isSaved = false;
+
+if (isset($_SESSION['username'])) {
+    $username = mysqli_real_escape_string($conn, $_SESSION['username']);
+
+    $checkSave = mysqli_query($conn, "
+        SELECT id FROM saved_documents 
+        WHERE username = '$username' AND document_id = $document_id
+        LIMIT 1
+    ");
+
+    if ($checkSave && mysqli_num_rows($checkSave) > 0) {
+        $isSaved = true;
+    }
+}
+
+// Lấy danh sách tài liệu đã lưu của người dùng
+$savedDocs = [];
+
+if (isset($_SESSION['username'])) {
+    $username = mysqli_real_escape_string($conn, $_SESSION['username']);
+
+    $rs = mysqli_query($conn, "
+        SELECT document_id 
+        FROM saved_documents 
+        WHERE username = '$username'
+    ");
+
+    while ($rowSaved = mysqli_fetch_assoc($rs)) {
+        $savedDocs[] = (int)$rowSaved['document_id'];
+    }
+}
+
 ?>
 
 <div class="container mt-4 mrt">
@@ -60,10 +97,11 @@ while ($row = mysqli_fetch_assoc($result)) {
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-4">
         <?php
-        $sql = "SELECT * FROM documents WHERE status = 0 ORDER BY document_id DESC LIMIT 15";
+        $sql = "SELECT * FROM documents WHERE status = 0 ORDER BY document_id DESC LIMIT 20";
         $result = mysqli_query($conn, $sql);
 
         while ($row = mysqli_fetch_assoc($result)):
+            $isSaved = in_array((int)$row['document_id'], $savedDocs);
 
             $thumb = !empty($row['thumbnail']) ? './uploads/thumbnails/' . $row['thumbnail'] : './assets/img/default-document.jpg';
 
@@ -106,7 +144,7 @@ while ($row = mysqli_fetch_assoc($result)) {
                         </h6>
 
                         <div class="mt-auto d-flex justify-content-between align-items-center text-muted"
-                            style="font-size: 0.75rem;">
+                            style="font-size: 13px;">
                             <div class="d-flex align-items-center gap-2">
                                 <?php if ($pageCount > 0): ?>
                                     <span>
@@ -115,7 +153,12 @@ while ($row = mysqli_fetch_assoc($result)) {
                                     </span>
                                 <?php endif; ?>
                             </div>
-                            <i class="far fa-bookmark hover-primary" style="cursor:pointer; font-size: 18px;"></i>
+                            <!-- LƯU -->
+                            <button
+                                class="btn btn-light border btn-save" data-id="<?= $row['document_id'] ?>">
+                                <i class="<?= $isSaved ? 'fas' : 'far' ?> fa-bookmark fs-5 d-block mb-1"></i>
+                            </button>
+                            <!-- LƯU -->
                         </div>
                     </div>
                 </div>

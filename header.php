@@ -140,8 +140,6 @@ if ($result && mysqli_num_rows($result) > 0) {
                             </div>
                         </div>
                     </li>
-
-
                     <li class="nav-item"><a class="nav-link" href="contact.php"><i class="fa fa-envelope mr-1"></i> Liên hệ</a></li>
                 </ul>
 
@@ -149,8 +147,8 @@ if ($result && mysqli_num_rows($result) > 0) {
                     <div class="input-group">
                         <input class="form-control" type="search" name="q" placeholder="Tìm kiếm tài liệu...">
                         <div class="input-group-append">
-                            <button class="btn btn-light border" type="submit">
-                                <i class="fa fa-search text-muted"></i>
+                            <button class="btn btn-light border search-document" type="submit">
+                                <i class="fa fa-search"></i>
                             </button>
                         </div>
                     </div>
@@ -181,7 +179,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                                 </span>
                             </a>
 
-                            <div class="dropdown-menu dropdown-menu-right shadow border-0" aria-labelledby="userDropdown" style="left: -35px;">
+                            <div class="dropdown-menu dropdown-menu-right shadow border-0" aria-labelledby="userDropdown" style="left: -30px;">
                                 <a class="dropdown-item" href="profile.php"><i class="fa fa-id-card mr-2"></i> Thông tin tài khoản</a>
                                 <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 1): ?>
                                     <!-- ADMIN -->

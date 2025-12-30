@@ -113,43 +113,35 @@ $(document).ready(function () {
    LƯU / BỎ LƯU TÀI LIỆU (document_detail.php)
 ================================================== */
 document.addEventListener("DOMContentLoaded", function () {
-  const btnSave = document.getElementById("btn-save");
+  const btnSaves = document.querySelectorAll(".btn-save");
 
-  if (!btnSave) return; 
+  if (btnSaves.length === 0) return;
 
-  btnSave.addEventListener("click", function () {
-    const docId = this.dataset.id;
-    if (!docId) return;
+  btnSaves.forEach((btn) => {
+    btn.addEventListener("click", function () {
+      const docId = this.dataset.id;
+      if (!docId) return;
 
-    fetch("toggle_save_document.php", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: "document_id=" + docId,
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Network response was not ok");
-        return res.text();
+      fetch("toggle_save_document.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "document_id=" + docId,
       })
-      .then((text) => {
-        try {
-          const data = JSON.parse(text);
-
+        .then((res) => res.json())
+        .then((data) => {
           if (data.status === "login") {
             alert("Vui lòng đăng nhập để sử dụng chức năng này.");
             window.location.href = "login.php";
           } else if (data.status === "saved") {
             alert("Đã lưu tài liệu thành công!");
-            location.reload();
+            window.location.reload();
           } else if (data.status === "unsaved") {
-            alert("Đã bỏ lưu tài liệu!");
-            location.reload();
+            alert("Đã bỏ lưu tài liệu.");
+            window.location.reload();
           }
-        } catch (e) {
-          console.error("Lỗi parse JSON:", text);
-          alert("Có lỗi xảy ra từ phía server.");
-        }
-      })
-      .catch((err) => console.error("Fetch error:", err));
+        })
+        .catch((err) => console.error("Fetch error:", err));
+    });
   });
 });
 
@@ -157,10 +149,9 @@ document.addEventListener("DOMContentLoaded", function () {
    PROFILE – HIỂN THỊ FORM ĐỔI MẬT KHẨU
 ================================================== */
 function togglePasswordForm() {
-    const wrapper = document.getElementById("profileWrapper");
-    if (!wrapper) return;
+  const wrapper = document.getElementById("profileWrapper");
+  if (!wrapper) return;
 
-    wrapper.classList.toggle("show-password");
-    wrapper.classList.toggle("justify-center");
+  wrapper.classList.toggle("show-password");
+  wrapper.classList.toggle("justify-center");
 }
-
