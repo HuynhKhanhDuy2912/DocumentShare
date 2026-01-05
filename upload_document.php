@@ -70,8 +70,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['document_file'])) {
             <div class="col-lg-8">
                 <div class="card shadow-lg border-0 main-upload-card">
                     <div class="card-header bg-white py-4 border-bottom text-center">
-                        <h2 class="fw-bold text-primary mb-0">
-                            <i class="bi bi-cloud-arrow-up-fill me-2"></i>Đăng tài liệu mới
+                        <h2 class="fw-bold mb-0">
+                            <i class="fa fa-cloud-upload-alt me-2"></i>Đăng tài liệu mới
                         </h2>
                         <p class="text-muted mt-2">Chia sẻ kiến thức của bạn với cộng đồng DocumentShare</p>
                     </div>
@@ -126,13 +126,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['document_file'])) {
                                 <textarea name="description" class="form-control custom-input" rows="5" placeholder="Ghi chú ngắn gọn về nội dung chính của tài liệu..."></textarea>
                             </div>
 
-                            <div class="d-grid gap-2 mt-5">
-                                <button type="submit" class="btn btn-success btn-lg fw-bold shadow-sm py-3 btn-submit-upload">
-                                    <i class="bi bi-check-circle-fill me-2"></i>Tải lên và Chia sẻ ngay
-                                </button>
-                                <a href="manage_documents.php" class="btn btn-link text-muted mt-2 text-decoration-none">
-                                    <i class="bi bi-arrow-left"></i> Quay lại danh sách quản lý
+                            <div class="d-flex gap-2 mt-5">                                
+                                <a href="upload.php" class="btn btn-small btn-secondary    fw-bold text-decoration-none">
+                                    <i class="fa fa-arrow-left"></i> Quay lại
                                 </a>
+                                <button type="submit" class="btn btn-success btn-small fw-bold shadow-sm py-2 btn-submit-upload ms-auto">
+                                    <i class="fa fa-upload me-2"></i>Tải lên và Chia sẻ ngay
+                                </button>
                             </div>
                         </form>
                     </div>

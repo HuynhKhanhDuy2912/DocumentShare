@@ -88,7 +88,7 @@ if ($result && mysqli_num_rows($result) > 0) {
 
                                     <div class="mega-column">
                                         <h4 class="mega-title">
-                                            <a href="javascript:void(0)" style="color: inherit; text-decoration: none;">
+                                            <a href="javascript:void(0)" style="color: #000; text-decoration: none;">
                                                 <?= htmlspecialchars($category['name']) ?>
                                             </a>
                                         </h4>

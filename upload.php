@@ -75,11 +75,11 @@ function formatSizeUnits($bytes) {
     
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="fw-bold text-primary mb-0"><i class="bi bi-folder2-open me-2"></i>Quản lý tài liệu</h2>
+            <h2 class="fw-bold text-primary mb-0"><i class="fa fa-folder-open me-2"></i>Quản lý tài liệu</h2>
             <p class="text-muted small">Tối ưu hóa quy trình lưu trữ và chia sẻ kiến thức của bạn.</p>
         </div>
-        <a href="upload_document.php" class="btn btn-success px-4 fw-bold shadow-sm">
-            <i class="bi bi-cloud-arrow-up"></i> Đăng tài liệu mới
+        <a href="upload_document.php" class="btn btn-success px-2 fw-bold shadow-sm">
+            <i class="fa fa-cloud-arrow-up"></i> Đăng tài liệu mới
         </a>
     </div>
 

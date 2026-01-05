@@ -269,8 +269,8 @@ body {
 /* --- Chỉnh chiều cao Carousel Slide --- */
 .carousel-item img {
   height: 400px;
-  object-fit: cover;
-  object-position: center;
+  margin: 0 auto;
+  width: 1200px;
 }
 
 @media (max-width: 768px) {
@@ -287,11 +287,11 @@ body {
 .mega-menu {
   display: none;
   position: absolute;
-  left: 0;
+  left: -125px;
   top: 100%;
   width: 1000px;
   background: #fff;
-  padding: 20px;
+  padding: 20px 30px;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   z-index: 1000;
@@ -326,8 +326,8 @@ body {
 .mega-column ul li a {
   display: block;
   padding: 6px 0;
-  color: #4a5568;
-  font-size: 14px;
+  font-size: 16px;
+  text-decoration: none;
 }
 
 .mega-column ul li a:hover {

@@ -99,7 +99,7 @@ $thumbnail = !empty($doc['thumbnail'])
                     </div>
 
                     <!-- TITLE -->
-                    <h5 class="fw-bold mb-2">
+                    <h5 class="fw-bold mb-2" style="font-size: 1.5rem;">
                         <?= htmlspecialchars($doc['title']) ?>
                     </h5>
 
@@ -120,11 +120,6 @@ $thumbnail = !empty($doc['thumbnail'])
                                 <?= $isSaved ? 'Đã lưu' : 'Lưu' ?>
                             </span>
                         </button>
-                        <!-- DEBUG -->
-                        <!-- <div style="font-size:12px;color:red;">
-                            isSaved =
-                            <?= var_export($isSaved, true) ?>
-                        </div> -->
 
                         <!-- TẢI -->
                         <a href="download.php?id=<?= $document_id ?>"
@@ -164,7 +159,7 @@ $thumbnail = !empty($doc['thumbnail'])
 
         <!-- PHẢI -->
         <div class="col-lg-2">
-            <h6 class="fw-bold mb-3">Tài liệu liên quan</h6>
+            <h4 class="fw-bold mb-3">Tài liệu liên quan</h4>
 
             <?php
             $docId = (int)$document_id;

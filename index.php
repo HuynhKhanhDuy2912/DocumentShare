@@ -74,22 +74,16 @@ while ($row = mysqli_fetch_assoc($rsFeatured)) {
 
 ?>
 
-<div class="container mt-4 mrt">
-
-    <!-- CAROUSEL -->
+<!-- CAROUSEL -->
+<div class="bg" style="margin-top: 33px; background-color: #0080ffff; padding: 10px;">
     <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
 
             <?php foreach ($banners as $index => $banner): ?>
                 <div class="carousel-item <?= $index == 0 ? 'active' : '' ?>">
-                    <img src="uploads/slideshows/<?= $banner['imageurl'] ?>" class="d-block w-100" alt="Slide">
-                    <div class="carousel-caption d-none d-md-block">
-                        <h5><?= $banner['title'] ?></h5>
-                        <p><?= $banner['description'] ?></p>
-                    </div>
+                    <img src="uploads/slideshows/<?= $banner['imageurl'] ?>" class="d-block" alt="Slide">
                 </div>
             <?php endforeach; ?>
-
         </div>
 
         <!-- Nút điều hướng -->
@@ -101,6 +95,11 @@ while ($row = mysqli_fetch_assoc($rsFeatured)) {
             <span class="carousel-control-next-icon"></span>
         </button>
     </div>
+    <span class="d-block text-center text-white text-uppercase mt-2" style="font-size: 20px; font-weight: bold;">
+        Cùng nhau chia sẻ tiếp cận nguồn tài liệu học tập chất lượng và miễn phí!
+    </span>
+</div>
+<div class="container mt-4">
     <?php if (!empty($featuredDocs)): ?>
         <section class="featured-section mt-5">
             <div class="featured-header">
@@ -187,7 +186,7 @@ while ($row = mysqli_fetch_assoc($rsFeatured)) {
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-4">
         <?php
-        $sql = "SELECT * FROM documents WHERE status = 0 ORDER BY document_id DESC LIMIT 20";
+        $sql = "SELECT * FROM documents WHERE status = 0 ORDER BY document_id DESC LIMIT 30";
         $result = mysqli_query($conn, $sql);
 
         while ($row = mysqli_fetch_assoc($result)):

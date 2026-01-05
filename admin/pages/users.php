@@ -282,7 +282,7 @@ $is_edit_mode = ($current_view == 'form' && !empty($data['username']));
                                     <td><strong><?php echo $row['username']; ?></strong></td>
                                     <td><?php echo $row['email']; ?></td>
                                     <td><?php echo $row['fullname']; ?></td>
-                                    <td><?php echo ($row['role'] == 1) ? 'Admin' : 'Người dùng'; ?>
+                                    <td><?php echo ($row['role'] == 1) ? 'Quản trị viên' : 'Người dùng'; ?>
                                     </td>
                                     <td>
                                         <?php if ($row['status'] == 1): ?>
