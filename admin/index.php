@@ -44,9 +44,10 @@
   $page_titles = [
     'dashboard'     => 'Trang chủ',
     'users'         => 'Quản lý tài khoản',
-    'categories'    => 'Quản lý danh mục',
-    'subcategories' => 'Quản lý danh mục con',
+    'categories'    => 'Quản lý chủ đề',
+    'subcategories' => 'Quản lý môn học',
     'documents'     => 'Quản lý tài liệu',
+    'uploads'       => 'Quản lý tài liệu đăng tải',
     'slideshows'    => 'Quản lý slideshow',
   ];
 
@@ -135,19 +136,25 @@
               <li class="nav-item">
                 <a href="index.php?p=categories" class="nav-link <?php if ($page == 'categories') echo 'active'; ?>">
                   <i class="nav-icon fas fa-th"></i>
-                  <p>Quản lý danh mục</p>
+                  <p>Quản lý chủ đề</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="index.php?p=subcategories" class="nav-link <?php if ($page == 'subcategories') echo 'active'; ?>">
                   <i class="nav-icon fas fa-list"></i>
-                  <p>Quản lý danh mục con</p>
+                  <p>Quản lý môn học</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="index.php?p=documents" class="nav-link <?php if ($page == 'documents') echo 'active'; ?>">
                   <i class="nav-icon fas fa-file"></i>
                   <p>Quản lý tài liệu</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="index.php?p=uploads" class="nav-link <?php if ($page == 'uploads') echo 'active'; ?>">
+                  <i class="nav-icon fas fa-cloud-upload-alt"></i>
+                  <p>Quản lý tài liệu đăng tải</p>
                 </a>
               </li>
               <li class="nav-item">

@@ -21,10 +21,10 @@
             <div class="col-lg-2 col-md-6">
                 <h6 class="fw-bold mb-3">Danh mục</h6>
                 <ul class="list-unstyled small">
-                    <li><a href="danhmuc.php" class="text-muted text-decoration-none">Công nghệ thông tin</a></li>
-                    <li><a href="danhmuc.php" class="text-muted text-decoration-none">Kinh tế</a></li>
-                    <li><a href="danhmuc.php" class="text-muted text-decoration-none">Ngoại ngữ</a></li>
-                    <li><a href="danhmuc.php" class="text-muted text-decoration-none">Khác</a></li>
+                    <li><a href="#" class="text-muted text-decoration-none">Công nghệ thông tin</a></li>
+                    <li><a href="#" class="text-muted text-decoration-none">Kinh tế</a></li>
+                    <li><a href="#" class="text-muted text-decoration-none">Ngoại ngữ</a></li>
+                    <li><a href="#" class="text-muted text-decoration-none">Khác</a></li>
                 </ul>
             </div>
 

@@ -112,38 +112,66 @@ $(document).ready(function () {
 /* ==================================================
    LƯU / BỎ LƯU TÀI LIỆU (document_detail.php)
 ================================================== */
-document.addEventListener("DOMContentLoaded", function () {
-  const btnSaves = document.querySelectorAll(".btn-save");
+document.addEventListener("click", function (e) {
+  const btn = e.target.closest(".btn-save");
+  if (!btn) return;
 
-  if (btnSaves.length === 0) return;
+  e.preventDefault();
 
-  btnSaves.forEach((btn) => {
-    btn.addEventListener("click", function () {
-      const docId = this.dataset.id;
-      if (!docId) return;
+  const docId = btn.getAttribute("data-id");
+  if (!docId) return;
 
-      fetch("toggle_save_document.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: "document_id=" + docId,
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.status === "login") {
-            alert("Vui lòng đăng nhập để sử dụng chức năng này.");
-            window.location.href = "login.php";
-          } else if (data.status === "saved") {
-            alert("Đã lưu tài liệu thành công!");
-            window.location.reload();
-          } else if (data.status === "unsaved") {
-            alert("Đã bỏ lưu tài liệu.");
-            window.location.reload();
-          }
-        })
-        .catch((err) => console.error("Fetch error:", err));
-    });
-  });
+  fetch("toggle_save_document.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: "document_id=" + docId,
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.status === "login") {
+        alert("Vui lòng đăng nhập để lưu tài liệu.");
+        window.location.href = "login.php";
+        return;
+      }
+
+      updateSaveUI(docId, data.status === "saved");
+    })
+    .catch(console.error);
 });
+
+function updateSaveUI(docId, isSaved) {
+  // ===== CẬP NHẬT NÚT TRONG LIST =====
+  document
+    .querySelectorAll('.btn-save[data-id="' + docId + '"]')
+    .forEach((btn) => {
+      if (btn.id === "modalSave") return;
+
+      const icon = btn.querySelector("i");
+      if (!icon) return;
+
+      icon.classList.toggle("fas", isSaved);
+      icon.classList.toggle("far", !isSaved);
+    });
+
+  // ===== CẬP NHẬT NÚT TRONG MODAL =====
+  const modalSave = document.getElementById("modalSave");
+  if (!modalSave || modalSave.dataset.id != docId) return;
+
+  const icon = modalSave.querySelector("i");
+  const text = modalSave.querySelector(".save-text");
+
+  if (!icon || !text) return;
+
+  if (isSaved) {
+    icon.classList.remove("far");
+    icon.classList.add("fas");
+    text.textContent = "Đã lưu";
+  } else {
+    icon.classList.remove("fas");
+    icon.classList.add("far");
+    text.textContent = "Lưu";
+  }
+}
 
 /* ==================================================
    PROFILE – HIỂN THỊ FORM ĐỔI MẬT KHẨU
@@ -161,61 +189,90 @@ function togglePasswordForm() {
 /* =================================================
    TÀI LIỆU NỔI BẬT – SLIDER
 ================================================== */
-
-// let featuredIndex = 0;
-
-// function slideFeatured(direction) {
-//     const track = document.getElementById('featuredTrack');
-//     const item = track.children[0];
-//     const gap = 16;
-
-//     const itemWidth = item.offsetWidth + gap;
-//     const wrapperWidth = track.parentElement.offsetWidth;
-//     const visibleItems = Math.floor(wrapperWidth / itemWidth);
-//     const maxIndex = track.children.length - visibleItems;
-
-//     featuredIndex += direction;
-
-//     if (featuredIndex < 0) featuredIndex = 0;
-//     if (featuredIndex > maxIndex) featuredIndex = maxIndex;
-
-//     track.style.transform = `translateX(-${featuredIndex * itemWidth}px)`;
-// }
 let featuredIndex = 0;
 
 function slideFeatured(direction) {
-    const track = document.getElementById('featuredTrack');
-    const items = track.children;
-    if (items.length === 0) return;
+  const track = document.getElementById("featuredTrack");
+  const items = track.children;
+  if (items.length === 0) return;
 
-    const gap = 16;
-    const itemWidth = items[0].offsetWidth + gap;
-    const wrapperWidth = track.parentElement.offsetWidth;
-    
-    // Tính số item hiển thị thực tế
-    const visibleItems = Math.floor(wrapperWidth / itemWidth);
-    const maxIndex = items.length - visibleItems;
+  const gap = 16;
+  const itemWidth = items[0].offsetWidth + gap;
+  const wrapperWidth = track.parentElement.offsetWidth;
 
-    featuredIndex += direction;
+  // Tính số item hiển thị thực tế
+  const visibleItems = Math.floor(wrapperWidth / itemWidth);
+  const maxIndex = items.length - visibleItems;
 
-    // Logic Vòng lặp (Loop)
-    if (featuredIndex < 0) {
-        featuredIndex = maxIndex; // Quay về cuối
-    } else if (featuredIndex > maxIndex) {
-        featuredIndex = 0; // Quay về đầu
-    }
+  featuredIndex += direction;
 
-    track.style.transform = `translateX(-${featuredIndex * itemWidth}px)`;
+  // Logic Vòng lặp (Loop)
+  if (featuredIndex < 0) {
+    featuredIndex = maxIndex; 
+  } else if (featuredIndex > maxIndex) {
+    featuredIndex = 0; 
+  }
+
+  track.style.transform = `translateX(-${featuredIndex * itemWidth}px)`;
 }
 
 /* ==================================================
-           SHARE DOCUMENT
+                    SHARE DOCUMENT
 ================================================== */
 function copyShareLink() {
-    const input = document.getElementById('shareLink');
-    input.select();
-    input.setSelectionRange(0, 99999);
-    navigator.clipboard.writeText(input.value);
+  const input = document.getElementById("shareLink");
+  input.select();
+  input.setSelectionRange(0, 99999);
+  navigator.clipboard.writeText(input.value);
 
-    alert("Đã sao chép liên kết!");
+  alert("Đã sao chép liên kết!");
 }
+
+/* ==================================================
+                    MENU DOT
+================================================== */
+document.addEventListener("DOMContentLoaded", () => {
+  const overlay = document.getElementById("docOverlay");
+  const modal = document.getElementById("docModal");
+  const closeBtn = document.querySelector(".close-modal");
+
+  const modalView = document.getElementById("modalView");
+  const modalDownload = document.getElementById("modalDownload");
+  const modalSave = document.getElementById("modalSave");
+
+  document.querySelectorAll(".page-more").forEach((el) => {
+    el.addEventListener("click", () => {
+      const id = el.dataset.id;
+
+      document.getElementById("modalTitle").innerText = el.dataset.title;
+      document.getElementById("modalThumb").src = el.dataset.thumb;
+      document.getElementById("modalDesc").innerText = el.dataset.desc;
+      document.getElementById("modalViewCount").innerText = el.dataset.views;
+      document.getElementById("modalDownloadCount").innerText =
+        el.dataset.downloads;
+      document.getElementById("modalPageCount").innerText = el.dataset.pages;
+
+      modalView.href = "document_detail.php?id=" + id;
+      modalDownload.href = "download.php?id=" + id;
+
+      const cardSaveBtn = document.querySelector(
+        `.btn-save[data-id="${id}"] i`
+      );
+      const isSaved = cardSaveBtn?.classList.contains("fas");
+
+      modalSave.dataset.id = id;
+      updateSaveUI(id, isSaved);
+
+      overlay.style.display = "block";
+      modal.classList.add("show");
+    });
+  });
+
+  function closeModal() {
+    overlay.style.display = "none";
+    modal.classList.remove("show");
+  }
+
+  overlay.addEventListener("click", closeModal);
+  closeBtn.addEventListener("click", closeModal);
+});

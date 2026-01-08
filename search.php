@@ -19,7 +19,7 @@ $q_safe = mysqli_real_escape_string($conn, $q);
 /* ===============================
    PHÂN TRANG
 ================================ */
-$limit  = 12;
+$limit  = 10;
 $page   = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $offset = ($page - 1) * $limit;
 
@@ -48,7 +48,7 @@ SELECT d.*
 FROM documents d
 LEFT JOIN subcategories s ON d.subcategory_id = s.subcategory_id
 LEFT JOIN categories c ON s.category_id = c.category_id
-WHERE d.status = 0
+WHERE d.status = 'approved' AND d.is_visible = 1
 AND (
     d.title LIKE '%$q_safe%' OR
     d.description LIKE '%$q_safe%' OR
@@ -69,7 +69,7 @@ SELECT COUNT(*) AS total
 FROM documents d
 LEFT JOIN subcategories s ON d.subcategory_id = s.subcategory_id
 LEFT JOIN categories c ON s.category_id = c.category_id
-WHERE d.status = 0
+WHERE d.status = 'approved' AND d.is_visible = 1
 AND (
     d.title LIKE '%$q_safe%' OR
     d.description LIKE '%$q_safe%' OR
@@ -105,7 +105,7 @@ function countPdfPages($filePath)
         <div class="alert alert-info">Không tìm thấy tài liệu phù hợp.</div>
     <?php else: ?>
 
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-4">
             <?php while ($row = mysqli_fetch_assoc($result)): ?>
                 <?php
                 $thumb = !empty($row['thumbnail'])
@@ -162,15 +162,12 @@ function countPdfPages($filePath)
 
                                 <!-- LƯU -->
                                 <button
-                                    class="btn btn-light border btn-save"
-                                    data-id="<?= $row['document_id'] ?>">
+                                    class="btn btn-light border btn-save p-1 px-2" data-id="<?= $row['document_id'] ?>">
                                     <i class="<?= $isSaved ? 'fas' : 'far' ?> fa-bookmark fs-5"></i>
                                 </button>
                                 <!-- /LƯU -->
-
                             </div>
                         </div>
-
                     </div>
                 </div>
             <?php endwhile; ?>

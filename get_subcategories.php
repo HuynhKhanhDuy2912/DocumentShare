@@ -12,12 +12,12 @@ if (isset($_GET['category_id'])) {
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
-        echo '<option value="">-- Chọn danh mục con --</option>';
+        echo '<option value="" disabled selected>-- Chọn môn học --</option>';
         while ($row = $result->fetch_assoc()) {
             echo '<option value="' . $row['subcategory_id'] . '">' . htmlspecialchars($row['name']) . '</option>';
         }
     } else {
-        echo '<option value="">Không có danh mục con</option>';
+        echo '<option value="">Không có môn học</option>';
     }
 }
 ?>

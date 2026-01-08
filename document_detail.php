@@ -23,12 +23,17 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 
 $document_id = (int)$_GET['id'];
 
-$sql = "
-    SELECT *
-    FROM documents
-    WHERE document_id = $document_id AND status = 0
-    LIMIT 1
-";
+$sql = "SELECT d.*, 
+               sc.name AS sub_name, 
+               c.name AS cate_name, 
+               c.category_id AS parent_cate_id
+        FROM documents d
+        LEFT JOIN subcategories sc ON d.subcategory_id = sc.subcategory_id
+        LEFT JOIN categories c ON sc.category_id = c.category_id
+        WHERE d.document_id = $document_id 
+        AND d.status = 'approved' 
+        AND d.is_visible = 1 
+        LIMIT 1";
 $result = mysqli_query($conn, $sql);
 
 if (!$result || mysqli_num_rows($result) === 0) {
@@ -73,12 +78,26 @@ $thumbnail = !empty($doc['thumbnail'])
 ?>
 
 <div class="container-fluid mrt">
-    <div class="row g-4">
+    <div class="row g-4" style="padding-left: 0px !important;">
 
         <!-- TRÁI -->
-        <div class="col-lg-3">
-            <div class="card shadow-sm border-0">
+        <div class="col-lg-3" style="padding-left: 0px !important;">
+            <div class="card">
                 <div class="card-body">
+                    <div>
+                        <ol class="breadcrumb mb-0 small">
+                            <li><a href="index.php" class="text-decoration-none">Trang chủ</a></li>
+                            <li>
+                                <i class="fa fa-angle-double-right"></i> <?= htmlspecialchars($doc['cate_name'] ?? 'Chủ đề') ?>
+                            </li>
+                            <li>
+                                <i class="fa fa-angle-double-right"></i>
+                                <a href="subcategory_detail.php?id=<?= (int)$doc['subcategory_id'] ?>" class="text-decoration-none">
+                                    <?= htmlspecialchars($doc['sub_name'] ?? 'Môn học') ?>
+                                </a>
+                            </li>
+                        </ol>
+                    </div>
 
                     <!-- THỐNG KÊ -->
                     <div class="d-flex align-items-center text-muted small mb-3 gap-3">
@@ -88,10 +107,12 @@ $thumbnail = !empty($doc['thumbnail'])
                                 <?= $pageCount ?> trang
                             </span>
                         <?php endif; ?>
+                        <span class="dot">•</span>
                         <span>
                             <i class="far fa-eye me-1"></i>
                             <?= (int)$doc['views'] + 1 ?> lượt xem
                         </span>
+                        <span class="dot">•</span>
                         <span>
                             <i class="fas fa-download me-1"></i>
                             <?= (int)$doc['downloads'] ?> lượt tải
@@ -142,18 +163,33 @@ $thumbnail = !empty($doc['thumbnail'])
 
 
         <!-- GIỮA -->
-        <div class="col-lg-7">
+        <div class="col-lg-7" style="padding-left: 0px !important;">
             <div class="card shadow-sm border-0">
                 <div class="card-body p-2">
+                    <?php
+                    $isLogin = isset($_SESSION['username']);
+                    ?>
+
                     <?php if ($doc['file_type'] === 'pdf'): ?>
-                        <iframe src="<?= $filePath ?>" width="100%" height="850" style="border:none;"></iframe>
+
+                        <?php if ($isLogin): ?>
+                            <iframe src="<?= $filePath ?>" width="100%" height="850" style="border:none;"></iframe>
+                        <?php else: ?>
+                            <iframe src="<?= $filePath ?>#toolbar=0&navpanes=0&scrollbar=0" width="100%" height="850" style="border:none;"></iframe>
+                        <?php endif; ?>
+
                     <?php else: ?>
                         <div class="alert alert-info">
                             File không hỗ trợ xem trực tiếp.
-                            <a href="<?= $filePath ?>" download>Tải về</a>
+                            <?php if ($isLogin): ?>
+                                <a href="<?= $filePath ?>" download>Tải về</a>
+                            <?php else: ?>
+                                <span class="text-danger">Vui lòng đăng nhập để tải file</span>
+                            <?php endif; ?>
                         </div>
                     <?php endif; ?>
                 </div>
+
             </div>
         </div>
 
@@ -165,7 +201,7 @@ $thumbnail = !empty($doc['thumbnail'])
             $docId = (int)$document_id;
             $subId = (int)$doc['subcategory_id'];
 
-            // Lấy tài liệu cùng DANH MỤC LỚN (category)
+            // Lấy tài liệu cùng chủ đề
             $sqlRelated = " SELECT d.document_id, d.title, d.thumbnail, d.file_type FROM documents d
                     INNER JOIN subcategories s ON d.subcategory_id = s.subcategory_id
                     WHERE s.category_id = (
@@ -175,7 +211,7 @@ $thumbnail = !empty($doc['thumbnail'])
                         LIMIT 1
                     )
                 AND d.document_id != $docId
-                AND d.status = 0
+                AND d.status = 'approved' AND d.is_visible = 1
                 ORDER BY RAND()
                 LIMIT 7";
 
@@ -195,9 +231,20 @@ $thumbnail = !empty($doc['thumbnail'])
                                 <div class="small fw-semibold">
                                     <?= htmlspecialchars($r['title']) ?>
                                 </div>
-                                <span class="badge bg-secondary">
-                                    <?= strtoupper($r['file_type']) ?>
-                                </span>
+                                <div class="d-flex mt-1">
+                                    <div class="bg-danger text-white small" style="padding: 4px 4px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-right: 5px;">
+                                        <?= strtoupper($r['file_type']) ?>
+                                    </div>
+                                    <?php if ($pageCount > 0): ?>
+                                        <span class="text-muted small">  
+                                            <?= $pageCount ?> trang
+                                        </span>
+                                    <?php endif; ?>
+                                    <button
+                                        class="btn btn-small btn-light btn-save ms-auto" data-id="<?= $r['document_id'] ?>" style="margin-right: 20px;">
+                                        <i class="<?= $isSaved ? 'fas' : 'far' ?> fa-bookmark d-block mb-1" style="font-size: 17px;"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </a>
@@ -228,7 +275,7 @@ $thumbnail = !empty($doc['thumbnail'])
                     <a target="_blank"
                         href="https://www.facebook.com/sharer/sharer.php?u=<?= urlencode('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']) ?>"
                         class="btn">
-                         <img src="assets/img/facebook.png" width="45" height="45">
+                        <img src="assets/img/facebook.png" width="45" height="45">
                     </a>
 
                     <!-- Zalo -->

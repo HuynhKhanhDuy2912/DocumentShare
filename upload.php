@@ -2,67 +2,73 @@
 session_start();
 include 'config.php';
 
-// 1. KIỂM TRA ĐĂNG NHẬP
+/* ================== 1. KIỂM TRA ĐĂNG NHẬP ================== */
 if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit();
 }
 $current_user = $_SESSION['username'];
 
-// 2. XỬ LÝ LOGIC XÓA & ẨN/HIỆN (Giữ nguyên phần Prepared Statement của bạn)
+/* ================== 2. XÓA TÀI LIỆU ================== */
 if (isset($_GET['delete_id'])) {
     $id = intval($_GET['delete_id']);
-    $stmt = $conn->prepare("SELECT file_path FROM document_uploads WHERE document_id = ? AND username = ?");
+
+    $stmt = $conn->prepare("SELECT file_path FROM documents WHERE document_id = ? AND username = ?");
     $stmt->bind_param("is", $id, $current_user);
     $stmt->execute();
     $res = $stmt->get_result();
     $doc = $res->fetch_assoc();
 
     if ($doc) {
-        if (!empty($doc['file_path']) && file_exists($doc['file_path'])) {
-            unlink($doc['file_path']); 
+        // Đường dẫn đầy đủ đến file
+        $full_path = "uploads/documents/" . $doc['file_path'];
+        if (!empty($doc['file_path']) && file_exists($full_path)) {
+            @unlink($full_path);
         }
-        $del = $conn->prepare("DELETE FROM document_uploads WHERE document_id = ?");
-        $del->bind_param("i", $id);
-        if ($del->execute()) {
-            echo "<script>alert('Đã xóa tài liệu thành công!'); window.location.href='manage_documents.php';</script>";
-            exit(); 
-        }
+
+        $del = $conn->prepare("DELETE FROM documents WHERE document_id = ? AND username = ?");
+        $del->bind_param("is", $id, $current_user);
+        $del->execute();
+
+        echo "<script>alert('Đã xóa tài liệu thành công!'); window.location.href='upload.php';</script>";
+        exit();
     }
 }
 
-if (isset($_GET['toggle_status']) && isset($_GET['id'])) {
-    $id = intval($_GET['id']);
-    $new_status = intval($_GET['toggle_status']); 
-    $up = $conn->prepare("UPDATE document_uploads SET status = ? WHERE document_id = ? AND username = ?");
-    $up->bind_param("iis", $new_status, $id, $current_user);
-    $up->execute();
-    header("Location: manage_documents.php");
-    exit();
-}
-
-// 3. LOGIC PHÂN TRANG & TÌM KIẾM
-$search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : "";
-$limit = 10; 
-$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+/* ================== 3. PHÂN TRANG + TÌM KIẾM ================== */
+$search = isset($_GET['search']) ? trim($_GET['search']) : "";
+$limit = 10;
+$page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 $offset = ($page - 1) * $limit;
 
-$sql_count = "SELECT COUNT(*) as total FROM document_uploads WHERE username = '$current_user' AND title LIKE '%$search%'";
-$count_res = mysqli_query($conn, $sql_count);
-$total_docs = mysqli_fetch_assoc($count_res)['total'];
+$sql_count = "SELECT COUNT(*) AS total FROM documents WHERE username = ? AND title LIKE ?";
+$stmt_count = $conn->prepare($sql_count);
+$like = "%$search%";
+$stmt_count->bind_param("ss", $current_user, $like);
+$stmt_count->execute();
+$total_docs = $stmt_count->get_result()->fetch_assoc()['total'];
 $total_pages = ceil($total_docs / $limit);
 
-// 4. TRUY VẤN DỮ LIỆU (JOIN lấy tên từ 2 bảng danh mục)
-$sql = "SELECT d.*, c.name as cate_name, sc.name as subcate_name 
-        FROM document_uploads d 
-        LEFT JOIN categories c ON d.category_id = c.category_id 
-        LEFT JOIN subcategories sc ON d.subcategory_id = sc.subcategory_id 
-        WHERE d.username = '$current_user' AND d.title LIKE '%$search%'
-        ORDER BY d.document_id DESC 
-        LIMIT $offset, $limit";
-$result_docs = mysqli_query($conn, $sql);
+/* ================== 4. LẤY DANH SÁCH TÀI LIỆU ================== */
+$sql = "
+SELECT 
+    d.*,
+    sc.name AS subcate_name
+    FROM documents d
+    LEFT JOIN subcategories sc ON d.subcategory_id = sc.subcategory_id
+    WHERE d.username = ?
+    AND d.title LIKE ?
+    ORDER BY d.document_id DESC
+    LIMIT ?, ?
+";
 
-function formatSizeUnits($bytes) {
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("ssii", $current_user, $like, $offset, $limit);
+$stmt->execute();
+$result_docs = $stmt->get_result();
+
+function formatSizeUnits($bytes)
+{
     if ($bytes >= 1048576) return number_format($bytes / 1048576, 2) . ' MB';
     if ($bytes >= 1024) return number_format($bytes / 1024, 2) . ' KB';
     return $bytes . ' bytes';
@@ -72,116 +78,104 @@ function formatSizeUnits($bytes) {
 <?php include("header.php"); ?>
 
 <div class="container" style="margin-top: 110px; margin-bottom: 60px;">
-    
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="fw-bold text-primary mb-0"><i class="fa fa-folder-open me-2"></i>Quản lý tài liệu</h2>
-            <p class="text-muted small">Tối ưu hóa quy trình lưu trữ và chia sẻ kiến thức của bạn.</p>
+            <h2 class="fw-bold text-primary mb-0"><i class="fa fa-folder-open me-2"></i>Tài liệu của tôi</h2>
+            <p class="text-muted small">Quản lý và theo dõi trạng thái các tài liệu bạn đã chia sẻ.</p>
         </div>
-        <a href="upload_document.php" class="btn btn-success px-2 fw-bold shadow-sm">
+        <a href="upload_document.php" class="btn btn-success fw-bold shadow-sm">
             <i class="fa fa-cloud-arrow-up"></i> Đăng tài liệu mới
         </a>
     </div>
 
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body bg-light rounded">
-            <form action="" method="GET" class="row g-2">
+            <form method="GET" class="row g-2">
                 <div class="col-md-10">
-                    <div class="input-group">
-                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
-                        <input type="text" name="search" class="form-control border-start-0" placeholder="Nhập tên tài liệu cần tìm..." value="<?= htmlspecialchars($search) ?>">
-                    </div>
+                    <input type="text" name="search" class="form-control" placeholder="Tìm kiếm tài liệu của bạn..." value="<?= htmlspecialchars($search) ?>">
                 </div>
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-dark w-100 fw-bold">Tìm kiếm</button>
+                    <button class="btn btn-dark w-100 fw-bold">Tìm kiếm</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div class="card border-0 shadow-sm overflow-hidden">
+    <div class="card border-0 shadow-sm">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead class="bg-primary text-white">
-                    <tr>
-                        <th class="ps-3 py-3">ID</th>
-                        <th style="width: 25%;">Tên tài liệu</th>
-                        <th>Danh mục</th>
-                        <th>Danh mục con</th>
-                        <th class="text-center">Trạng thái</th>
+                    <tr class="text-center">
+                        <th>Ảnh</th>
+                        <th>Tên tài liệu</th>
+                        <th>Môn học</th>
+                        <th>Kiểm duyệt</th>
+                        <th>Hiển thị</th>
                         <th>Thống kê</th>
-                        <th class="text-end pe-3">Hành động</th>
+                        <th>Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if (mysqli_num_rows($result_docs) > 0): ?>
-                        <?php while ($row = mysqli_fetch_assoc($result_docs)): ?>
-                            <tr>
-                                <td class="ps-3 text-muted"><?= $row['document_id'] ?></td>
+                    <?php if ($result_docs->num_rows > 0): ?>
+                        <?php while ($row = $result_docs->fetch_assoc()): ?>
+                            <tr class="text-center">
                                 <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="me-2 fs-3 text-danger"><i class="bi bi-file-earmark-pdf-fill"></i></div>
-                                        <div class="text-truncate" style="max-width: 200px;">
-                                            <div class="fw-bold text-dark"><?= htmlspecialchars($row['title']) ?></div>
-                                            <small class="text-muted"><?= strtoupper($row['file_type']) ?> • <?= formatSizeUnits($row['file_size']) ?></small>
-                                        </div>
-                                    </div>
+                                    <?php
+                                    // Kiểm tra nếu có ảnh trong DB, nếu không dùng ảnh mặc định
+                                    $thumb_path = !empty($row['thumbnail']) ? "uploads/thumbnails/" . $row['thumbnail'] : "assets/img/default-document.jpg";
+                                    ?>
+                                    <img src="<?= $thumb_path ?>" width="50" height="70" style="object-fit: cover;" class="border rounded shadow-sm">
                                 </td>
-                                
                                 <td>
-                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill">
-                                        <i class="bi bi-tag-fill me-1"></i><?= htmlspecialchars($row['cate_name'] ?? 'Chưa rõ') ?>
-                                    </span>
+                                    <strong><?= htmlspecialchars($row['title']) ?></strong><br>
+                                    <small class="text-muted"><?= strtoupper($row['file_type']) ?> • <?= formatSizeUnits($row['file_size']) ?></small>
                                 </td>
-
-                                <td>
-                                    <span class="badge bg-light text-dark border rounded-pill">
-                                        <i class="bi bi-diagram-2 me-1"></i><?= htmlspecialchars($row['subcate_name'] ?? 'Không có') ?>
-                                    </span>
-                                </td>
+                                <td><?= htmlspecialchars($row['subcate_name'] ?? 'Chưa phân loại') ?></td>
 
                                 <td class="text-center">
-                                    <?php if ($row['status'] == 1): ?>
-                                        <a href="?toggle_status=0&id=<?= $row['document_id'] ?>" class="badge bg-success text-decoration-none shadow-sm" onclick="return confirm('Ẩn tài liệu này?');">
-                                            <i class="bi bi-check-circle"></i> Hiển thị
-                                        </a>
+                                    <?php if ($row['status'] == 'approved'): ?>
+                                        <span class="badge bg-success">Đã duyệt</span>
+                                    <?php elseif ($row['status'] == 'rejected'): ?>
+                                        <span class="badge bg-danger">Từ chối</span>
                                     <?php else: ?>
-                                        <a href="?toggle_status=1&id=<?= $row['document_id'] ?>" class="badge bg-warning text-dark text-decoration-none shadow-sm" onclick="return confirm('Công khai tài liệu này?');">
-                                            <i class="bi bi-eye-slash"></i> Đang ẩn
-                                        </a>
+                                        <span class="badge bg-info">Chờ duyệt</span>
                                     <?php endif; ?>
                                 </td>
 
-                                <td>
-                                    <small class="d-block text-muted text-nowrap"><i class="bi bi-eye"></i> <?= $row['views'] ?> xem</small>
-                                    <small class="d-block text-muted text-nowrap"><i class="bi bi-download"></i> <?= $row['shares'] ?> tải</small>
+                                <td class="text-center">
+                                    <?php if ($row['is_visible'] == 1): ?>
+                                        <span class="text-success" title="Tài liệu đang hiển thị trên hệ thống">
+                                            <i class="fa fa-eye"></i> Hiển thị
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="text-secondary" title="Tài liệu này đang bị ẩn">
+                                            <i class="fa fa-eye-slash"></i> Đang ẩn
+                                        </span>
+                                    <?php endif; ?>
                                 </td>
 
-                                <td class="text-end pe-3">
-                                    <div class="btn-group shadow-sm">
-                                        <a href="documentOfUser_detail.php?id=<?= $row['document_id'] ?>" class="btn btn-sm btn-outline-info" title="Xem chi tiết">
-                                            <i class="bi bi-info-circle"></i> Chi tiết
-                                        </a>
-                                        <a href="<?= $row['file_path'] ?>" target="_blank" class="btn btn-sm btn-outline-secondary" title="Tải file">
-                                            <i class="bi bi-download"></i> Tải
-                                        </a>
-                                        <a href="edit_document.php?id=<?= $row['document_id'] ?>" class="btn btn-sm btn-outline-primary" title="Sửa">
-                                            <i class="bi bi-pencil"></i> Sửa
-                                        </a>
-                                        <a href="?delete_id=<?= $row['document_id'] ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Xóa vĩnh viễn?');" title="Xóa">
-                                            <i class="bi bi-trash"></i> Xóa
-                                        </a>
-                                    </div>
+                                <td style="font-size: 16px;">
+                                    <small style="margin-right: 10px;"><i class="far fa-eye"></i> <?= $row['views'] ?> xem</small>
+                                    <small><i class="fas fa-download"></i> <?= $row['downloads'] ?> tải</small>
+                                </td>
+
+                                <td>
+                                    <a href="download.php?id=<?= $row['document_id'] ?>" class="btn btn-sm btn-outline-secondary" title="Tải về"><i class="fa fa-download"></i></a>
+                                    <a href="edit_document.php?id=<?= $row['document_id'] ?>" class="btn btn-sm btn-outline-primary" title="Sửa"><i class="fa fa-edit"></i></a>
+                                    <a href="?delete_id=<?= $row['document_id'] ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Xóa vĩnh viễn tài liệu này?')" title="Xóa"><i class="fa fa-trash"></i></a>
                                 </td>
                             </tr>
                         <?php endwhile; ?>
                     <?php else: ?>
-                        <tr><td colspan="7" class="text-center py-5 text-muted">Không tìm thấy tài liệu nào.</td></tr>
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-5">Bạn chưa có tài liệu nào.</td>
+                        </tr>
                     <?php endif; ?>
                 </tbody>
             </table>
         </div>
     </div>
-    </div>
+</div>
 
 <?php include("footer.php"); ?>

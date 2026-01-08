@@ -27,7 +27,7 @@ $subcategory = mysqli_fetch_assoc($sub_res);
 
 // Lấy tài liệu theo danh mục con
 $doc_sql = "SELECT * FROM documents 
-            WHERE subcategory_id = $sub_id AND status = 0
+            WHERE subcategory_id = $sub_id AND status = 'approved' AND is_visible = 1
             ORDER BY document_id DESC";
 $doc_res = mysqli_query($conn, $doc_sql);
 ?>
@@ -47,7 +47,7 @@ $doc_res = mysqli_query($conn, $doc_sql);
                 $thumb = !empty($doc['thumbnail'])
                     ? "uploads/thumbnails/" . $doc['thumbnail']
                     : "assets/img/default-document.jpg";
-                
+
                 // Xác định màu sắc badge dựa trên loại file
                 $badge_class = 'bg-danger'; // Mặc định cho PDF
                 if ($doc['file_type'] == 'docx' || $doc['file_type'] == 'doc') $badge_class = 'bg-primary';
@@ -62,7 +62,7 @@ $doc_res = mysqli_query($conn, $doc_sql);
                                 </span>
                                 <img src="<?= $thumb ?>" class="doc-thumb" alt="<?= htmlspecialchars($doc['title']) ?>">
                             </div>
-                            
+
                             <div class="card-body">
                                 <h6 class="doc-title fw-bold mb-2">
                                     <?= htmlspecialchars($doc['title']) ?>
@@ -78,18 +78,17 @@ $doc_res = mysqli_query($conn, $doc_sql);
                             </div>
                         </a>
                         <div class="card-footer bg-transparent border-0 pb-3 pt-0">
-                            <a href="document_detail.php?id=<?= $doc['document_id'] ?>" 
-                               class="btn btn-outline-primary btn-sm w-100 rounded-pill">
-                               Xem chi tiết
+                            <a href="document_detail.php?id=<?= $doc['document_id'] ?>"
+                                class="btn btn-outline-primary btn-sm w-100 rounded-pill">
+                                Xem chi tiết
                             </a>
                         </div>
                     </div>
                 </div>
             <?php endwhile; ?>
         <?php else: ?>
-            <div class="col-12 py-5 text-center">
-                <img src="assets/img/empty.png" alt="Empty" style="width: 150px; opacity: 0.5;">
-                <p class="text-muted mt-3">Chưa có tài liệu nào trong danh mục này.</p>
+            <div class="col-lg-12 py-5 text-center">
+                <p class="text-muted mt-3" style="font-size: 18px;">Chưa có tài liệu nào trong danh mục này.</p>
             </div>
         <?php endif; ?>
     </div>

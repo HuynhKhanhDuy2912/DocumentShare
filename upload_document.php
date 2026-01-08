@@ -2,136 +2,181 @@
 session_start();
 include 'config.php';
 
-// 1. KIỂM TRA ĐĂNG NHẬP
+/* =========================
+1. KIỂM TRA ĐĂNG NHẬP
+========================= */
 if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit();
 }
 $current_user = $_SESSION['username'];
+$user_role    = (isset($_SESSION['role']) && !empty($_SESSION['role'])) ? $_SESSION['role'] : 'user';
 
-// 2. LẤY DANH SÁCH DANH MỤC CHA (status = 0)
+/* =========================
+2. LẤY CHỦ ĐỀ
+========================= */
 $sql_categories = "SELECT category_id, name FROM categories WHERE status = 0 ORDER BY name ASC";
 $result_categories = mysqli_query($conn, $sql_categories);
 
-// 3. XỬ LÝ LOGIC KHI NHẤN "TẢI LÊN NGAY"
+/* =========================
+3. XỬ LÝ UPLOAD
+========================= */
 $error_msg = "";
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['document_file'])) {
-    $title = mysqli_real_escape_string($conn, $_POST['title']);
-    $category_id = intval($_POST['category_id']);
-    $subcategory_id = intval($_POST['subcategory_id']); 
-    $description = mysqli_real_escape_string($conn, $_POST['description']);
-    
-    $file = $_FILES['document_file'];
-    $file_ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-    $file_name = time() . '_' . uniqid() . '.' . $file_ext;
-    $target_dir = "uploads/documents/";
-    $target_file = $target_dir . $file_name;
-    $file_size = $file['size'];
 
-    $upload_ok = true;
-    $allowed_types = ['pdf', 'doc', 'docx', 'zip', 'rar', 'txt', 'jpg', 'png'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['document_file'])) {
 
-    if (!in_array($file_ext, $allowed_types)) {
-        $upload_ok = false;
-        $error_msg = "Định dạng file .$file_ext không được hỗ trợ.";
-    }
+    $title          = trim($_POST['title']);
+    $description    = trim($_POST['description']);
+    $subcategory_id = intval($_POST['subcategory_id']);
 
-    if ($file_size > 20 * 1024 * 1024) {
-        $upload_ok = false;
-        $error_msg = "Dung lượng tối đa cho phép là 20MB.";
-    }
+    if ($subcategory_id <= 0) {
+        $error_msg = "Vui lòng chọn đầy đủ chủ đề và môn học.";
+    } else {
+        $file      = $_FILES['document_file'];
+        $file_ext  = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $file_size = $file['size'];
 
-    if ($upload_ok) {
-        if (!is_dir($target_dir)) mkdir($target_dir, 0777, true);
+        $allowed_types = ['pdf', 'doc', 'docx', 'zip', 'rar', 'txt', 'jpg', 'png'];
+        $max_size = 20 * 1024 * 1024;
 
-        if (move_uploaded_file($file['tmp_name'], $target_file)) {
-            // Cập nhật câu lệnh SQL lưu cả subcategory_id
-            $stmt = $conn->prepare("INSERT INTO document_uploads (title, description, category_id, subcategory_id, username, file_path, file_type, file_size, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, NOW())");
-            $stmt->bind_param("ssiisssi", $title, $description, $category_id, $subcategory_id, $current_user, $target_file, $file_ext, $file_size);
-            
-            if ($stmt->execute()) {
-                echo "<script>alert('Tải lên thành công!'); window.location.href='upload.php';</script>";
-                exit();
-            } else {
-                $error_msg = "Lỗi database: " . $conn->error;
-            }
+        if (!in_array($file_ext, $allowed_types)) {
+            $error_msg = "Định dạng file tài liệu .$file_ext không được hỗ trợ.";
+        } elseif ($file_size > $max_size) {
+            $error_msg = "Dung lượng file tài liệu tối đa 20MB.";
         } else {
-            $error_msg = "Không thể di chuyển file vào thư mục lưu trữ.";
+
+            // --- XỬ LÝ ẢNH ĐẠI DIỆN ---
+            $thumbnail_name = "";
+            if (!empty($_FILES['thumbnail']['name'])) {
+                $thumb = $_FILES['thumbnail'];
+                $thumbnail_name = time() . "_thumb_" . uniqid() . "." . strtolower(pathinfo($thumb['name'], PATHINFO_EXTENSION));
+                move_uploaded_file($thumb['tmp_name'], "uploads/thumbnails/" . $thumbnail_name);
+            }
+
+            // --- XỬ LÝ FILE TÀI LIỆU ---
+            $file_name_db = time() . "_" . uniqid() . "." . $file_ext;
+            $file_path_full = "uploads/documents/" . $file_name_db;
+
+            if (move_uploaded_file($file['tmp_name'], $file_path_full)) {
+
+                $status = 'pending'; // Trạng thái mặc định
+                $is_visible = 0;     // Ẩn mặc định
+                $share_link = $file_name_db; // share_link bằng tên file theo yêu cầu
+
+                // Câu lệnh SQL 12 tham số (?)
+                $sql = "INSERT INTO documents
+                        (title, description, thumbnail, file_path, file_type, file_size, share_link, 
+                         subcategory_id, status, is_visible, username, uploader_role, views, downloads, created_at)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, NOW())";
+
+                $stmt = $conn->prepare($sql);
+
+                /* --- SỬA LỖI TẠI ĐÂY: Chuỗi định dạng sssssisisiss (12 ký tự) --- */
+                // 1.title(s), 2.desc(s), 3.thumb(s), 4.path(s), 5.type(s), 6.size(i)
+                // 7.link(s), 8.sub_id(i), 9.status(s), 10.visible(i), 11.user(s), 12.role(s)
+                $stmt->bind_param(
+                    "sssssisisiss",
+                    $title,          // 1
+                    $description,    // 2
+                    $thumbnail_name, // 3
+                    $file_name_db,   // 4
+                    $file_ext,       // 5
+                    $file_size,      // 6 (i)
+                    $share_link,     // 7
+                    $subcategory_id, // 8 (i)
+                    $status,         // 9
+                    $is_visible,     // 10 (i)
+                    $current_user,   // 11
+                    $user_role       // 12
+                );
+
+                if ($stmt->execute()) {
+                    echo "<script>alert('Đăng tài liệu thành công!');location.href='upload.php';</script>";
+                    exit();
+                } else {
+                    $error_msg = "Lỗi CSDL: " . $stmt->error;
+                }
+            }
         }
     }
 }
+
+// Sửa lỗi hiển thị danh sách bên dưới
+$sql_list = "SELECT d.*, sc.name as subcate_name FROM documents d 
+             LEFT JOIN subcategories sc ON d.subcategory_id = sc.subcategory_id 
+             WHERE d.username = '$current_user' ORDER BY d.document_id DESC";
+$result_docs = mysqli_query($conn, $sql_list);
+
+function formatSizeUnits($bytes)
+{
+    if ($bytes >= 1048576) return number_format($bytes / 1048576, 2) . ' MB';
+    if ($bytes >= 1024) return number_format($bytes / 1024, 2) . ' KB';
+    return $bytes . ' bytes';
+}
 ?>
 
-<?php include("header.php"); ?>
+<?php include "header.php"; ?>
 
-<div class="upload-page-wrapper">
+<div class="upload-page-wrapper mrt">
     <div class="container mb-5">
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <div class="card shadow-lg border-0 main-upload-card">
-                    <div class="card-header bg-white py-4 border-bottom text-center">
-                        <h2 class="fw-bold mb-0">
-                            <i class="fa fa-cloud-upload-alt me-2"></i>Đăng tài liệu mới
-                        </h2>
-                        <p class="text-muted mt-2">Chia sẻ kiến thức của bạn với cộng đồng DocumentShare</p>
+                    <div class="card-header text-center bg-white py-4  text-primary">
+                        <h3 class="fw-bold"><i class="fa fa-cloud-upload-alt"></i> Đăng tài liệu</h3>
+                        <p class="text-muted">Chia sẻ kiến thức của bạn với cộng đồng</p>
                     </div>
-                    
+
                     <div class="card-body p-4 p-md-5">
-                        <?php if(!empty($error_msg)): ?>
-                            <div class="alert alert-danger d-flex align-items-center mb-4 shadow-sm" role="alert">
-                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                                <div><?= $error_msg ?></div>
-                            </div>
+                        <?php if ($error_msg): ?>
+                            <div class="alert alert-danger"><?= $error_msg ?></div>
                         <?php endif; ?>
 
-                        <form action="" method="POST" enctype="multipart/form-data">
+                        <form method="POST" enctype="multipart/form-data">
                             <div class="mb-4">
-                                <label class="form-label fw-bold">Tiêu đề tài liệu <span class="text-danger">*</span></label>
-                                <input type="text" name="title" class="form-control custom-input" placeholder="Ví dụ: Đồ án tốt nghiệp Công nghệ thông tin" required>
+                                <label class="fw-bold">Tiêu đề tài liệu *</label>
+                                <input type="text" name="title" class="form-control custom-input" placeholder="Ví dụ: Đề thi mẫu môn Lập trình PHP" required>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-6 mb-4">
-                                    <label class="form-label fw-bold">Danh mục <span class="text-danger">*</span></label>
+                                    <label class="fw-bold">Chủ đề *</label>
                                     <select name="category_id" id="category_id" class="form-select custom-select-style" required>
-                                        <option value="">-- Chọn danh mục --</option>
-                                        <?php if ($result_categories): ?>
-                                            <?php while($cate = mysqli_fetch_assoc($result_categories)): ?>
-                                                <option value="<?= $cate['category_id'] ?>">
-                                                    <?= htmlspecialchars($cate['name']) ?>
-                                                </option>
-                                            <?php endwhile; ?>
-                                        <?php endif; ?>
+                                        <option value="" disabled selected>-- Chọn chủ đề --</option>
+                                        <?php while ($row = mysqli_fetch_assoc($result_categories)): ?>
+                                            <option value="<?= $row['category_id'] ?>"><?= htmlspecialchars($row['name']) ?></option>
+                                        <?php endwhile; ?>
                                     </select>
                                 </div>
 
                                 <div class="col-md-6 mb-4">
-                                    <label class="form-label fw-bold">Danh mục con <span class="text-danger">*</span></label>
-                                    <select name="subcategory_id" id="subcategory_id" class="form-select custom-select-style" required>
-                                        <option value="">-- Chọn danh mục cha trước --</option>
+                                    <label class="fw-bold">Môn học *</label>
+                                    <select name="subcategory_id" id="subcategory_id" class="form-select custom-select-style" required disabled>
+                                        <option value="" disabled selected>-- Chọn môn học --</option>
                                     </select>
                                 </div>
                             </div>
 
-                            <div class="row">
-                                <div class="col-md-12 mb-4">
-                                    <label class="form-label fw-bold">Chọn tệp tin <span class="text-danger">*</span></label>
-                                    <input type="file" name="document_file" class="form-control custom-input" required>
-                                    <div class="form-text mt-2 text-muted">Hỗ trợ: PDF, DOCX, ZIP, JPG (Tối đa 20MB)</div>
-                                </div>
+                            <div class="mb-4">
+                                <label class="fw-bold">Ảnh đại diện tài liệu</label>
+                                <input type="file" name="thumbnail" class="form-control custom-input" accept="image/*">
                             </div>
 
                             <div class="mb-4">
-                                <label class="form-label fw-bold">Mô tả tài liệu</label>
-                                <textarea name="description" class="form-control custom-input" rows="5" placeholder="Ghi chú ngắn gọn về nội dung chính của tài liệu..."></textarea>
+                                <label class="fw-bold">Tệp tài liệu *</label>
+                                <input type="file" name="document_file" class="form-control custom-input" required>
+                                <div class="form-text small">Hỗ trợ: PDF, DOCX,... tối đa 20MB.</div>
                             </div>
 
-                            <div class="d-flex gap-2 mt-5">                                
-                                <a href="upload.php" class="btn btn-small btn-secondary    fw-bold text-decoration-none">
-                                    <i class="fa fa-arrow-left"></i> Quay lại
-                                </a>
-                                <button type="submit" class="btn btn-success btn-small fw-bold shadow-sm py-2 btn-submit-upload ms-auto">
-                                    <i class="fa fa-upload me-2"></i>Tải lên và Chia sẻ ngay
+                            <div class="mb-4">
+                                <label class="fw-bold">Mô tả</label>
+                                <textarea name="description" class="form-control custom-input" rows="4" placeholder="Viết mô tả ngắn gọn giúp mọi người dễ tìm kiếm hơn..."></textarea>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-4">
+                                <a href="upload.php" class="btn btn-secondary">Quay lại</a>
+                                <button class="btn btn-success px-4">
+                                    <i class="fa fa-upload"></i> Tải lên ngay
                                 </button>
                             </div>
                         </form>
@@ -139,83 +184,59 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['document_file'])) {
                 </div>
             </div>
         </div>
+
+        <div class="card mt-5 border-0 shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-primary text-white">
+                        <tr class="text-center">
+                            <th>Ảnh</th>
+                            <th>Tên tài liệu</th>
+                            <th>Chuyên mục</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php while ($row = mysqli_fetch_assoc($result_docs)): ?>
+                            <tr class="text-center">
+                                <td><img src="<?= !empty($row['thumbnail']) ? 'uploads/thumbnails/' . $row['thumbnail'] : 'assets/img/default.png' ?>" width="40"></td>
+                                <td class="text-start">
+                                    <strong><?= htmlspecialchars($row['title']) ?></strong><br>
+                                    <small class="text-muted"><?= strtoupper($row['file_type']) ?> • <?= isset($row['file_size']) ? formatSizeUnits($row['file_size']) : '0 bytes' ?></small>
+                                </td>
+                                <td><?= htmlspecialchars($row['subcate_name'] ?? 'Chưa rõ') ?></td>
+                                <td><span class="badge bg-warning"><?= $row['status'] ?></span></td>
+                                <td><a href="edit_document.php?id=<?= $row['document_id'] ?>" class="btn btn-sm btn-outline-primary"><i class="fa fa-edit"></i></a></td>
+                            </tr>
+                        <?php endwhile; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 
-<style>
-    /* Tổng thể trang */
-    body { background-color: #f0f2f5; }
-    
-    /* Wrapper để fix lỗi Header Fixed đè nội dung */
-    .upload-page-wrapper {
-        padding-top: 130px; /* Khoảng cách an toàn dưới Header */
-        min-height: 100vh;
-    }
-
-    /* Tùy chỉnh Card */
-    .main-upload-card {
-        border-radius: 20px;
-        overflow: hidden;
-    }
-
-    /* FIX LỖI Ô CHỌN BỊ MẤT NỬA & STYLE ĐỒNG BỘ */
-    .custom-input, .custom-select-style {
-        border: 1px solid #ced4da !important;
-        border-radius: 12px !important;
-        padding: 12px 18px !important;
-        font-size: 15px !important;
-        height: auto !important; /* Quan trọng: để ô không bị bóp nghẹt */
-        line-height: 1.6 !important;
-        transition: all 0.2s ease;
-    }
-
-    .custom-input:focus, .custom-select-style:focus {
-        border-color: #0d6efd !important;
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.08) !important;
-        outline: none;
-    }
-
-    /* Nút bấm xanh lá cây phong cách hiện đại */
-    .btn-submit-upload {
-        background-color: #198754;
-        border: none;
-        border-radius: 12px;
-        transition: all 0.3s ease;
-    }
-    .btn-submit-upload:hover {
-        background-color: #157347;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(25, 135, 84, 0.3) !important;
-    }
-</style>
-
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const categorySelect = document.getElementById('category_id');
-    const subcategorySelect = document.getElementById('subcategory_id');
-
-    categorySelect.addEventListener('change', function() {
-        const categoryId = this.value;
-
-        // Reset ô danh mục con và hiện trạng thái tải
-        subcategorySelect.innerHTML = '<option value="">Đang tải dữ liệu...</option>';
-
-        if (categoryId !== "") {
-            // Fetch API để gọi file xử lý ngầm
-            fetch('get_subcategories.php?category_id=' + categoryId)
-                .then(response => response.text())
-                .then(data => {
-                    subcategorySelect.innerHTML = data;
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    subcategorySelect.innerHTML = '<option value="">Lỗi tải danh mục!</option>';
-                });
-        } else {
-            subcategorySelect.innerHTML = '<option value="">-- Chọn danh mục cha trước --</option>';
+    document.getElementById('category_id').addEventListener('change', function() {
+        const id = this.value;
+        const sub = document.getElementById('subcategory_id');
+        if (!id) {
+            sub.innerHTML = '<option value="">-- Chọn môn học --</option>';
+            sub.disabled = true;
+            return;
         }
+        sub.disabled = false;
+        sub.innerHTML = '<option>Đang tải dữ liệu...</option>';
+        fetch('get_subcategories.php?category_id=' + id)
+            .then(res => res.text())
+            .then(html => {
+                sub.innerHTML = html;
+            })
+            .catch(() => {
+                sub.innerHTML = '<option>Lỗi tải dữ liệu</option>';
+            });
     });
-});
 </script>
 
-<?php include("footer.php"); ?>
+<?php include "footer.php"; ?>

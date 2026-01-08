@@ -21,7 +21,7 @@ while ($row = mysqli_fetch_assoc($result)) {
     $banners[] = $row;
 }
 
-$document_id = (int)$_GET['id'];
+$document_id = (int)($_GET['id'] ?? 0);
 
 // Kiểm tra tài liệu đã được lưu chưa
 $isSaved = false;
@@ -58,9 +58,9 @@ if (isset($_SESSION['username'])) {
 }
 
 $sqlFeatured = "
-    SELECT * 
-    FROM documents 
-    WHERE status = 0 
+    SELECT * FROM documents 
+    WHERE status = 'approved' 
+      AND is_visible = 1
       AND downloads > 0
     ORDER BY downloads DESC
 ";
@@ -75,7 +75,7 @@ while ($row = mysqli_fetch_assoc($rsFeatured)) {
 ?>
 
 <!-- CAROUSEL -->
-<div class="bg" style="margin-top: 33px; background-color: #0080ffff; padding: 10px;">
+<div class="bg" style="margin-top: 80px; background-color: #0080ffff; padding: 10px;">
     <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
 
@@ -186,24 +186,18 @@ while ($row = mysqli_fetch_assoc($rsFeatured)) {
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-4">
         <?php
-        $sql = "SELECT * FROM documents WHERE status = 0 ORDER BY document_id DESC LIMIT 30";
-        $result = mysqli_query($conn, $sql);
+        $sqlLatest = "SELECT * FROM documents WHERE status = 'approved' AND is_visible = 1 ORDER BY document_id DESC LIMIT 30";
+        $resultLatest = mysqli_query($conn, $sqlLatest);
 
-        while ($row = mysqli_fetch_assoc($result)):
+        while ($row = mysqli_fetch_assoc($resultLatest)):
             $isSaved = in_array((int)$row['document_id'], $savedDocs);
-
             $thumb = !empty($row['thumbnail']) ? './uploads/thumbnails/' . $row['thumbnail'] : './assets/img/default-document.jpg';
-
-            $filePath = 'uploads/documents/' . $row['file_path'];
-            $pageCount = 0;
-            if ($row['file_type'] === 'pdf') {
-                $pageCount = countPdfPages($filePath);
-            }
-
-            // Xác định icon dựa trên loại file
             $file_ext = strtolower($row['file_type']);
-            $icon_class = ($file_ext == 'pdf') ? 'bg-danger' : 'bg-primary';
-            $icon_text = ($file_ext == 'pdf') ? 'PDF' : 'W';
+
+            $pageCount = 0;
+            if ($file_ext === 'pdf') {
+                $pageCount = countPdfPages('uploads/documents/' . $row['file_path']);
+            }
         ?>
             <div class="col">
                 <div class="card h-100 border-0 shadow-sm doc-card">
@@ -220,6 +214,8 @@ while ($row = mysqli_fetch_assoc($rsFeatured)) {
                                 <img src="<?= $thumb ?>" alt="Document Cover">
                             </div>
                         </a>
+
+
                     </div>
 
                     <!-- Nội dung -->
@@ -236,18 +232,29 @@ while ($row = mysqli_fetch_assoc($rsFeatured)) {
                             style="font-size: 13px;">
                             <div class="d-flex align-items-center gap-2">
                                 <?php if ($pageCount > 0): ?>
-                                    <span>
-                                        <i class="far fa-file-alt me-1"></i>
+                                    <span class="border p-2 btn-light" style="border-radius: 10px;">
                                         <?= $pageCount ?> trang
+                                        <i class="fas fa-ellipsis-h ms-1 p-1 page-more"
+                                            style="border-radius: 50%; border: solid 1px; cursor: pointer;"
+                                            data-id="<?= $row['document_id'] ?>"
+                                            data-views="<?= $row['views'] ?>"
+                                            data-downloads="<?= $row['downloads'] ?>"
+                                            data-pages="<?= $pageCount ?>"
+                                            data-title="<?= htmlspecialchars($row['title']) ?>"
+                                            data-thumb="<?= $thumb ?>"
+                                            data-desc="<?= htmlspecialchars($row['description'] ?? 'Không có mô tả') ?>"
+                                            data-saved="<?= $isSaved ? 1 : 0 ?>">
+                                        </i>
+
                                     </span>
                                 <?php endif; ?>
                             </div>
-                            <!-- LƯU -->
+                            <!-- Lưu -->
                             <button
                                 class="btn btn-light border btn-save p-1 px-2" data-id="<?= $row['document_id'] ?>">
                                 <i class="<?= $isSaved ? 'fas' : 'far' ?> fa-bookmark fs-5"></i>
                             </button>
-                            <!-- LƯU -->
+
                         </div>
                     </div>
                 </div>
@@ -255,5 +262,37 @@ while ($row = mysqli_fetch_assoc($rsFeatured)) {
         <?php endwhile; ?>
     </div>
 </div>
+
+<!-- OVERLAY -->
+<div id="docOverlay" class="doc-overlay"></div>
+
+<!-- MODAL -->
+<div id="docModal" class="doc-modal">
+    <button class="close-modal"><i class="fas fa-times"></i></button>
+
+    <div class="modal-body d-flex gap-3">
+        <img id="modalThumb" src="" class="modal-thumb">
+
+        <div>
+            <div class="d-flex gap-4 text-muted mt-2 mb-2" style="font-size:14px;">
+                <span><b id="modalPageCount">0</b> trang</span>
+                <span class="dot">•</span>                
+                <span><b id="modalViewCount">0</b> lượt xem</span>
+                <span class="dot">•</span>                
+                <span><b id="modalDownloadCount">0</b> lượt tải</span>                
+            </div>
+
+            <h5 id="modalTitle"></h5>
+            <p id="modalDesc" class="text-muted"></p>
+
+            <div class="modal-actions mt-3">
+                <a id="modalView" class="btn btn-success btn-sm"><i class="far fa-eye"></i> Xem tài liệu</a>
+                <a id="modalDownload" class="btn btn-outline-dark btn-sm"><i class="fas fa-download"></i> Tải xuống</a>
+                <button id="modalSave" class="btn btn-outline-dark btn-sm btn-save"><i class="far fa-bookmark"></i> <span class="save-text">Lưu</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <?php include("footer.php"); ?>

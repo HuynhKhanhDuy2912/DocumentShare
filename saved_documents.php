@@ -15,7 +15,7 @@ $sql = "
     SELECT d.*
     FROM saved_documents s
     INNER JOIN documents d ON s.document_id = d.document_id
-    WHERE s.username = '$username' AND d.status = 0
+    WHERE s.username = '$username' AND status = 'approved' AND is_visible = 1
     ORDER BY s.created_at DESC
 ";
 
@@ -73,7 +73,7 @@ $result = mysqli_query($conn, $sql);
                                 </span>
 
                                 <a href="unsave_document.php?id=<?= $row['document_id'] ?>"
-                                    class="text-danger"    
+                                    class="text-dark"    
                                     onclick="return confirm('Bạn có chắc bỏ lưu tài liệu này?')">
                                     <i class="fas fa-trash" style="font-size: 16px;"></i>
                                 </a>

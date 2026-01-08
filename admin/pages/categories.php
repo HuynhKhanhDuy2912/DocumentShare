@@ -17,9 +17,9 @@ $action = $_GET['action'] ?? '';
 $current_view = ($action === 'add' || $action === 'edit') ? 'form' : 'list';
 
 $page_title = match ($action) {
-    'add' => 'Thêm danh mục mới',
-    'edit' => 'Cập nhật danh mục',
-    default => 'Danh sách danh mục'
+    'add' => 'Thêm chủ đề mới',
+    'edit' => 'Cập nhật chủ đề',
+    default => 'Danh sách chủ đề'
 };
 
 // ------------------------------------------------------
@@ -43,7 +43,7 @@ if (isset($_POST['save_category'])) {
     mysqli_stmt_store_result($check_stmt);
 
     if (mysqli_stmt_num_rows($check_stmt) > 0) {
-        $message = "Tên danh mục <strong>$name</strong> đã tồn tại!";
+        $message = "Tên chủ đề <strong>$name</strong> đã tồn tại!";
         $data = ['category_id' => $id, 'name' => $name, 'description' => $description, 'status' => $status];
         $current_view = "form";
     }
@@ -58,13 +58,13 @@ if (isset($_POST['save_category'])) {
             $sql = "UPDATE categories SET name=?, description=?, status=? WHERE category_id=?";
             $stmt = mysqli_prepare($conn, $sql);
             mysqli_stmt_bind_param($stmt, "ssii", $name, $description, $status, $id);
-            $success_msg = "Cập nhật danh mục thành công!";
+            $success_msg = "Cập nhật chủ đề thành công!";
         } else {
             // THÊM
             $sql = "INSERT INTO categories (name, description, status) VALUES (?, ?, ?)";
             $stmt = mysqli_prepare($conn, $sql);
             mysqli_stmt_bind_param($stmt, "ssi", $name, $description, $status);
-            $success_msg = "Thêm danh mục thành công!";
+            $success_msg = "Thêm chủ đề thành công!";
         }
 
         if (mysqli_stmt_execute($stmt)) {
@@ -89,7 +89,7 @@ if ($action == 'delete' && isset($_GET['id'])) {
     mysqli_stmt_bind_param($stmt, "i", $id);
 
     if (mysqli_stmt_execute($stmt)) {
-        echo "<script>alert('Xóa danh mục thành công!'); window.location.href='?p=categories';</script>";
+        echo "<script>alert('Xóa chủ đề thành công!'); window.location.href='?p=categories';</script>";
         exit;
     } else {
         $message = "Lỗi xóa: " . mysqli_stmt_error($stmt);
@@ -108,7 +108,7 @@ if ($action == 'edit' && isset($_GET['id'])) {
     if ($row = mysqli_fetch_assoc($rs)) {
         $data = $row;
     } else {
-        $message = "Không tìm thấy danh mục!";
+        $message = "Không tìm thấy chủ đề!";
         $current_view = "list";
     }
     mysqli_stmt_close($stmt);
@@ -145,7 +145,7 @@ $is_edit = !empty($data['category_id']);
                 <input type="hidden" name="category_id" value="<?= htmlspecialchars($data['category_id']) ?>">
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold">Tên danh mục *</label>
+                    <label class="form-label fw-bold">Tên chủ đề *</label>
                     <input type="text" name="name" class="form-control"
                         value="<?= htmlspecialchars($data['name']) ?>" required>
                 </div>
@@ -179,7 +179,7 @@ $is_edit = !empty($data['category_id']);
                 <table class="table table-bordered table-striped table-hover">
                     <thead class="table-light">
                         <tr>
-                            <th>Tên danh mục</th>
+                            <th>Tên chủ đề</th>
                             <th>Mô tả</th>
                             <th width="110">Trạng thái</th>
                             <th width="140" class="text-center">Thao tác</th>
@@ -193,7 +193,7 @@ $is_edit = !empty($data['category_id']);
 
                         <?php if (!$result || mysqli_num_rows($result) == 0): ?>
                             <tr>
-                                <td colspan="4" class="text-center py-4">Chưa có danh mục</td>
+                                <td colspan="4" class="text-center py-4">Chưa có chủ đề</td>
                             </tr>
 
                         <?php else: ?>
@@ -213,7 +213,7 @@ $is_edit = !empty($data['category_id']);
                                             class="btn btn-info btn-sm"><i class="fas fa-edit"></i></a>
 
                                         <a href="?p=categories&action=delete&id=<?= $row['category_id'] ?>"
-                                            onclick="return confirm('Xóa danh mục này?');"
+                                            onclick="return confirm('Xóa chủ đề này?');"
                                             class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></a>
                                     </td>
                                 </tr>

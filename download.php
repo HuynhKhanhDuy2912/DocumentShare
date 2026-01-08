@@ -1,6 +1,14 @@
 <?php
 include "config.php";
 
+if (!isset($_SESSION['username'])) {
+    echo "<script>
+        alert('Vui lòng đăng nhập để tải tài liệu!');
+        window.location.href = 'login.php';
+    </script>";
+    exit;
+}
+
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     die("Tài liệu không tồn tại");
 }
@@ -8,7 +16,8 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $document_id = (int)$_GET['id'];
 
 // Lấy thông tin file
-$sql = "SELECT file_path FROM documents WHERE document_id = $document_id AND status = 0 LIMIT 1";
+$sql = "SELECT file_path FROM documents WHERE document_id = $document_id AND status = 'approved' 
+        AND is_visible = 1 LIMIT 1";
 $result = mysqli_query($conn, $sql);
 
 if (!$result || mysqli_num_rows($result) === 0) {

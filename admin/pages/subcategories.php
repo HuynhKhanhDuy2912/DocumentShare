@@ -17,9 +17,9 @@ $action = $_GET['action'] ?? '';
 $current_view = ($action === 'add' || $action === 'edit') ? 'form' : 'list';
 
 $page_title = match ($action) {
-    'add' => 'Thêm danh mục con mới',
-    'edit' => 'Cập nhật danh mục con',
-    default => 'Danh sách danh mục con'
+    'add' => 'Thêm danh môn học mới',
+    'edit' => 'Cập nhật môn học',
+    default => 'Danh sách môn học'
 };
 
 // ------------------------------------------------------
@@ -41,7 +41,7 @@ if (isset($_POST['save_subcategory'])) {
     mysqli_stmt_store_result($stmt_check);
 
     if (mysqli_stmt_num_rows($stmt_check) > 0) {
-        $message = "Danh mục con <strong>$name</strong> đã tồn tại trong danh mục này!";
+        $message = "Môn học <strong>$name</strong> đã tồn tại trong chủ đề này!";
         $data = ['subcategory_id' => $id, 'name' => $name, 'status' => $status, 'category_id' => $category_id];
         $current_view = 'form';
     }
@@ -53,13 +53,13 @@ if (isset($_POST['save_subcategory'])) {
             $sql = "UPDATE subcategories SET name=?, status=?, category_id=? WHERE subcategory_id=?";
             $stmt = mysqli_prepare($conn, $sql);
             mysqli_stmt_bind_param($stmt, "siii", $name, $status, $category_id, $id);
-            $success_msg = "Cập nhật danh mục con thành công!";
+            $success_msg = "Cập nhật môn học thành công!";
         } else {
             // Thêm mới
             $sql = "INSERT INTO subcategories (name, status, category_id) VALUES (?, ?, ?)";
             $stmt = mysqli_prepare($conn, $sql);
             mysqli_stmt_bind_param($stmt, "sii", $name, $status, $category_id);
-            $success_msg = "Thêm danh mục con thành công!";
+            $success_msg = "Thêm môn học thành công!";
         }
 
         if (mysqli_stmt_execute($stmt)) {
@@ -80,7 +80,7 @@ if ($action == 'delete' && isset($_GET['id'])) {
     $stmt = mysqli_prepare($conn, "DELETE FROM subcategories WHERE subcategory_id=?");
     mysqli_stmt_bind_param($stmt, "i", $id);
     if (mysqli_stmt_execute($stmt)) {
-        echo "<script>alert('Xóa danh mục con thành công!'); window.location.href='?p=subcategories';</script>";
+        echo "<script>alert('Xóa môn học thành công!'); window.location.href='?p=subcategories';</script>";
         exit;
     } else {
         $message = "Lỗi xóa: " . mysqli_stmt_error($stmt);
@@ -100,7 +100,7 @@ if ($action == 'edit' && isset($_GET['id'])) {
     if ($row = mysqli_fetch_assoc($rs)) {
         $data = $row;
     } else {
-        $message = "Không tìm thấy danh mục con!";
+        $message = "Không tìm thấy môn học!";
         $current_view = 'list';
     }
     mysqli_stmt_close($stmt);
@@ -126,7 +126,7 @@ $limit = 10; // số dòng mỗi trang
 $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $offset = ($page - 1) * $limit;
 
-// Tổng số danh mục con
+// Tổng số môn học
 $total_rs = mysqli_query($conn, "
     SELECT COUNT(*) AS total
     FROM subcategories s
@@ -157,14 +157,14 @@ $total_pages = ceil($total_records / $limit);
                 <input type="hidden" name="subcategory_id" value="<?= htmlspecialchars($data['subcategory_id']) ?>">
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold">Tên danh mục con *</label>
+                    <label class="form-label fw-bold">Tên môn học *</label>
                     <input type="text" name="name" class="form-control" value="<?= htmlspecialchars($data['name']) ?>" required>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold">Danh mục cha *</label>
+                    <label class="form-label fw-bold">Chủ đề *</label>
                     <select name="category_id" class="form-select" required>
-                        <option value="">-- Chọn danh mục --</option>
+                        <option value="">-- Chọn chủ đề --</option>
                         <?php
                         $cats = mysqli_query($conn, "SELECT * FROM categories ORDER BY name ASC");
                         while ($c = mysqli_fetch_assoc($cats)):
@@ -197,7 +197,7 @@ $total_pages = ceil($total_records / $limit);
                     <input type="text"
                         name="keyword"
                         class="form-control"
-                        placeholder="Tìm danh mục..."
+                        placeholder="Tìm môn học..."
                         value="<?= htmlspecialchars($keyword) ?>">
                 </div>
 
@@ -214,8 +214,8 @@ $total_pages = ceil($total_records / $limit);
                 <table class="table table-bordered table-striped table-hover">
                     <thead class="table-light">
                         <tr>
-                            <th>Tên danh mục con</th>
-                            <th>Danh mục cha</th>
+                            <th>Tên môn học</th>
+                            <th>Chủ đề</th>
                             <th width="110">Trạng thái</th>
                             <th width="140" class="text-center">Thao tác</th>
                         </tr>
@@ -235,7 +235,7 @@ $total_pages = ceil($total_records / $limit);
                         if (!$res || mysqli_num_rows($res) == 0):
                         ?>
                             <tr>
-                                <td colspan="4" class="text-center py-4">Chưa có danh mục con</td>
+                                <td colspan="4" class="text-center py-4">Chưa có môn học</td>
                             </tr>
                         <?php else: ?>
                             <?php while ($r = mysqli_fetch_assoc($res)): ?>
@@ -245,7 +245,7 @@ $total_pages = ceil($total_records / $limit);
                                     <td><?= $r['status'] == 1 ? '<span class="badge bg-secondary">Ẩn</span>' : '<span class="badge bg-success">Hiển thị</span>' ?></td>
                                     <td class="text-center">
                                         <a href="?p=subcategories&action=edit&id=<?= $r['subcategory_id'] ?>" class="btn btn-info btn-sm"><i class="fas fa-edit" title="Sửa"></i></a>
-                                        <a href="?p=subcategories&action=delete&id=<?= $r['subcategory_id'] ?>" onclick="return confirm('Xóa danh mục con này?');" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt" title="Xóa"></i></a>
+                                        <a href="?p=subcategories&action=delete&id=<?= $r['subcategory_id'] ?>" onclick="return confirm('Xóa môn học này?');" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt" title="Xóa"></i></a>
                                     </td>
                                 </tr>
                         <?php endwhile;

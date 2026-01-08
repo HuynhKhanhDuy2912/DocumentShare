@@ -124,7 +124,7 @@ if ($result->num_rows > 0) {
 }
 ?>
 
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh; margin-top: 40px;">
     <div class="login-card">
         <div class="text-center mb-4 login-header">
             <div class="mb-3 text-primary logo-login">
@@ -133,7 +133,7 @@ if ($result->num_rows > 0) {
                 </a>
             </div>
             <h3>Đăng Nhập</h3>
-            <p class="text-muted small">Chào mừng bạn quay đến với DocumentShare</p>
+            <p class="text-muted small">Chào mừng bạn đến với DocumentShare</p>
         </div> 
 
         <form action="" method="post" name="f1">
