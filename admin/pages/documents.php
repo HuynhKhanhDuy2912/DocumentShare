@@ -7,7 +7,9 @@ if (!isset($conn)) {
 }
 
 $message = "";
-$base_url = '?p=documents';
+// $base_url = '?p=documents';
+$redirect_page = $_POST['redirect'] ?? 'documents';
+$base_url = '?p=' . $redirect_page;
 $action = $_GET['action'] ?? '';
 $current_view = in_array($action, ['add', 'edit']) ? 'form' : 'list';
 $is_edit = ($action === 'edit');
@@ -79,14 +81,15 @@ if (isset($_POST['save_document'])) {
 
         $sql = "UPDATE documents SET
             title=?, description=?, thumbnail=?, file_path=?, file_type=?,
-            subcategory_id=?, status=?, is_visible=?, username=?, uploader_role=?,
-            approved_at=?, approved_by=? WHERE document_id=?";
+            subcategory_id=?, status=?, is_visible=?, approved_at=?, approved_by=?
+            WHERE document_id=?";
+
 
         $stmt = mysqli_prepare($conn, $sql);
 
         mysqli_stmt_bind_param(
             $stmt,
-            "sssssisissssi",
+            "sssssisissi",
             $title,
             $description,
             $thumbnail,
@@ -95,8 +98,6 @@ if (isset($_POST['save_document'])) {
             $subcategory_id,
             $status,
             $is_visible,
-            $username,
-            $uploader_role,
             $approved_at,
             $approved_by,
             $id
@@ -164,9 +165,21 @@ $limit = 10;
 $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $offset = ($page - 1) * $limit;
 $keyword = trim($_GET['keyword'] ?? '');
-$where = $keyword ? "WHERE d.title LIKE '%" . mysqli_real_escape_string($conn, $keyword) . "%'" : "";
+// $where = $keyword ? "WHERE d.title LIKE '%" . mysqli_real_escape_string($conn, $keyword) . "%'" : ""; //Lấy tất cả (kể cả user upload)
+$where = "WHERE d.uploader_role = 'admin'";
 
-$countRes = mysqli_query($conn, "SELECT COUNT(*) AS total FROM documents d $where");
+if ($keyword !== '') {
+    $safe = mysqli_real_escape_string($conn, $keyword);
+    $where .= " AND d.title LIKE '%$safe%'";
+}
+
+
+// $countRes = mysqli_query($conn, "SELECT COUNT(*) AS total FROM documents d $where"); //Lấy tất cả (kể cả user upload)
+$countRes = mysqli_query($conn, "
+    SELECT COUNT(*) AS total
+    FROM documents d
+    $where
+");
 $totalDocs = mysqli_fetch_assoc($countRes)['total'] ?? 0;
 $totalPages = ceil($totalDocs / $limit);
 ?>
@@ -186,6 +199,7 @@ $totalPages = ceil($totalDocs / $limit);
                 <input type="hidden" name="old_thumbnail" value="<?= $data['thumbnail'] ?>">
                 <input type="hidden" name="old_file" value="<?= $data['file_path'] ?>">
                 <input type="hidden" name="old_file_type" value="<?= $data['file_type'] ?>">
+                <input type="hidden" name="redirect" value="<?= htmlspecialchars($_GET['redirect'] ?? 'documents') ?>">
 
                 <div class="mb-3">
                     <label class="form-label fw-bold">Tiêu đề *</label>
@@ -237,7 +251,7 @@ $totalPages = ceil($totalDocs / $limit);
                     <button class="btn btn-success px-4" name="save_document">
                         <i class="fas fa-save me-1"></i> <?= $is_edit ? 'Cập nhật' : 'Thêm mới' ?>
                     </button>
-                    <a href="<?= $base_url ?>" class="btn btn-secondary px-3">Quay lại</a>
+                    <a href="javascript:history.back()" class="btn btn-secondary px-3">Quay lại</a>
                 </div>
             </form>
 
@@ -256,27 +270,29 @@ $totalPages = ceil($totalDocs / $limit);
             <div class="table-responsive">
                 <table class="table table-bordered table-hover align-middle">
                     <thead class="table-light">
-                        <tr>
+                        <tr class="text-center">
                             <th width="80">Ảnh</th>
                             <th>Tiêu đề</th>
+                            <th>Mô tả</th>
                             <th>Môn học</th>
                             <th>File</th>
-                            <th>Hiển thị</th>
-                            <th class="text-center">Thao tác</th>
+                            <th width="90">Hiển thị</th>
+                            <th width="100">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
                         $resList = mysqli_query($conn, "
-                            SELECT d.*, s.name as category_name 
-                            FROM documents d 
+                            SELECT d.*, s.name AS subcategory_name
+                            FROM documents d
                             LEFT JOIN subcategories s ON d.subcategory_id = s.subcategory_id
                             $where
                             ORDER BY d.document_id DESC
                             LIMIT $limit OFFSET $offset
                         ");
+
                         while ($r = mysqli_fetch_assoc($resList)): ?>
-                            <tr>
+                            <tr class="text-center">
                                 <td>
                                     <?php if ($r['thumbnail']): ?>
                                         <img src="../uploads/thumbnails/<?= $r['thumbnail'] ?>" width="55" height="75" style="object-fit: cover;">
@@ -285,18 +301,25 @@ $totalPages = ceil($totalDocs / $limit);
                                     <?php endif; ?>
                                 </td>
                                 <td><strong><?= htmlspecialchars($r['title']) ?></strong></td>
-                                <td><?= htmlspecialchars($r['category_name'] ?? 'N/A') ?></td>
+                                <td><?= htmlspecialchars($r['description']) ?></td>
+                                <td><?= htmlspecialchars($r['subcategory_name'] ?? 'N/A') ?></td>
                                 <td>
-                                    <?php if ($r['file_path']): ?>
-                                        <a href="../uploads/documents/<?= $r['file_path'] ?>" target="_blank" class="badge bg-info text-decoration-none">Xem file</a>
-                                    <?php endif; ?>
+                                    <a href="#"
+                                        class="btn btn-sm btn-info btn-preview"
+                                        data-id="<?= $r['document_id'] ?>">
+                                        <i class="fas fa-eye"></i> Xem
+                                    </a>
                                 </td>
                                 <td>
                                     <?= $r['is_visible'] ? '<span class="badge bg-success">Hiển thị</span>' : '<span class="badge bg-secondary">Đã ẩn</span>' ?>
                                 </td>
                                 <td class="text-center">
-                                    <a href="<?= $base_url ?>&action=edit&id=<?= $r['document_id'] ?>" class="btn btn-info btn-sm" style="margin-bottom: 10px;"><i class="fas fa-edit"></i></a>
-                                    <a href="<?= $base_url ?>&action=delete&id=<?= $r['document_id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Xóa tài liệu này?')"><i class="fas fa-trash"></i></a>
+                                    <a href="<?= $base_url ?>&action=edit&id=<?= $r['document_id'] ?>&redirect=documents"
+                                        class="btn btn-info btn-sm" title="Sửa"><i class="fas fa-edit"></i></a>
+
+                                    <a href="<?= $base_url ?>&action=delete&id=<?= $r['document_id'] ?>"
+                                        class="btn btn-danger btn-sm" onclick="return confirm('Xóa tài liệu này?')"
+                                        title="Xóa"><i class="fas fa-trash"></i></a>
                                 </td>
                             </tr>
                         <?php endwhile; ?>
@@ -333,3 +356,45 @@ $totalPages = ceil($totalDocs / $limit);
         <?php endif; ?>
     </div>
 </div>
+
+<!-- MODAL PREVIEW -->
+<div class="modal fade" id="previewModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-eye"></i> Xem trước tài liệu
+                </h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body" id="previewContent">
+                <div class="text-center text-muted">
+                    <i class="fas fa-spinner fa-spin"></i> Đang tải...
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.btn-preview').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const id = this.dataset.id;
+
+            document.getElementById('previewContent').innerHTML =
+                '<div class="text-center text-muted"><i class="fas fa-spinner fa-spin"></i> Đang tải...</div>';
+
+            $('#previewModal').modal('show');
+
+            fetch('pages/preview_admin_doc.php?id=' + id)
+                .then(res => res.text())
+                .then(html => {
+                    document.getElementById('previewContent').innerHTML = html;
+                });
+        });
+    });
+</script>

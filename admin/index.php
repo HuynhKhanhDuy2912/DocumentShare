@@ -58,7 +58,6 @@
   $logged_in_name = $_SESSION['username'];
   $avatar_filename = isset($_SESSION['avatar']) ? $_SESSION['avatar'] : '';
 
-  // Kiểm tra: Vì file này nằm trong folder admin, nên cần dùng ../ để ra ngoài tìm folder uploads
   $avatar_display_path = "dist/img/avatar5.png";
 
   if (!empty($avatar_filename)) {

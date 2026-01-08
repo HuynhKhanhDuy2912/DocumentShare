@@ -1,7 +1,4 @@
 <?php
-ob_start();
-include("../config.php");
-
 if (!isset($conn) || $conn === false) {
     die('<div class="alert alert-danger m-3">LỖI KẾT NỐI: Không thể kết nối DB.</div>');
 }

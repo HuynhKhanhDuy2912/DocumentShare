@@ -115,6 +115,36 @@ if ($action == 'edit' && isset($_GET['id'])) {
 }
 
 $is_edit = !empty($data['category_id']);
+
+// ------------------------------------------------------
+// SEARCH
+// ------------------------------------------------------
+$keyword = trim($_GET['keyword'] ?? '');
+$where = '';
+
+if ($keyword !== '') {
+    $safe = mysqli_real_escape_string($conn, $keyword);
+    $where = "WHERE name LIKE '%$safe%' OR description LIKE '%$safe%'";
+}
+
+// ------------------------------------------------------
+// PHÂN TRANG
+// ------------------------------------------------------
+$limit = 10;
+$page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+$offset = ($page - 1) * $limit;
+
+// Tổng số bản ghi
+$total_rs = mysqli_query($conn, "
+    SELECT COUNT(*) AS total
+    FROM categories
+    $where
+");
+
+$total_row = mysqli_fetch_assoc($total_rs);
+$total_records = $total_row['total'];
+$total_pages = ceil($total_records / $limit);
+
 ?>
 
 <!-- ============================== HTML =============================== -->
@@ -174,6 +204,28 @@ $is_edit = !empty($data['category_id']);
 
         <?php else: ?>
 
+            <form method="get" class="row g-2 mb-3">
+                <input type="hidden" name="p" value="categories">
+
+                <div class="col-md-4 ms-auto">
+                    <input type="text"
+                        name="keyword"
+                        class="form-control"
+                        placeholder="Tìm chủ đề..."
+                        value="<?= htmlspecialchars($keyword) ?>">
+                </div>
+
+                <div class="col-md-auto">
+                    <button class="btn btn-primary px-4">
+                        <i class="fas fa-search"></i> Tìm
+                    </button>
+                    <a href="?p=categories" class="btn btn-secondary">
+                        <i class="fas fa-sync"></i>
+                    </a>
+                </div>
+            </form>
+
+
             <!-- ============= DANH SÁCH ============= -->
             <div class="table-responsive">
                 <table class="table table-bordered table-striped table-hover">
@@ -188,7 +240,13 @@ $is_edit = !empty($data['category_id']);
 
                     <tbody>
                         <?php
-                        $result = mysqli_query($conn, "SELECT * FROM categories ORDER BY category_id DESC");
+                        $result = mysqli_query($conn, "
+                            SELECT *
+                            FROM categories
+                            $where
+                            ORDER BY category_id DESC
+                            LIMIT $limit OFFSET $offset
+                        ");
                         ?>
 
                         <?php if (!$result || mysqli_num_rows($result) == 0): ?>
@@ -221,9 +279,66 @@ $is_edit = !empty($data['category_id']);
                         <?php endif; ?>
                     </tbody>
                 </table>
+                <?php if ($total_pages > 1): ?>
+                    <nav class="pagination-wrapper mt-4">
+                        <ul class="pagination justify-content-center">
+
+                            <!-- Trang trước -->
+                            <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
+                                <a class="page-link"
+                                    href="?p=categories&page=<?= max(1, $page - 1) ?>&keyword=<?= urlencode($keyword) ?>">
+                                    &laquo;
+                                </a>
+                            </li>
+
+                            <?php
+                            $start = max(1, $page - 2);
+                            $end   = min($total_pages, $page + 2);
+                            ?>
+
+                            <?php if ($start > 1): ?>
+                                <li class="page-item">
+                                    <a class="page-link"
+                                        href="?p=categories&page=1&keyword=<?= urlencode($keyword) ?>">1</a>
+                                </li>
+                                <?php if ($start > 2): ?>
+                                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                                <?php endif; ?>
+                            <?php endif; ?>
+
+                            <?php for ($i = $start; $i <= $end; $i++): ?>
+                                <li class="page-item <?= ($i == $page) ? 'active' : '' ?>">
+                                    <a class="page-link"
+                                        href="?p=categories&page=<?= $i ?>&keyword=<?= urlencode($keyword) ?>">
+                                        <?= $i ?>
+                                    </a>
+                                </li>
+                            <?php endfor; ?>
+
+                            <?php if ($end < $total_pages): ?>
+                                <?php if ($end < $total_pages - 1): ?>
+                                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                                <?php endif; ?>
+                                <li class="page-item">
+                                    <a class="page-link"
+                                        href="?p=categories&page=<?= $total_pages ?>&keyword=<?= urlencode($keyword) ?>">
+                                        <?= $total_pages ?>
+                                    </a>
+                                </li>
+                            <?php endif; ?>
+
+                            <!-- Trang sau -->
+                            <li class="page-item <?= ($page >= $total_pages) ? 'disabled' : '' ?>">
+                                <a class="page-link"
+                                    href="?p=categories&page=<?= min($total_pages, $page + 1) ?>&keyword=<?= urlencode($keyword) ?>">
+                                    &raquo;
+                                </a>
+                            </li>
+
+                        </ul>
+                    </nav>
+                <?php endif; ?>
             </div>
-
         <?php endif; ?>
-
     </div>
 </div>
