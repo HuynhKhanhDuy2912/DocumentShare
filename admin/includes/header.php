@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Hệ thống quản lý</title>
-  <link rel="icon" href="../assets/img/logo.png">
+  <link rel="icon" href="../assets/img/logo.jpg">
 
   <!-- Boostrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">

@@ -129,10 +129,10 @@ if ($result->num_rows > 0) {
         <div class="text-center mb-4 login-header">
             <div class="mb-3 text-primary logo-login">
                 <a href="index.php">
-                    <img src="assets/img/logo.png" style="width: 64px; height: 64px; object-fit: contain;">
+                    <img src="assets/img/logo.jpg" style="width: 70px; height: 70px; object-fit: contain; border-radius: 50%;">
                 </a>
             </div>
-            <h3>Đăng Nhập</h3>
+            <h3>Đăng Nhập Tài Khoản</h3>
             <p class="text-muted small">Chào mừng bạn đến với DocumentShare</p>
         </div> 
 

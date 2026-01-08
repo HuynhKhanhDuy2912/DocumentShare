@@ -85,10 +85,10 @@ if (isset($_POST['sbDangky'])) {
         <div class="text-center mb-4">
             <div class="mb-3 text-primary">
                 <a href="index.php">
-                    <img src="assets/img/logo.png" style="width: 64px; height: 64px; object-fit: contain;">
+                    <img src="assets/img/logo.jpg" style="width: 70px; height: 70px; object-fit: contain; border-radius: 50%;">
                 </a>
             </div>
-            <h3 class="fw-bold text-dark">Đăng ký tài khoản</h3>
+            <h3 class="fw-bold text-dark">Đăng Ký Tài Khoản</h3>
             <p class="text-muted small">Tham gia ngay cộng đồng DocumentShare</p>
         </div>
 

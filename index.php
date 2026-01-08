@@ -75,7 +75,7 @@ while ($row = mysqli_fetch_assoc($rsFeatured)) {
 ?>
 
 <!-- CAROUSEL -->
-<div class="bg" style="margin-top: 80px; background-color: #0080ffff; padding: 10px;">
+<div class="bg" style="margin-top: 80px; background-color: #083f87; padding: 10px;">
     <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
 

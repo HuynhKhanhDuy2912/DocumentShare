@@ -43,7 +43,7 @@ if ($result && mysqli_num_rows($result) > 0) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DocumentShare</title>
-    <link rel="icon" href="assets/img/logo.png">
+    <link rel="icon" href="assets/img/logo.jpg">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -60,7 +60,7 @@ if ($result && mysqli_num_rows($result) > 0) {
         <div class="container-fluid px-lg-5">
 
             <a class="navbar-brand d-flex align-items-center" href="index.php">
-                <img src="assets/img/logo.png" alt="Logo" style="height: 40px; margin-right: 10px;">
+                <img src="assets/img/logo.jpg" alt="Logo" style="height: 40px; margin-right: 10px;">
                 <div class="d-flex flex-column">
                     <span style="font-weight: 700; font-size: 18px; line-height: 1.2; color: #0d6efd;">DocumentShare</span>
                     <span style="font-size: 12px; color: #6c757d; font-weight: 500;">Học Tập & Chia Sẻ</span>

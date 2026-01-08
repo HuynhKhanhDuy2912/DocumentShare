@@ -269,9 +269,9 @@ body {
 }
 /* --- Chỉnh chiều cao Carousel Slide --- */
 .carousel-item img {
-  height: 400px;
+  height: 410px;
   margin: 0 auto;
-  width: 1200px;
+  width: 1240px;
 }
 
 @media (max-width: 768px) {
@@ -761,7 +761,6 @@ body {
   transition: transform 0.45s ease;
 }
 
-/* Slider Container & Nav Buttons */
 .slider-container {
   position: relative;
   padding: 0 15px;
@@ -793,14 +792,12 @@ body {
   right: -5px;
 }
 
-/* Giữ chiều rộng cố định cho item trong slider */
 .featured-item {
   min-width: 210px;
   max-width: 210px;
   flex-shrink: 0;
 }
 
-/* Đảm bảo ảnh trong doc-thumb luôn đẹp */
 .doc-thumb {
   /* height: 240px; */
   overflow: hidden;

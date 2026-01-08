@@ -72,7 +72,7 @@
     <div class="wrapper">
 
       <div class="preloader flex-column justify-content-center align-items-center">
-        <img class="animation__shake" src="../assets/img/logo.png" height="60" width="60">
+        <img class="animation__shake" src="../assets/img/logo.jpg" height="60" width="60">
       </div>
 
       <nav class="main-header navbar navbar-expand navbar-white navbar-light">
@@ -103,7 +103,8 @@
       </nav>
       <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <a href="../index.php" class="brand-link text-center">
-          <span class="brand-text font-weight-light">DocumentShare</span>
+          <img src="../assets/img/logo.jpg" height="50" width="50" style="border-radius: 50%;">
+          <span class="brand-text fw-bold">DocumentShare</span>
         </a>
 
         <div class="sidebar">

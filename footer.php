@@ -9,7 +9,7 @@
             <!-- LOGO + GIỚI THIỆU -->
             <div class="col-lg-4 col-md-6">
                 <div class="d-flex align-items-center mb-3">
-                    <img src="assets/img/logo.png" alt="DocumentShare" style="width:40px;height:40px" class="me-2">
+                    <img src="assets/img/logo.jpg" alt="DocumentShare" style="width: 50px; height: 50px; object-fit: contain; border-radius: 50%;" class="me-2">
                     <h5 class="mb-0 fw-bold text-primary">DocumentShare</h5>
                 </div>
                 <p class="text-muted small">
