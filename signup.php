@@ -79,7 +79,7 @@ if (isset($_POST['sbDangky'])) {
 }
 ?>
 
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 90vh;">
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 90vh; margin-top: 60px;">
     <div class="register-box">
 
         <div class="text-center mb-4">

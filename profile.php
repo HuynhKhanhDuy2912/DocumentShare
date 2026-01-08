@@ -1,5 +1,5 @@
 <?php
-require("header.php");
+include 'header.php';
 
 if (!isset($_SESSION['emailUser'])) {
     header("Location: login.php");

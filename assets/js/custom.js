@@ -118,7 +118,7 @@ document.addEventListener("click", function (e) {
 
   e.preventDefault();
 
-  const docId = btn.getAttribute("data-id");
+  const docId = btn.dataset.id;
   if (!docId) return;
 
   fetch("toggle_save_document.php", {
@@ -130,7 +130,20 @@ document.addEventListener("click", function (e) {
     .then((data) => {
       if (data.status === "login") {
         alert("Vui lòng đăng nhập để lưu tài liệu.");
-        window.location.href = "login.php";
+        location.href = "login.php";
+        return;
+      }
+
+      if (
+        data.status === "unsaved" &&
+        document.body.classList.contains("page-saved")
+      ) {
+        const card =
+          btn.closest(".doc-card") ||
+          btn.closest(".card") ||
+          btn.closest(".col");
+
+        if (card) card.remove();
         return;
       }
 
@@ -208,9 +221,9 @@ function slideFeatured(direction) {
 
   // Logic Vòng lặp (Loop)
   if (featuredIndex < 0) {
-    featuredIndex = maxIndex; 
+    featuredIndex = maxIndex;
   } else if (featuredIndex > maxIndex) {
-    featuredIndex = 0; 
+    featuredIndex = 0;
   }
 
   track.style.transform = `translateX(-${featuredIndex * itemWidth}px)`;
@@ -235,6 +248,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const overlay = document.getElementById("docOverlay");
   const modal = document.getElementById("docModal");
   const closeBtn = document.querySelector(".close-modal");
+
+  if (!overlay || !modal || !closeBtn) return;
 
   const modalView = document.getElementById("modalView");
   const modalDownload = document.getElementById("modalDownload");

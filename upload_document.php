@@ -1,6 +1,6 @@
 <?php
-session_start();
 include 'config.php';
+include 'header.php';
 
 /* =========================
 1. KIỂM TRA ĐĂNG NHẬP
@@ -54,40 +54,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['document_file'])) {
             }
 
             // --- XỬ LÝ FILE TÀI LIỆU ---
-            $file_name_db = time() . "_" . uniqid() . "." . $file_ext;
+            $original_name = basename($file['name']); 
+            $original_name = preg_replace('/\s+/', '_', $original_name);
+            $original_name = preg_replace('/[^A-Za-z0-9._-]/', '', $original_name);
+
+            $file_name_db = time() . "_" . $original_name;
             $file_path_full = "uploads/documents/" . $file_name_db;
+
 
             if (move_uploaded_file($file['tmp_name'], $file_path_full)) {
 
                 $status = 'pending'; // Trạng thái mặc định
                 $is_visible = 0;     // Ẩn mặc định
-                $share_link = $file_name_db; // share_link bằng tên file theo yêu cầu
+                $share_link = $file_name_db; 
 
-                // Câu lệnh SQL 12 tham số (?)
                 $sql = "INSERT INTO documents
                         (title, description, thumbnail, file_path, file_type, file_size, share_link, 
                          subcategory_id, status, is_visible, username, uploader_role, views, downloads, created_at)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, NOW())";
 
                 $stmt = $conn->prepare($sql);
-
-                /* --- SỬA LỖI TẠI ĐÂY: Chuỗi định dạng sssssisisiss (12 ký tự) --- */
-                // 1.title(s), 2.desc(s), 3.thumb(s), 4.path(s), 5.type(s), 6.size(i)
-                // 7.link(s), 8.sub_id(i), 9.status(s), 10.visible(i), 11.user(s), 12.role(s)
                 $stmt->bind_param(
                     "sssssisisiss",
-                    $title,          // 1
-                    $description,    // 2
-                    $thumbnail_name, // 3
-                    $file_name_db,   // 4
-                    $file_ext,       // 5
-                    $file_size,      // 6 (i)
-                    $share_link,     // 7
-                    $subcategory_id, // 8 (i)
-                    $status,         // 9
-                    $is_visible,     // 10 (i)
-                    $current_user,   // 11
-                    $user_role       // 12
+                    $title,
+                    $description,
+                    $thumbnail_name,
+                    $file_name_db,
+                    $file_ext,
+                    $file_size,
+                    $share_link,
+                    $subcategory_id,
+                    $status,
+                    $is_visible,
+                    $current_user,
+                    $user_role
                 );
 
                 if ($stmt->execute()) {
@@ -101,21 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['document_file'])) {
     }
 }
 
-// Sửa lỗi hiển thị danh sách bên dưới
-$sql_list = "SELECT d.*, sc.name as subcate_name FROM documents d 
-             LEFT JOIN subcategories sc ON d.subcategory_id = sc.subcategory_id 
-             WHERE d.username = '$current_user' ORDER BY d.document_id DESC";
-$result_docs = mysqli_query($conn, $sql_list);
-
-function formatSizeUnits($bytes)
-{
-    if ($bytes >= 1048576) return number_format($bytes / 1048576, 2) . ' MB';
-    if ($bytes >= 1024) return number_format($bytes / 1024, 2) . ' KB';
-    return $bytes . ' bytes';
-}
 ?>
-
-<?php include "header.php"; ?>
 
 <div class="upload-page-wrapper mrt">
     <div class="container mb-5">
@@ -182,36 +168,6 @@ function formatSizeUnits($bytes)
                         </form>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="card mt-5 border-0 shadow-sm">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-primary text-white">
-                        <tr class="text-center">
-                            <th>Ảnh</th>
-                            <th>Tên tài liệu</th>
-                            <th>Chuyên mục</th>
-                            <th>Trạng thái</th>
-                            <th>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php while ($row = mysqli_fetch_assoc($result_docs)): ?>
-                            <tr class="text-center">
-                                <td><img src="<?= !empty($row['thumbnail']) ? 'uploads/thumbnails/' . $row['thumbnail'] : 'assets/img/default.png' ?>" width="40"></td>
-                                <td class="text-start">
-                                    <strong><?= htmlspecialchars($row['title']) ?></strong><br>
-                                    <small class="text-muted"><?= strtoupper($row['file_type']) ?> • <?= isset($row['file_size']) ? formatSizeUnits($row['file_size']) : '0 bytes' ?></small>
-                                </td>
-                                <td><?= htmlspecialchars($row['subcate_name'] ?? 'Chưa rõ') ?></td>
-                                <td><span class="badge bg-warning"><?= $row['status'] ?></span></td>
-                                <td><a href="edit_document.php?id=<?= $row['document_id'] ?>" class="btn btn-sm btn-outline-primary"><i class="fa fa-edit"></i></a></td>
-                            </tr>
-                        <?php endwhile; ?>
-                    </tbody>
-                </table>
             </div>
         </div>
     </div>

@@ -1,6 +1,6 @@
 <?php
-session_start();
 include 'config.php';
+include 'header.php';
 
 /* ================== 1. KIỂM TRA ĐĂNG NHẬP ================== */
 if (!isset($_SESSION['username'])) {
@@ -120,8 +120,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 ?>
 
-<?php include("header.php"); ?>
-
 <div class="edit-wrapper mrt" style="background-color: #f4f7f6; min-height: 100vh; padding-bottom: 50px;">
     <div class="container">
         <div class="row justify-content-center">
@@ -129,10 +127,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <div class="card shadow-lg border-0" style="border-radius: 15px;">
                     <div class="card-header bg-white py-4 border-0 text-center">
                         <h2 class="fw-bold text-primary mb-0">Chỉnh sửa tài liệu</h2>
-                        <p class="text-muted">Cập nhật thông tin hoặc thay thế file mới</p>
+                        <p class="text-muted">Cập nhật thông tin hoặc thay thế file tài liệu mới</p>
                     </div>
 
-                    <div class="card-body p-4 p-md-5">
+                    <div class="card-body p-4">
                         <?php if ($error_msg): ?>
                             <div class="alert alert-danger shadow-sm border-0 mb-4"><?= $error_msg ?></div>
                         <?php endif; ?>
@@ -185,11 +183,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <textarea name="description" class="form-control custom-input" rows="5"><?= htmlspecialchars($doc['description']) ?></textarea>
                             </div>
 
-                            <div class="d-grid gap-2 mt-5 d-flex">  
-                                <button type="submit" class="btn btn-primary btn-small fw-bold shadow-sm py-3 btn-update">
+                            <div class="gap-2 mt-3 d-flex justify-content-end">  
+                                <button type="submit" class="btn btn-primary btn-small fw-bold shadow-sm py-2 btn-update">
                                     <i class="fa fa-save me-2"></i>Lưu thay đổi
                                 </button>                             
-                                <a href="upload.php" class="btn btn-secondary btn-small text-decoration-none text-white py-3 fw-bold">Hủy bỏ</a>                                
+                                <a href="upload.php" class="btn btn-secondary btn-small text-decoration-none text-white py-2 fw-bold">Hủy bỏ</a>                                
                             </div>
                         </form>
                     </div>

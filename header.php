@@ -54,7 +54,7 @@ if ($result && mysqli_num_rows($result) > 0) {
     <link rel="stylesheet" href="assets/css/custom.css">
 </head>
 
-<body>
+<body class="<?= isset($pageName) ? 'page-' . $pageName : '' ?>">
 
     <nav class="navbar navbar-expand-lg navbar-white bg-white shadow-sm fixed-top" style="height: 80px;">
         <div class="container-fluid px-lg-5">

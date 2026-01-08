@@ -61,6 +61,22 @@ if (isset($_SESSION['username'])) {
     }
 }
 
+//Lấy danh sách document
+$savedDocs = [];
+
+if (isset($_SESSION['username'])) {
+    $username = mysqli_real_escape_string($conn, $_SESSION['username']);
+
+    $savedQuery = mysqli_query($conn, "
+        SELECT document_id FROM saved_documents
+        WHERE username = '$username'
+    ");
+
+    while ($row = mysqli_fetch_assoc($savedQuery)) {
+        $savedDocs[] = $row['document_id'];
+    }
+}
+
 
 // Tăng lượt xem
 mysqli_query($conn, "UPDATE documents SET views = views + 1 WHERE document_id = $document_id");
@@ -236,13 +252,18 @@ $thumbnail = !empty($doc['thumbnail'])
                                         <?= strtoupper($r['file_type']) ?>
                                     </div>
                                     <?php if ($pageCount > 0): ?>
-                                        <span class="text-muted small">  
+                                        <span class="text-muted small">
                                             <?= $pageCount ?> trang
                                         </span>
                                     <?php endif; ?>
+
+                                    <?php
+                                        $isRelatedSaved = in_array($r['document_id'], $savedDocs);
+                                    ?>
+
                                     <button
                                         class="btn btn-small btn-light btn-save ms-auto" data-id="<?= $r['document_id'] ?>" style="margin-right: 20px;">
-                                        <i class="<?= $isSaved ? 'fas' : 'far' ?> fa-bookmark d-block mb-1" style="font-size: 17px;"></i>
+                                        <i class="<?= $isRelatedSaved ? 'fas' : 'far' ?> fa-bookmark d-block mb-1" style="font-size: 17px;"></i>
                                     </button>
                                 </div>
                             </div>
@@ -267,34 +288,31 @@ $thumbnail = !empty($doc['thumbnail'])
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
-            <div class="modal-body text-center">
-
+            <div class="modal-body text-center" style="display: block;">
                 <div class="d-flex justify-content-center gap-3 mb-3">
-
                     <!-- Facebook -->
                     <a target="_blank"
                         href="https://www.facebook.com/sharer/sharer.php?u=<?= urlencode('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']) ?>"
-                        class="btn">
+                        class="btn" title="Facebook">
                         <img src="assets/img/facebook.png" width="45" height="45">
                     </a>
 
                     <!-- Zalo -->
                     <a target="_blank"
                         href="https://zalo.me/share?url=<?= urlencode($url) ?>"
-                        class="btn d-flex align-items-center justify-content-center">
+                        class="btn d-flex align-items-center justify-content-center" title="Zalo">
                         <img src="assets/img/zalo.png" width="40" height="40">
                     </a>
 
                     <!-- Copy link -->
-                    <button class="btn btn-secondary" onclick="copyShareLink()" style="width: 50px; height: 50px; margin-top: 5px;">
+                    <button class="btn btn-secondary" onclick="copyShareLink()"
+                        style="width: 50px; height: 50px; margin-top: 5px;" title="Copy Link">
                         <i class="fas fa-link"></i>
                     </button>
-
                 </div>
-
-                <input type="text" class="form-control text-center" id="shareLink"
-                    value="<?= 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ?>"
-                    readonly>
+                <input type="text" class="form-control text-center mx-auto"
+                    id="shareLink" value="<?= 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ?>"
+                    readonly style="max-width: 440px;">
             </div>
         </div>
     </div>

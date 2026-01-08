@@ -1,38 +1,38 @@
 <?php
-require "config.php";
+session_start();
+include "config.php";
 
-header('Content-Type: application/json; charset=utf-8');
-
-// Chưa đăng nhập
 if (!isset($_SESSION['username'])) {
     echo json_encode(["status" => "login"]);
     exit;
 }
 
-if (!isset($_POST['document_id'])) {
+$username = $_SESSION['username'];
+$docId = (int)($_POST['document_id'] ?? 0);
+
+if ($docId <= 0) {
     echo json_encode(["status" => "error"]);
     exit;
 }
 
-$username = $_SESSION['username'];
-$document_id = (int)$_POST['document_id'];
-
+// Kiểm tra đã lưu chưa
 $check = mysqli_query($conn, "
-    SELECT id FROM saved_documents
-    WHERE username = '$username' AND document_id = $document_id
-    LIMIT 1
+    SELECT 1 FROM saved_documents
+    WHERE username = '$username' AND document_id = $docId
 ");
 
-if ($check && mysqli_num_rows($check) > 0) {
+if (mysqli_num_rows($check) > 0) {
+    // BỎ LƯU
     mysqli_query($conn, "
         DELETE FROM saved_documents
-        WHERE username = '$username' AND document_id = $document_id
+        WHERE username = '$username' AND document_id = $docId
     ");
     echo json_encode(["status" => "unsaved"]);
 } else {
+    // LƯU
     mysqli_query($conn, "
-        INSERT INTO saved_documents (username, document_id)
-        VALUES ('$username', $document_id)
+        INSERT INTO saved_documents(username, document_id)
+        VALUES('$username', $docId)
     ");
     echo json_encode(["status" => "saved"]);
 }

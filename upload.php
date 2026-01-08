@@ -1,5 +1,4 @@
 <?php
-session_start();
 include 'config.php';
 
 /* ================== 1. KIỂM TRA ĐĂNG NHẬP ================== */
@@ -37,7 +36,7 @@ if (isset($_GET['delete_id'])) {
 
 /* ================== 3. PHÂN TRANG + TÌM KIẾM ================== */
 $search = isset($_GET['search']) ? trim($_GET['search']) : "";
-$limit = 10;
+$limit = 5;
 $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 $offset = ($page - 1) * $limit;
 
@@ -149,7 +148,7 @@ function formatSizeUnits($bytes)
                                             <i class="fa fa-eye"></i> Hiển thị
                                         </span>
                                     <?php else: ?>
-                                        <span class="text-secondary" title="Tài liệu này đang bị ẩn">
+                                        <span class="text-secondary" title="Tài liệu này đang bị ẩn" style="font-size: 14px;">
                                             <i class="fa fa-eye-slash"></i> Đang ẩn
                                         </span>
                                     <?php endif; ?>
@@ -161,9 +160,10 @@ function formatSizeUnits($bytes)
                                 </td>
 
                                 <td>
-                                    <a href="download.php?id=<?= $row['document_id'] ?>" class="btn btn-sm btn-outline-secondary" title="Tải về"><i class="fa fa-download"></i></a>
+                                    <a href="preview_my_doc.php?id=<?= $row['document_id'] ?>" class="btn btn-sm btn-outline-success" title="Xem trước"><i class="fa fa-eye"></i></a>
+                                    <a href="download_my_doc.php?id=<?= $row['document_id'] ?>" class="btn btn-sm btn-outline-secondary" title="Tải về"><i class="fa fa-download"></i></a>
                                     <a href="edit_document.php?id=<?= $row['document_id'] ?>" class="btn btn-sm btn-outline-primary" title="Sửa"><i class="fa fa-edit"></i></a>
-                                    <a href="?delete_id=<?= $row['document_id'] ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Xóa vĩnh viễn tài liệu này?')" title="Xóa"><i class="fa fa-trash"></i></a>
+                                    <a href="?delete_id=<?= $row['document_id'] ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa tài liệu này?')" title="Xóa"><i class="fa fa-trash"></i></a>
                                 </td>
                             </tr>
                         <?php endwhile; ?>
@@ -176,6 +176,42 @@ function formatSizeUnits($bytes)
             </table>
         </div>
     </div>
+
+    <?php
+    $queryString = '';
+    if (!empty($search)) {
+        $queryString = '&search=' . urlencode($search);
+    }
+    ?>
+
+    <?php if ($total_pages > 1): ?>
+        <nav class="mt-5">
+            <ul class="pagination justify-content-center custom-pagination">
+
+                <!-- PREV -->
+                <li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
+                    <a class="page-link" href="?page=<?= $page - 1 ?><?= $queryString ?>">
+                        <i class="fas fa-angle-left"></i>
+                    </a>
+                </li>
+
+                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                    <li class="page-item <?= $i == $page ? 'active' : '' ?>">
+                        <a class="page-link" href="?page=<?= $i ?><?= $queryString ?>">
+                            <?= $i ?>
+                        </a>
+                    </li>
+                <?php endfor; ?>
+
+                <!-- NEXT -->
+                <li class="page-item <?= $page >= $total_pages ? 'disabled' : '' ?>">
+                    <a class="page-link" href="?page=<?= $page + 1 ?><?= $queryString ?>">
+                        <i class="fas fa-angle-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    <?php endif; ?>
 </div>
 
 <?php include("footer.php"); ?>

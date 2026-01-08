@@ -1,6 +1,6 @@
 <?php require("header.php"); ?>
 <?php
-session_destroy(); // xóa tất cả các session
+session_destroy();
 unset($_SESSION['username']);
 
 
