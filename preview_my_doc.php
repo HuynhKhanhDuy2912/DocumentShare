@@ -95,7 +95,7 @@ if (!file_exists($file_path)) {
                     File <strong>.<?= $file_ext ?></strong> không hỗ trợ xem trước.
                 </div>
                 <div class="d-flex justify-content-end">
-                    <a href="download_my_doc.php?document_id=<?= $doc['document_id'] ?>"
+                    <a href="download_my_doc.php?id=<?= $doc['document_id'] ?>"
                         class="btn btn-primary">
                         <i class="fas fa-download"></i> Tải tài liệu
                     </a>

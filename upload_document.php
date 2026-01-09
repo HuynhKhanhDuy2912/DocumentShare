@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['document_file'])) {
         $file_ext  = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         $file_size = $file['size'];
 
-        $allowed_types = ['pdf', 'doc', 'docx', 'zip', 'rar', 'txt', 'jpg', 'png'];
+        $allowed_types = ['pdf', 'doc', 'docx'];
         $max_size = 20 * 1024 * 1024;
 
         if (!in_array($file_ext, $allowed_types)) {
@@ -144,8 +144,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['document_file'])) {
                             </div>
 
                             <div class="mb-4">
-                                <label class="fw-bold">Ảnh đại diện tài liệu</label>
-                                <input type="file" name="thumbnail" class="form-control custom-input" accept="image/*">
+                                <label class="fw-bold">Ảnh đại diện tài liệu *</label>
+                                <input type="file" name="thumbnail" class="form-control custom-input" accept="image/*" required>
                             </div>
 
                             <div class="mb-4">
@@ -155,8 +155,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['document_file'])) {
                             </div>
 
                             <div class="mb-4">
-                                <label class="fw-bold">Mô tả</label>
-                                <textarea name="description" class="form-control custom-input" rows="4" placeholder="Viết mô tả ngắn gọn giúp mọi người dễ tìm kiếm hơn..."></textarea>
+                                <label class="fw-bold">Mô tả *</label>
+                                <textarea name="description" class="form-control custom-input" rows="4" placeholder="Viết mô tả ngắn gọn giúp mọi người dễ tìm kiếm hơn..." required></textarea>
                             </div>
 
                             <div class="d-flex justify-content-between mt-4">

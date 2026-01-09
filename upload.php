@@ -111,8 +111,8 @@ function formatSizeUnits($bytes)
                         <th>Môn học</th>
                         <th>Kiểm duyệt</th>
                         <th>Hiển thị</th>
-                        <th>Thống kê</th>
-                        <th>Thao tác</th>
+                        <th width="140" >Thống kê</th>
+                        <th width="180">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -144,7 +144,7 @@ function formatSizeUnits($bytes)
 
                                 <td class="text-center">
                                     <?php if ($row['is_visible'] == 1): ?>
-                                        <span class="text-success" title="Tài liệu đang hiển thị trên hệ thống">
+                                        <span class="text-success" title="Tài liệu đang hiển thị trên hệ thống" style="font-size: 14px;">
                                             <i class="fa fa-eye"></i> Hiển thị
                                         </span>
                                     <?php else: ?>
@@ -162,7 +162,9 @@ function formatSizeUnits($bytes)
                                 <td>
                                     <a href="preview_my_doc.php?id=<?= $row['document_id'] ?>" class="btn btn-sm btn-outline-success" title="Xem trước"><i class="fa fa-eye"></i></a>
                                     <a href="download_my_doc.php?id=<?= $row['document_id'] ?>" class="btn btn-sm btn-outline-secondary" title="Tải về"><i class="fa fa-download"></i></a>
-                                    <a href="edit_document.php?id=<?= $row['document_id'] ?>" class="btn btn-sm btn-outline-primary" title="Sửa"><i class="fa fa-edit"></i></a>
+                                    <?php if ($row['status'] != 'approved'): ?>
+                                        <a href="edit_document.php?id=<?= $row['document_id'] ?>" class="btn btn-sm btn-outline-primary" title="Sửa"><i class="fa fa-edit"></i></a>
+                                    <?php endif; ?>
                                     <a href="?delete_id=<?= $row['document_id'] ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa tài liệu này?')" title="Xóa"><i class="fa fa-trash"></i></a>
                                 </td>
                             </tr>

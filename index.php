@@ -63,6 +63,7 @@ $sqlFeatured = "
       AND is_visible = 1
       AND downloads > 0
     ORDER BY downloads DESC
+    LIMIT 10
 ";
 
 $rsFeatured = mysqli_query($conn, $sqlFeatured);
@@ -99,7 +100,12 @@ while ($row = mysqli_fetch_assoc($rsFeatured)) {
         Cùng nhau chia sẻ tiếp cận nguồn tài liệu học tập chất lượng và miễn phí!
     </span>
 </div>
+
 <div class="container mt-4">
+
+<?php include 'featured_document.php' ?>
+
+    <!-- TÀI LIỆU NỔI BẬT -->
     <?php if (!empty($featuredDocs)): ?>
         <section class="featured-section mt-5">
             <div class="featured-header">
@@ -269,10 +275,8 @@ while ($row = mysqli_fetch_assoc($rsFeatured)) {
 <!-- MODAL -->
 <div id="docModal" class="doc-modal">
     <button class="close-modal"><i class="fas fa-times"></i></button>
-
     <div class="modal-body d-flex gap-3">
         <img id="modalThumb" src="" class="modal-thumb">
-
         <div>
             <div class="d-flex gap-4 text-muted mt-2 mb-2" style="font-size:14px;">
                 <span><b id="modalPageCount">0</b> trang</span>
@@ -281,10 +285,8 @@ while ($row = mysqli_fetch_assoc($rsFeatured)) {
                 <span class="dot">•</span>                
                 <span><b id="modalDownloadCount">0</b> lượt tải</span>                
             </div>
-
             <h5 id="modalTitle"></h5>
             <p id="modalDesc" class="text-muted"></p>
-
             <div class="modal-actions mt-3">
                 <a id="modalView" class="btn btn-success btn-sm"><i class="far fa-eye"></i> Xem tài liệu</a>
                 <a id="modalDownload" class="btn btn-outline-dark btn-sm"><i class="fas fa-download"></i> Tải xuống</a>

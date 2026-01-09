@@ -34,6 +34,27 @@ if (isset($_POST['save_category'])) {
     $description = trim($_POST['description']);
     $status = (int)$_POST['status'];
 
+    // --- BẮT ĐẦU PHẦN THÊM: Xử lý Ảnh đại diện ---
+    $image_name = $_POST['old_image'] ?? ''; // Giữ ảnh cũ nếu không up ảnh mới
+    if (!empty($_FILES['image']['name'])) {
+        $file = $_FILES['image'];
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $allowed = ['jpg', 'jpeg', 'png', 'webp'];
+
+        if (in_array($ext, $allowed)) {
+            $image_name = time() . '_' . uniqid() . '.' . $ext;
+            $upload_dir = '../uploads/categories/';
+            if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
+
+            if (move_uploaded_file($file['tmp_name'], $upload_dir . $image_name)) {
+                // Xóa ảnh cũ nếu đang ở chế độ Sửa
+                if ($id > 0 && !empty($_POST['old_image']) && file_exists($upload_dir . $_POST['old_image'])) {
+                    @unlink($upload_dir . $_POST['old_image']);
+                }
+            }
+        }
+    }
+
     // KIỂM TRA TRÙNG TÊN
     $check_sql = "SELECT category_id FROM categories WHERE name = ? AND category_id != ?";
     $check_stmt = mysqli_prepare($conn, $check_sql);
@@ -52,18 +73,15 @@ if (isset($_POST['save_category'])) {
 
     // NẾU KHÔNG LỖI THÌ THÊM / SỬA
     if (empty($message)) {
-
         if ($id > 0) {
-            // SỬA
-            $sql = "UPDATE categories SET name=?, description=?, status=? WHERE category_id=?";
+            $sql = "UPDATE categories SET name=?, description=?, status=?, image=? WHERE category_id=?";
             $stmt = mysqli_prepare($conn, $sql);
-            mysqli_stmt_bind_param($stmt, "ssii", $name, $description, $status, $id);
+            mysqli_stmt_bind_param($stmt, "ssisi", $name, $description, $status, $image_name, $id);
             $success_msg = "Cập nhật chủ đề thành công!";
         } else {
-            // THÊM
-            $sql = "INSERT INTO categories (name, description, status) VALUES (?, ?, ?)";
+            $sql = "INSERT INTO categories (name, description, status, image) VALUES (?, ?, ?, ?)";
             $stmt = mysqli_prepare($conn, $sql);
-            mysqli_stmt_bind_param($stmt, "ssi", $name, $description, $status);
+            mysqli_stmt_bind_param($stmt, "ssis", $name, $description, $status, $image_name);
             $success_msg = "Thêm chủ đề thành công!";
         }
 
@@ -170,7 +188,7 @@ $total_pages = ceil($total_records / $limit);
         <!-- ================= FORM ================= -->
         <?php if ($current_view == 'form'): ?>
 
-            <form method="POST" action="">
+            <form method="POST" action="" enctype="multipart/form-data">
 
                 <input type="hidden" name="category_id" value="<?= htmlspecialchars($data['category_id']) ?>">
 
@@ -178,6 +196,16 @@ $total_pages = ceil($total_records / $limit);
                     <label class="form-label fw-bold">Tên chủ đề *</label>
                     <input type="text" name="name" class="form-control"
                         value="<?= htmlspecialchars($data['name']) ?>" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Ảnh đại diện</label>
+                    <input type="file" name="image" class="form-control" accept="image/*">
+                    <?php if (!empty($data['image'])): ?>
+                        <div class="mt-2">
+                            <img src="../uploads/categories/<?= $data['image'] ?>" width="100" class="img-thumbnail">
+                        </div>
+                    <?php endif; ?>
                 </div>
 
                 <div class="mb-3">
@@ -231,6 +259,7 @@ $total_pages = ceil($total_records / $limit);
                 <table class="table table-bordered table-striped table-hover">
                     <thead class="table-light">
                         <tr>
+                            <th>Ảnh</th>
                             <th>Tên chủ đề</th>
                             <th>Mô tả</th>
                             <th width="110">Trạng thái</th>
@@ -257,6 +286,13 @@ $total_pages = ceil($total_records / $limit);
                         <?php else: ?>
                             <?php while ($row = mysqli_fetch_assoc($result)): ?>
                                 <tr>
+                                    <td>
+                                        <?php if (!empty($row['image'])): ?>
+                                            <img src="../uploads/categories/<?= $row['image'] ?>" width="50" height="50" style="object-fit: cover;">
+                                        <?php else: ?>
+                                            <span class="text-muted small">N/A</span>
+                                        <?php endif; ?>
+                                    </td>
                                     <td><strong><?= htmlspecialchars($row['name']) ?></strong></td>
                                     <td><?= htmlspecialchars($row['description']) ?></td>
 

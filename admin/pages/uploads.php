@@ -22,7 +22,7 @@ if (isset($_GET['approve'])) {
             approved_at=NOW(),
             approved_by='$user'
         WHERE document_id=$id
-          AND uploader_role='user'
+        AND uploader_role='user'
     ");
 
     echo "<script>alert('Đã duyệt tài liệu!');location.href='?p=uploads'</script>";

@@ -91,6 +91,9 @@ if ($doc['file_type'] === 'pdf') {
 $thumbnail = !empty($doc['thumbnail'])
     ? "uploads/thumbnails/" . $doc['thumbnail']
     : "assets/img/default-document.jpg";
+
+// $sqlComments = "SELECT * FROM comments WHERE document_id = $document_id ORDER BY created_at DESC";
+// $resultComments = mysqli_query($conn, $sqlComments);
 ?>
 
 <div class="container-fluid mrt">
@@ -145,12 +148,23 @@ $thumbnail = !empty($doc['thumbnail'])
                         <?= nl2br(htmlspecialchars($doc['description'])) ?>
                     </p>
 
+                    <div class="document-metadata py-3 mb-2 d-flex">
+                        <div class="align-items-center mb-2">
+                            <i class="fas fa-th"></i>
+                            <span class="me-2">Chủ đề:</span>
+                            <span class="border p-1" style="border-radius: 10px; font-size: 14px; background-color: #ebebeb;"><?= htmlspecialchars($doc['sub_name']) ?></span>
+                        </div>
+                        <div class="align-items-end text-muted ms-auto">
+                            <i class="fas fa-user" style="font-size: 14px;"></i>
+                            <span><?= htmlspecialchars($doc['username'] ?? 'Người dùng') ?></span>
+                        </div>
+                    </div>
+
                     <!-- NÚT CHỨC NĂNG -->
                     <div class="d-flex justify-content-between text-center mb-3">
-
                         <!-- LƯU -->
                         <button
-                            class="btn btn-light border flex-fill mx-1 py-3 btn-save" data-id="<?= $doc['document_id'] ?>">
+                            class="btn btn-light border flex-fill mx-1 py-2 btn-save" data-id="<?= $doc['document_id'] ?>">
                             <i class="<?= $isSaved ? 'fas' : 'far' ?> fa-bookmark fs-5 d-block mb-1"></i>
 
                             <span class="small">
@@ -160,19 +174,22 @@ $thumbnail = !empty($doc['thumbnail'])
 
                         <!-- TẢI -->
                         <a href="download.php?id=<?= $document_id ?>"
-                            class="btn btn-light border flex-fill mx-1 py-3">
+                            class="btn btn-light border flex-fill mx-1 py-2">
                             <i class="fas fa-download fs-5 d-block mb-1"></i>
                             <span class="small">Tải</span>
                         </a>
 
                         <!-- CHIA SẺ -->
-                        <button class="btn btn-light border flex-fill mx-1 py-3"
+                        <button class="btn btn-light border flex-fill mx-1 py-2"
                             data-bs-toggle="modal" data-bs-target="#shareModal">
                             <i class="fas fa-share-alt fs-5 d-block mb-1"></i>
                             <span class="small">Chia sẻ</span>
                         </button>
                     </div>
-
+                    
+                    <!-- Comments -->
+                    <?php include 'comments.php' ?>
+                    <!-- Comments -->
                 </div>
             </div>
         </div>
@@ -258,7 +275,7 @@ $thumbnail = !empty($doc['thumbnail'])
                                     <?php endif; ?>
 
                                     <?php
-                                        $isRelatedSaved = in_array($r['document_id'], $savedDocs);
+                                    $isRelatedSaved = in_array($r['document_id'], $savedDocs);
                                     ?>
 
                                     <button
