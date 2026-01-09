@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th1 08, 2026 lúc 06:17 AM
+-- Thời gian đã tạo: Th1 09, 2026 lúc 10:04 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -31,6 +31,7 @@ CREATE TABLE `categories` (
   `category_id` int(10) NOT NULL,
   `name` varchar(100) NOT NULL,
   `description` text NOT NULL,
+  `image` varchar(255) DEFAULT NULL,
   `status` int(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -38,15 +39,15 @@ CREATE TABLE `categories` (
 -- Đang đổ dữ liệu cho bảng `categories`
 --
 
-INSERT INTO `categories` (`category_id`, `name`, `description`, `status`) VALUES
-(1, 'Công Nghệ Thông Tin', '“Tổng hợp tài liệu, giáo trình và khóa học liên quan đến lập trình, mạng máy tính, cơ sở dữ liệu, bảo mật và các lĩnh vực trong ngành Công Nghệ Thông Tin.”', 0),
-(2, 'Tài Chính - Ngân Hàng', '“Tổng hợp tài liệu, giáo trình và khóa học liên quan đến tài chính, ngân hàng, kế toán, đầu tư, quản trị rủi ro và các lĩnh vực chuyên môn trong ngành Tài Chính – Ngân Hàng.”', 0),
-(3, 'Tiếng Anh - Ngoại Ngữ', '“Tổng hợp tài liệu, giáo trình và khóa học về tiếng Anh và các ngoại ngữ khác, bao gồm ngữ pháp, từ vựng, kỹ năng nghe – nói – đọc – viết và tài liệu luyện thi chứng chỉ quốc tế.”', 0),
-(4, 'Kỹ Thuật - Công Nghệ', '“Tổng hợp tài liệu, giáo trình và khóa học về kỹ thuật và công nghệ, bao gồm cơ khí, điện – điện tử, tự động hóa, kỹ thuật công trình và các lĩnh vực ứng dụng khoa học kỹ thuật.”', 0),
-(5, 'Khoa Học - Xã Hội', '“Tổng hợp tài liệu, giáo trình và khóa học liên quan đến khoa học xã hội, bao gồm tâm lý học, xã hội học, triết học, lịch sử, văn hóa và các lĩnh vực nghiên cứu về con người và xã hội.”', 0),
-(6, 'Khoa Học - Tự Nhiên', '“Tổng hợp tài liệu, giáo trình và khóa học về khoa học tự nhiên, bao gồm toán học, vật lý, hóa học, sinh học, môi trường và các lĩnh vực nghiên cứu quy luật tự nhiên.”', 0),
-(7, 'Y - Dược - Sức Khỏe', '“Tổng hợp tài liệu, giáo trình và khóa học về y học, dược học và chăm sóc sức khỏe, bao gồm kiến thức bệnh học, dược lý, điều dưỡng, dinh dưỡng và các lĩnh vực hỗ trợ y tế.”', 0),
-(8, 'Nông - Lâm - Thủy Sản', '“Tổng hợp tài liệu, giáo trình và khóa học về Nông – Lâm – Thủy Sản, bao gồm trồng trọt, chăn nuôi, lâm nghiệp, nuôi trồng thủy sản, bảo vệ thực vật và các lĩnh vực phục vụ sản xuất nông nghiệp.”', 0);
+INSERT INTO `categories` (`category_id`, `name`, `description`, `image`, `status`) VALUES
+(1, 'Công Nghệ Thông Tin', '“Tổng hợp tài liệu, giáo trình và khóa học liên quan đến lập trình, mạng máy tính, cơ sở dữ liệu, bảo mật và các lĩnh vực trong ngành Công Nghệ Thông Tin.”', '1767940731_6960a27b237d5.jpg', 0),
+(2, 'Tài Chính - Ngân Hàng', '“Tổng hợp tài liệu, giáo trình và khóa học liên quan đến tài chính, ngân hàng, kế toán, đầu tư, quản trị rủi ro và các lĩnh vực chuyên môn trong ngành Tài Chính – Ngân Hàng.”', '1767940883_6960a313cfc02.jpeg', 0),
+(3, 'Tiếng Anh - Ngoại Ngữ', '“Tổng hợp tài liệu, giáo trình và khóa học về tiếng Anh và các ngoại ngữ khác, bao gồm ngữ pháp, từ vựng, kỹ năng nghe – nói – đọc – viết và tài liệu luyện thi chứng chỉ quốc tế.”', '1767940647_6960a227e1711.jpg', 0),
+(4, 'Kỹ Thuật - Công Nghệ', '“Tổng hợp tài liệu, giáo trình và khóa học về kỹ thuật và công nghệ, bao gồm cơ khí, điện – điện tử, tự động hóa, kỹ thuật công trình và các lĩnh vực ứng dụng khoa học kỹ thuật.”', '1767940660_6960a234d19b7.jpg', 0),
+(5, 'Khoa Học - Xã Hội', '“Tổng hợp tài liệu, giáo trình và khóa học liên quan đến khoa học xã hội, bao gồm tâm lý học, xã hội học, triết học, lịch sử, văn hóa và các lĩnh vực nghiên cứu về con người và xã hội.”', '1767940989_6960a37dd0c14.jpg', 0),
+(6, 'Khoa Học - Tự Nhiên', '“Tổng hợp tài liệu, giáo trình và khóa học về khoa học tự nhiên, bao gồm toán học, vật lý, hóa học, sinh học, môi trường và các lĩnh vực nghiên cứu quy luật tự nhiên.”', '1767941052_6960a3bc29f16.jpg', 0),
+(7, 'Y - Dược - Sức Khỏe', '“Tổng hợp tài liệu, giáo trình và khóa học về y học, dược học và chăm sóc sức khỏe, bao gồm kiến thức bệnh học, dược lý, điều dưỡng, dinh dưỡng và các lĩnh vực hỗ trợ y tế.”', '1767940007_69609fa740a4e.jpg', 0),
+(8, 'Nông - Lâm - Thủy Sản', '“Tổng hợp tài liệu, giáo trình và khóa học về Nông – Lâm – Thủy Sản, bao gồm trồng trọt, chăn nuôi, lâm nghiệp, nuôi trồng thủy sản, bảo vệ thực vật và các lĩnh vực phục vụ sản xuất nông nghiệp.”', '1767939957_69609f757e919.jpg', 0);
 
 -- --------------------------------------------------------
 
@@ -56,11 +57,21 @@ INSERT INTO `categories` (`category_id`, `name`, `description`, `status`) VALUES
 
 CREATE TABLE `comments` (
   `comment_id` int(11) NOT NULL,
-  `username` int(11) NOT NULL,
-  `content` int(11) NOT NULL,
+  `username` varchar(50) DEFAULT NULL,
+  `content` text DEFAULT NULL,
   `document_id` int(10) NOT NULL,
-  `status` int(10) NOT NULL
+  `parent_id` int(11) DEFAULT 0,
+  `status` int(10) NOT NULL,
+  `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `comments`
+--
+
+INSERT INTO `comments` (`comment_id`, `username`, `content`, `document_id`, `parent_id`, `status`, `created_at`) VALUES
+(1, 'hanhan', 'Tài liệu hay quá ', 22, 0, 0, '2026-01-09 14:58:36'),
+(2, 'admin', 'Cảm ơn bạn', 22, 1, 0, '2026-01-09 15:39:20');
 
 -- --------------------------------------------------------
 
@@ -95,41 +106,42 @@ CREATE TABLE `documents` (
 --
 
 INSERT INTO `documents` (`document_id`, `title`, `description`, `thumbnail`, `file_path`, `file_type`, `file_size`, `subcategory_id`, `status`, `is_visible`, `approved_at`, `approved_by`, `username`, `uploader_role`, `views`, `share_link`, `downloads`, `created_at`, `updated_at`) VALUES
-(8, 'Bài giảng Hệ quản trị và an toàn cơ sở dữ liệu: Chương 4 - Hệ quản trị cơ sở dữ liệu phi quan hệ', 'Bài giảng Hệ quản trị và an toàn cơ sở dữ liệu: Chương 4 giới thiệu về hệ quản trị CSDL phi quan hệ NoSQL, MongoDB, các kiến thức về khái niệm, ưu nhược điểm và cách sử dụng MongoDB.', '1766460687_thumb_IT1.jpg', '1766460687_BaoCaoDoAnCN.pdf', 'pdf', 0, 7, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 72, '1766417512_LapTrinhHTML.pdf', 2, '2026-01-05 23:55:23', '2026-01-07 12:32:54'),
+(8, 'Bài giảng Hệ quản trị và an toàn cơ sở dữ liệu: Chương 4 - Hệ quản trị cơ sở dữ liệu phi quan hệ', 'Bài giảng Hệ quản trị và an toàn cơ sở dữ liệu: Chương 4 giới thiệu về hệ quản trị CSDL phi quan hệ NoSQL, MongoDB, các kiến thức về khái niệm, ưu nhược điểm và cách sử dụng MongoDB.', '1766460687_thumb_IT1.jpg', '1766460687_BaoCaoDoAnCN.pdf', 'pdf', 0, 7, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 81, '1766417512_LapTrinhHTML.pdf', 2, '2026-01-05 23:55:23', '2026-01-09 12:42:58'),
 (9, 'Bài giảng An toàn thông tin trong cơ sở dữ liệu: Chương 5 - Phát hiện xâm nhập trái phép', 'Bài giảng An toàn thông tin trong cơ sở dữ liệu: Chương 5 về phát hiện xâm nhập trái phép vào CSDL; tìm hiểu các loại tấn công (bí mật, toàn vẹn), mô hình đe dọa (quản trị, nhân viên, hacker) và giải pháp bảo mật.', '1766460788_thumb_IT2.jpg', '1766460788_HuynhKhanhDuy_DeCuongChiTiet.pdf', 'pdf', 0, 8, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 45, '1766419930_HuynhKhanhDuy_DeCuongChiTiet.pdf', 2, '2026-01-05 23:55:23', '2026-01-06 21:48:35'),
 (10, 'Bài giảng Nhập môn tài chính ngân hàng - Chương 7: Tài chính quốc tế', 'Chương 7 giới thiệu về tài chính quốc tế qua các nội dung: Sự hình thành các tổ chức tài chính quốc tế; Phân loại các tổ chức tài chính quốc tế; Vai trò của các tổ chức tài chính quốc tế; Một số tổ chức tài chính quốc tế.', '1766459909_thumb_C7.jpg', '1766459909_BaoCaoDoAnCN.pdf', 'pdf', 0, 16, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 0, '1766459909_BaoCaoDoAnCN.pdf', 0, '2026-01-05 23:55:23', '2026-01-06 10:19:27'),
-(11, 'Giáo trình Anh văn chuyên ngành (Ngành: Hướng dẫn du lịch - Trung cấp) - Trường Trung cấp Mỹ thuật - Văn hóa Bình Dương', 'Giáo trình Anh văn chuyên ngành du lịch (trình độ Trung cấp) trang bị kiến thức, kỹ năng giao tiếp tiếng Anh cơ bản trong ngành du lịch: đặt phòng, vé máy bay, hướng dẫn khách.', '1766460892_thumb_El1.jpg', '1766460892_BaoCaoDoAnCN.pdf', 'pdf', 0, 15, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 2, '1766459977_LapTrinhHTML.pdf', 0, '2026-01-05 23:55:23', '2026-01-06 10:19:27'),
-(12, 'Bài giảng Định dạng văn bản', 'Bài giảng Định dạng văn bản trình bày các nội dung về: Tổng quan, định dạng, bảng biểu, style, trộn thư, thiết lập trang, review và tiếng Việt.', '1766461022_thumb_IT3.jpg', '1766461022_BaoCaoDoAnCN.pdf', 'pdf', 0, 5, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 1, '1766461022_BaoCaoDoAnCN.pdf', 0, '2026-01-05 23:55:23', '2026-01-06 10:19:27'),
-(13, 'Tài liệu học tập Tin ứng dụng trong kinh doanh', 'Tài liệu \"Tin ứng dụng trong kinh doanh\" hướng dẫn sinh viên ngành TàiQuản trị kinh doanh sử dụng Excel để phân tích dữ liệu. Nội dung gồm Excel cơ bản, cơ sở dữ liệu, và các tính năng nâng cao như Goal Seek, Solver.', '1766461086_thumb_IT4.jpg', '1766461086_HuynhKhanhDuy_DeCuongChiTiet.pdf', 'pdf', 0, 5, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 5, '1766461086_HuynhKhanhDuy_DeCuongChiTiet.pdf', 0, '2026-01-05 23:55:23', '2026-01-07 15:22:57'),
+(11, 'Giáo trình Anh văn chuyên ngành (Ngành: Hướng dẫn du lịch - Trung cấp) - Trường Trung cấp Mỹ thuật - Văn hóa Bình Dương', 'Giáo trình Anh văn chuyên ngành du lịch (trình độ Trung cấp) trang bị kiến thức, kỹ năng giao tiếp tiếng Anh cơ bản trong ngành du lịch: đặt phòng, vé máy bay, hướng dẫn khách.', '1766460892_thumb_El1.jpg', '1766460892_BaoCaoDoAnCN.pdf', 'pdf', 0, 15, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 4, '1766459977_LapTrinhHTML.pdf', 1, '2026-01-05 23:55:23', '2026-01-09 15:50:07'),
+(12, 'Bài giảng Định dạng văn bản', 'Bài giảng Định dạng văn bản trình bày các nội dung về: Tổng quan, định dạng, bảng biểu, style, trộn thư, thiết lập trang, review và tiếng Việt.', '1766461022_thumb_IT3.jpg', '1766461022_BaoCaoDoAnCN.pdf', 'pdf', 0, 5, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 23, '1766461022_BaoCaoDoAnCN.pdf', 0, '2026-01-05 23:55:23', '2026-01-09 15:56:40'),
+(13, 'Tài liệu học tập Tin ứng dụng trong kinh doanh', 'Tài liệu \"Tin ứng dụng trong kinh doanh\" hướng dẫn sinh viên ngành TàiQuản trị kinh doanh sử dụng Excel để phân tích dữ liệu. Nội dung gồm Excel cơ bản, cơ sở dữ liệu, và các tính năng nâng cao như Goal Seek, Solver.', '1766461086_thumb_IT4.jpg', '1766461086_HuynhKhanhDuy_DeCuongChiTiet.pdf', 'pdf', 0, 5, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 6, '1766461086_HuynhKhanhDuy_DeCuongChiTiet.pdf', 0, '2026-01-05 23:55:23', '2026-01-08 21:21:42'),
 (14, 'Ngân hàng câu hỏi môn Linux và mã nguồn mở', 'Tài liệu về Linux và mã nguồn mở: giới thiệu khái niệm, lịch sử, lợi ích, giấy phép (Apache, BSD, GNU GPL, MIT), và các phần mềm phổ biến (Drupal, GIMP).', '1766461161_thumb_IT5.jpg', '1766461161_BaoCaoDoAnCN.pdf', 'pdf', 0, 5, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 16, '1766461161_BaoCaoDoAnCN.pdf', 2, '2026-01-05 23:55:23', '2026-01-07 15:18:47'),
-(15, 'Ngân hàng câu hỏi trắc nghiệm Kỹ năng sử dụng công nghệ thông tin (Cơ bản và nâng cao)', 'Ngân hàng câu hỏi trắc nghiệm Kỹ năng sử dụng công nghệ thông tin bao gồm các module từ cơ bản đến nâng cao như: Hiểu biết về CNTT cơ bản; sử dụng máy tính cơ bản; xử lý văn bản cơ bản.', '1766461235_thumb_IT6.jpg', '1766461235_HuynhKhanhDuy_DeCuongChiTiet.pdf', 'pdf', 0, 5, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 4, '1766461235_HuynhKhanhDuy_DeCuongChiTiet.pdf', 0, '2026-01-05 23:55:23', '2026-01-06 22:49:02'),
+(15, 'Ngân hàng câu hỏi trắc nghiệm Kỹ năng sử dụng công nghệ thông tin (Cơ bản và nâng cao)', 'Ngân hàng câu hỏi trắc nghiệm Kỹ năng sử dụng công nghệ thông tin bao gồm các module từ cơ bản đến nâng cao như: Hiểu biết về CNTT cơ bản; sử dụng máy tính cơ bản; xử lý văn bản cơ bản.', '1766461235_thumb_IT6.jpg', '1766461235_HuynhKhanhDuy_DeCuongChiTiet.pdf', 'pdf', 0, 5, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 45, '1766461235_HuynhKhanhDuy_DeCuongChiTiet.pdf', 0, '2026-01-05 23:55:23', '2026-01-09 14:57:36'),
 (16, 'Bài giảng Khoa học máy tính: Quản lý một Oracle Instance', 'Bài giảng hướng dẫn về quản lý Oracle Instance gồm các thao tác sau: tạo và quản lý các file tham số (PFILE, SPFILE), khởi động và tắt một instance, thay đổi các trạng thái khởi động Instance.', '1766461357_thumb_IT7.jpg', '1766461357_BaoCaoDoAnCN.pdf', 'pdf', 0, 6, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 1, '1766461357_BaoCaoDoAnCN.pdf', 0, '2026-01-05 23:55:23', '2026-01-06 10:19:27'),
-(17, 'Bài giảng Khoa học máy tính: Các thành phần cấu trúc của Oracle', 'Bài giảng trình bày về cấu trúc của Oracle bao gồm: Oracle Server (Instance, Database), file dữ liệu (Data, Redo Log, Control), file tham số, file mật khẩu và Archived Log.', '1766461418_thumb_IT7.jpg', '1766461418_BaoCaoDoAnCN.pdf', 'pdf', 0, 6, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 1, '1766461418_BaoCaoDoAnCN.pdf', 0, '2026-01-05 23:55:23', '2026-01-07 12:56:52'),
+(17, 'Bài giảng Khoa học máy tính: Các thành phần cấu trúc của Oracle', 'Bài giảng trình bày về cấu trúc của Oracle bao gồm: Oracle Server (Instance, Database), file dữ liệu (Data, Redo Log, Control), file tham số, file mật khẩu và Archived Log.', '1766461418_thumb_IT7.jpg', '1766461418_BaoCaoDoAnCN.pdf', 'pdf', 0, 6, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 2, '1766461418_BaoCaoDoAnCN.pdf', 0, '2026-01-05 23:55:23', '2026-01-08 12:18:58'),
 (18, 'Bài giảng Ngôn ngữ hình thức và Ôtômát: Chương 5 - Ôtômat đẩy xuống', 'Bài giảng Ngôn ngữ hình thức và Ôtômát: Chương 5 giới thiệu ôtômat đẩy xuống (PDA), mô hình tính toán cho ngôn ngữ phi ngữ cảnh.', '1766461489_thumb_IT8.jpg', '1766461489_BaoCaoDoAnCN.pdf', 'pdf', 0, 6, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 2, '1766461489_BaoCaoDoAnCN.pdf', 0, '2026-01-05 23:55:23', '2026-01-07 12:36:30'),
 (19, 'Bài giảng Lập trình C++', 'Bài giảng Lập trình C++ Tổng quan về lập trình hướng đối tượng (OOP) và C++: khái niệm, cú pháp, tính năng. OOP: đối tượng, lớp, trừu tượng, bao gói, kế thừa, đa hình. C++: mở rộng C, vào/ra, cấp phát bộ nhớ, hàm, tải bội, lớp, toán tử, Stream.', '1766461550_thumb_IT9.jpg', '1766461550_HuynhKhanhDuy_DeCuongChiTiet.pdf', 'pdf', 0, 6, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 1, '1766461550_HuynhKhanhDuy_DeCuongChiTiet.pdf', 0, '2026-01-05 23:55:23', '2026-01-06 10:19:27'),
-(20, 'Bài giảng Cơ sở dữ liệu: Chương 7 - Truy vấn dữ liệu', 'Bài giảng Cơ sở dữ liệu: Chương 7 tổng quan về SQL gồm: ngôn ngữ truy vấn cấu trúc, môi trường SQL (Catalog, Schema, DDL, DML, DCL), kiểu dữ liệu, câu lệnh SELECT FROM, GROUP BY, HAVING.', '1766461626_thumb_IT10.jpg', '1766461626_BaoCaoDoAnCN.pdf', 'pdf', 0, 7, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 3, '1766461626_BaoCaoDoAnCN.pdf', 1, '2026-01-05 23:55:23', '2026-01-06 10:19:27'),
+(20, 'Bài giảng Cơ sở dữ liệu: Chương 7 - Truy vấn dữ liệu', 'Bài giảng Cơ sở dữ liệu: Chương 7 tổng quan về SQL gồm: ngôn ngữ truy vấn cấu trúc, môi trường SQL (Catalog, Schema, DDL, DML, DCL), kiểu dữ liệu, câu lệnh SELECT FROM, GROUP BY, HAVING.', '1766461626_thumb_IT10.jpg', '1766461626_BaoCaoDoAnCN.pdf', 'pdf', 0, 7, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 4, '1766461626_BaoCaoDoAnCN.pdf', 1, '2026-01-05 23:55:23', '2026-01-08 21:11:43'),
 (21, 'Bộ câu hỏi ôn tập môn Khai phá dữ liệu (Data Mining)', 'Tài liệu ôn tập Data Mining trình bày nội dung chính về: Khái niệm, quy trình KDD, thuật toán Apriori, FP-Growth, tiền xử lý dữ liệu, phân cụm, phân lớp, luật kết hợp, Big Data.', '1766461686_thumb_IT11.jpg', '1766461686_BaoCaoDoAnCN.pdf', 'pdf', 0, 7, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 1, '1766461686_BaoCaoDoAnCN.pdf', 0, '2026-01-05 23:55:23', '2026-01-07 15:18:53'),
-(22, 'Một thuật toán khai thác tập lợi ích cao liên quan có lợi nhuận âm', 'Bài viết trình bày phương pháp đề xuất nhằm phát hiện và khai thác các tập mục có lợi ích cao trong trường hợp lợi nhuận mang giá trị âm, góp phần mở rộng hướng tiếp cận trong lĩnh vực khai thác dữ liệu.', '1766461745_thumb_IT12.jpg', '1766461745_HuynhKhanhDuy_DeCuongChiTiet.pdf', 'pdf', 0, 7, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 16, '1766461745_HuynhKhanhDuy_DeCuongChiTiet.pdf', 0, '2026-01-05 23:55:23', '2026-01-07 12:37:11'),
+(22, 'Một thuật toán khai thác tập lợi ích cao liên quan có lợi nhuận âm', 'Bài viết trình bày phương pháp đề xuất nhằm phát hiện và khai thác các tập mục có lợi ích cao trong trường hợp lợi nhuận mang giá trị âm, góp phần mở rộng hướng tiếp cận trong lĩnh vực khai thác dữ liệu.', '1766461745_thumb_IT12.jpg', '1766461745_HuynhKhanhDuy_DeCuongChiTiet.pdf', 'pdf', 0, 7, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 91, '1766461745_HuynhKhanhDuy_DeCuongChiTiet.pdf', 0, '2026-01-05 23:55:23', '2026-01-09 15:56:17'),
 (23, 'Bài giảng An toàn và bảo mật thông tin', 'Bài giảng về an toàn và bảo mật thông tin (ATBM TT) trong hệ thống thông tin doanh nghiệp: Khái niệm, quy trình, rủi ro, biện pháp bảo vệ và pháp luật liên quan.', '1766461827_thumb_IT13.jpg', '1766461827_BaoCaoDoAnCN.pdf', 'pdf', 0, 8, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 2, '1766461827_BaoCaoDoAnCN.pdf', 0, '2026-01-05 23:55:23', '2026-01-06 11:01:02'),
-(24, 'Lecture Cryptography: Cryptography Applications (Part 1) - PhD. Ngoc-Tu Nguyen', 'Lecture Cryptography: Cryptography Applications (Part 1) introduces real-world applications of cryptographic principles in authentication, key negotiation, and secure protocols. Topics include SSL/TLS, IPSec, SSH, and Kerberos. The lecture emphasizes practical implementation in networks and systems. Please refer to the lecture for more details!', '1766461897_thumb_IT16.jpg', '1766461897_BaoCaoDoAnCN.pdf', 'pdf', 0, 8, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 0, '1766461897_BaoCaoDoAnCN.pdf', 0, '2026-01-05 23:55:23', '2026-01-06 10:19:27'),
+(24, 'Lecture Cryptography: Cryptography Applications (Part 1) - PhD. Ngoc-Tu Nguyen', 'Lecture Cryptography: Cryptography Applications (Part 1) introduces real-world applications of cryptographic principles in authentication, key negotiation, and secure protocols. Topics include SSL/TLS, IPSec, SSH, and Kerberos. The lecture emphasizes practical implementation in networks and systems. Please refer to the lecture for more details!', '1766461897_thumb_IT16.jpg', '1766461897_BaoCaoDoAnCN.pdf', 'pdf', 0, 8, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 2, '1766461897_BaoCaoDoAnCN.pdf', 0, '2026-01-05 23:55:23', '2026-01-09 14:10:10'),
 (25, 'Giáo trình An toàn mạng (Nghề: Quản trị mạng máy tính - Trình độ: Cao đẳng) - Trường Cao đẳng Thủ Thiêm', 'Giáo trình An toàn mạng cung cấp kiến thức cơ bản về bảo mật mạng, mã hóa thông tin, NAT, tường lửa, ACL, và phòng chống virus. Tài liệu dành cho sinh viên Quản trị Mạng.', '1766461960_thumb_IT7.jpg', '1766461960_BaoCaoDoAnCN.pdf', 'pdf', 0, 8, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 13, '1766461960_BaoCaoDoAnCN.pdf', 0, '2026-01-05 23:55:23', '2026-01-06 22:49:07'),
 (26, 'Bài giảng Thiết kế hướng đối tượng: Chương 4 - Thiết kế hệ thống', 'Bài giảng Thiết kế hướng đối tượng: Chương 4 trình bày thiết kế hệ thống, biểu đồ lớp, kiến trúc (thành phần, triển khai) và phát sinh mã.', '1766462089_thumb_IT19.jpg', '1766462089_BaoCaoDoAnCN.pdf', 'pdf', 0, 9, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 0, '1766462089_BaoCaoDoAnCN.pdf', 0, '2026-01-05 23:55:23', '2026-01-06 10:19:27'),
 (27, 'Bài giảng Lập trình website - ThS. Trần Thịnh Mạnh Đức', 'Bài giảng Lập trình website tổng quan về lập trình website: lịch sử Internet, khái niệm mạng (server, client, giao thức, địa chỉ IP), World Wide Web và trang web.', '1766462150_thumb_IT20.jpg', '1766462150_BaoCaoDoAnCN.pdf', 'pdf', 0, 9, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 1, '1766462150_BaoCaoDoAnCN.pdf', 0, '2026-01-05 23:55:23', '2026-01-06 10:19:27'),
-(28, 'Tài liệu ôn tập môn Lập trình web 1', 'Tài liệu trình bày tổng quan lập trình web: thuật ngữ (website, URL), loại trang (tĩnh, động), hosting, database (MySQL), web application (front-end, back-end).', '1766462222_thumb_IT21.jpg', '1766462222_HuynhKhanhDuy_DeCuongChiTiet.pdf', 'pdf', 0, 9, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 4, '1766462222_HuynhKhanhDuy_DeCuongChiTiet.pdf', 1, '2026-01-05 23:55:23', '2026-01-06 10:19:27'),
-(29, 'Bài giảng Thiết kế hướng đối tượng: Chương 2 - Ngôn ngữ mô hình hóa hướng đối tượng', 'Bài giảng Thiết kế hướng đối tượng: Chương 2 giới thiệu ngôn ngữ mô hình hóa hướng đối tượng, giúp mô tả ý tưởng rõ ràng, dễ đọc, trực quan cấu trúc phức tạp và có các khung nhìn khác nhau.', '1766462285_thumb_IT19.jpg', '1766462285_BaoCaoDoAnCN.pdf', 'pdf', 0, 9, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 56, '1766462285_BaoCaoDoAnCN.pdf', 0, '2026-01-05 23:55:23', '2026-01-06 22:39:10'),
-(30, 'Phát triển ứng dụng phát hiện hư hỏng đường bộ theo thời gian thực', 'Bài viết nghiên cứu phát triển ứng dụng Android phát hiện hư hỏng đường bộ theo thời gian thực, dùng YOLOv12m để đưa ra lựa chọn giải pháp tối ưu cho triển khai thực tế.', '1766462445_thumb_ai1.jpg', '1766462445_BaoCaoDoAnCN.pdf', 'pdf', 0, 10, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 9, '1766462445_BaoCaoDoAnCN.pdf', 0, '2026-01-05 23:55:23', '2026-01-07 15:09:21'),
+(28, 'Tài liệu ôn tập môn Lập trình web 1', 'Tài liệu trình bày tổng quan lập trình web: thuật ngữ (website, URL), loại trang (tĩnh, động), hosting, database (MySQL), web application (front-end, back-end).', '1766462222_thumb_IT21.jpg', '1766462222_HuynhKhanhDuy_DeCuongChiTiet.pdf', 'pdf', 0, 9, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 8, '1766462222_HuynhKhanhDuy_DeCuongChiTiet.pdf', 1, '2026-01-05 23:55:23', '2026-01-08 21:14:30'),
+(29, 'Bài giảng Thiết kế hướng đối tượng: Chương 2 - Ngôn ngữ mô hình hóa hướng đối tượng', 'Bài giảng Thiết kế hướng đối tượng: Chương 2 giới thiệu ngôn ngữ mô hình hóa hướng đối tượng, giúp mô tả ý tưởng rõ ràng, dễ đọc, trực quan cấu trúc phức tạp và có các khung nhìn khác nhau.', '1766462285_thumb_IT19.jpg', '1766462285_BaoCaoDoAnCN.pdf', 'pdf', 0, 9, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 58, '1766462285_BaoCaoDoAnCN.pdf', 0, '2026-01-05 23:55:23', '2026-01-08 21:11:39'),
+(30, 'Phát triển ứng dụng phát hiện hư hỏng đường bộ theo thời gian thực', 'Bài viết nghiên cứu phát triển ứng dụng Android phát hiện hư hỏng đường bộ theo thời gian thực, dùng YOLOv12m để đưa ra lựa chọn giải pháp tối ưu cho triển khai thực tế.', '1766462445_thumb_ai1.jpg', '1766462445_BaoCaoDoAnCN.pdf', 'pdf', 0, 10, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 10, '1766462445_BaoCaoDoAnCN.pdf', 0, '2026-01-05 23:55:23', '2026-01-08 21:11:47'),
 (31, 'Sách bài tập AIO (Kèm bài giải; version 2025)', 'Sách bài tập AIO (2025) cung cấp kiến thức AI từ cơ bản đến nâng cao, toán học, Python, máy học, deep learning và ứng dụng thực tế. Cập nhật kiến thức mới nhất.', '1766462505_thumb_ai2.jpg', '1766462505_HuynhKhanhDuy_DeCuongChiTiet.pdf', 'pdf', 0, 10, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 13, '1766462505_HuynhKhanhDuy_DeCuongChiTiet.pdf', 0, '2026-01-05 23:55:23', '2026-01-06 10:19:27'),
-(32, 'Nguyên lý kế toán - Xác định kết quả kinh doanh', 'Tài liệu về nguyên lý kế toán, tập trung vào xác định kết quả kinh doanh: doanh thu, chi phí, lợi nhuận. Hướng dẫn phương pháp kế toán và lập báo cáo.', '1766479511_thumb_H1.jpg', '1766479511_BaoCaoDoAnCN.pdf', 'pdf', 0, 11, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 0, '1766479511_BaoCaoDoAnCN.pdf', 0, '2026-01-05 23:55:23', '2026-01-06 10:19:27'),
+(32, 'Nguyên lý kế toán - Xác định kết quả kinh doanh', 'Tài liệu về nguyên lý kế toán, tập trung vào xác định kết quả kinh doanh: doanh thu, chi phí, lợi nhuận. Hướng dẫn phương pháp kế toán và lập báo cáo.', '1766479511_thumb_H1.jpg', '1766479511_BaoCaoDoAnCN.pdf', 'pdf', 0, 11, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 6, '1766479511_BaoCaoDoAnCN.pdf', 0, '2026-01-05 23:55:23', '2026-01-08 20:58:46'),
 (33, 'Nguyên lý kế toán - Tiêu thụ sản phẩm', 'Tài liệu này trình bày nguyên lý kế toán tiêu thụ sản phẩm, bao gồm khái niệm, phương pháp hạch toán, tài khoản kế toán, doanh thu, giá vốn, chi phí bán hàng.', '1766479567_thumb_H2.jpg', '1766479567_BaoCaoDoAnCN.pdf', 'pdf', 0, 11, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 19, '1766479567_BaoCaoDoAnCN.pdf', 2, '2026-01-05 23:55:23', '2026-01-07 12:23:40'),
 (34, 'Bài tập môn Kế toán tổng hợp', 'Tài liệu này bao gồm các câu hỏi và bài tập về kế toán và thuế, cung cấp các kiến thức trọng tâm về: định khoản, thuế giá trị gia tăng và xác định giá thành sản phẩm.', '1766479698_thumb_H3.jpg', '1766479698_BaoCaoDoAnCN.pdf', 'pdf', 0, 11, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 5, '1766479698_BaoCaoDoAnCN.pdf', 0, '2026-01-05 23:55:23', '2026-01-07 12:25:34'),
-(35, 'Mối quan hệ giữa qui định kế toán và thuế tại Việt Nam: Phân tích từ góc độ lý thuyết', 'Bài viết nghiên cứu về mối quan hệ giữa kế toán và thuế ở Việt Nam, đánh giá mức độ độc lập và đề xuất giải pháp cải thiện. Phân tích qui định giai đoạn 2013-2019.', '1766479755_thumb_H3.jpg', '1766479755_BaoCaoDoAnCN.pdf', 'pdf', 0, 11, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 31, '1766479755_BaoCaoDoAnCN.pdf', 1, '2026-01-05 23:55:23', '2026-01-07 14:40:03'),
+(35, 'Mối quan hệ giữa qui định kế toán và thuế tại Việt Nam: Phân tích từ góc độ lý thuyết', 'Bài viết nghiên cứu về mối quan hệ giữa kế toán và thuế ở Việt Nam, đánh giá mức độ độc lập và đề xuất giải pháp cải thiện. Phân tích qui định giai đoạn 2013-2019.', '1766479755_thumb_H3.jpg', '1766479755_BaoCaoDoAnCN.pdf', 'pdf', 0, 11, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 33, '1766479755_BaoCaoDoAnCN.pdf', 1, '2026-01-05 23:55:23', '2026-01-09 14:12:14'),
 (36, 'Bài giảng Phân tích dữ liệu trong kiểm toán: Chương 1 - TS. Hoàng Thị Mai Lan', 'Nội dung bài giảng chương 1 trình bày tổng quan, chuẩn mực, phương pháp, tổ chức, độ tin cậy, bằng chứng, hồ sơ, ứng dụng, công cụ (Excel, Python, R, Power BI, Tableau, ACL Analytics, CaseWare IDEA), thách thức và giải pháp.', '1766479866_thumb_t1.jpg', '1766479866_HuynhKhanhDuy_DeCuongChiTiet.pdf', 'pdf', 0, 12, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 3, '1766479866_HuynhKhanhDuy_DeCuongChiTiet.pdf', 0, '2026-01-05 23:55:23', '2026-01-06 10:19:27'),
 (37, 'Hệ thống câu hỏi và bài tập trắc nghiệm thi công chức thuế năm 2014', 'Mời các bạn cùng tham khảo tài liệu \"Hệ thống câu hỏi và bài tập trắc nghiệm thi công chức thuế năm 2014\" dưới đây để có thêm tài liệu học tập và ôn thi, tài liệu cung cấp cho các bạn những câu hỏi bài tập trắc nghiệm có đáp án về thuế giá trị gia tăng, thuế thu nhập doanh nghiệp, thuế thu nhập cá nhân,... Chúc các bạn đạt kết quả cao trong kỳ thi sắp tới.', '1766479920_thumb_t2.jpg', '1766479920_HuynhKhanhDuy_DeCuongChiTiet.pdf', 'pdf', 0, 12, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 1, '1766479920_HuynhKhanhDuy_DeCuongChiTiet.pdf', 0, '2026-01-05 23:55:23', '2026-01-07 12:37:22'),
-(38, 'Tài liệu ôn thi chứng chỉ Kiểm toán và Kế toán viên - Chuyên đề 3: Thuế và quản lý thuế nâng cao', 'Nội dung chuyên đề 3 bao gồm kiến thức chung về thuế và các sắc thuế chủ yếu trong hệ thống thuế Việt Nam. Nội dung kiến thức của chuyên đề đòi hỏi người dự thi chứng chỉ kiểm toán viên và kế toán viên hành nghề phải hiểu sâu sắc nội dung những sắc thuế chủ yếu trong hệ thống thuế Việt Nam.', '1766479969_thumb_t3.jpg', '1766479969_BaoCaoDoAnCN.pdf', 'pdf', 0, 12, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 31, '1766479969_BaoCaoDoAnCN.pdf', 4, '2026-01-05 23:55:23', '2026-01-07 12:25:37'),
-(39, 'Bài tập tình huống môn Kiểm toán', 'Tài liệu gồm bài tập tình huống kiểm toán: đánh giá rủi ro, thủ tục kiểm toán, chuẩn mực đạo đức. Các tình huống kiểm toán BCTC khác nhau.', '1766480037_thumb_t4.jpg', '1766480037_BaoCaoDoAnCN.pdf', 'pdf', 0, 12, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 32, '1766480037_BaoCaoDoAnCN.pdf', 2, '2026-01-05 23:55:23', '2026-01-07 12:21:50'),
-(40, 'Bài giảng Định giá tài sản: Chương 5 - ThS. Nguyễn Minh Hiền', 'Bài giảng Định giá tài sản: Chương 5 về định giá doanh nghiệp, bao gồm các nội dung về: Giá trị doanh nghiệp, phương pháp (tài sản thuần, P/E..), quy trình, phương pháp giá trị tài sản thuần.', '1766480113_thumb_d1.jpg', '1766480113_BaoCaoDoAnCN.pdf', 'pdf', 0, 13, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 70, '1766480113_BaoCaoDoAnCN.pdf', 3, '2026-01-05 23:55:23', '2026-01-07 15:44:22'),
-(41, 'Bài giảng Tài chính nhà quản trị: Chương 7 - Chi phí sử dụng vốn', 'Bài giảng Tài chính nhà quản trị: Chương 7 trình bày về khái niệm, chi phí vốn bộ phận, chi phí vốn trung bình trọng số, chi phí vốn biên tế & quyết định đầu tư.', '1766480166_thumb_d2.jpg', '1766480166_BaoCaoDoAnCN.pdf', 'pdf', 0, 13, 'approved', 1, '2026-01-06 05:29:21', 'admin', 'admin', 'admin', 10, '1766480166_BaoCaoDoAnCN.pdf', 0, '2026-01-05 23:55:23', '2026-01-07 12:37:03'),
-(49, 'bbbbbbbb', 'bbbbbbbbbbbb', '1767684132_thumb_695cb824b741e.jpg', '1767684132_695cb824b794d.doc', 'doc', 8292686, 7, 'pending', 0, NULL, NULL, 'hanhan', 'user', 0, '1767684132_695cb824b794d.doc', 0, '2026-01-06 14:22:12', '2026-01-06 14:22:12');
+(38, 'Tài liệu ôn thi chứng chỉ Kiểm toán và Kế toán viên - Chuyên đề 3: Thuế và quản lý thuế nâng cao', 'Nội dung chuyên đề 3 bao gồm kiến thức chung về thuế và các sắc thuế chủ yếu trong hệ thống thuế Việt Nam. Nội dung kiến thức của chuyên đề đòi hỏi người dự thi chứng chỉ kiểm toán viên và kế toán viên hành nghề phải hiểu sâu sắc nội dung những sắc thuế chủ yếu trong hệ thống thuế Việt Nam.', '1766479969_thumb_t3.jpg', '1766479969_BaoCaoDoAnCN.pdf', 'pdf', 0, 12, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 49, '1766479969_BaoCaoDoAnCN.pdf', 4, '2026-01-05 23:55:23', '2026-01-09 14:58:59'),
+(39, 'Bài tập tình huống môn Kiểm toán', 'Tài liệu gồm bài tập tình huống kiểm toán: đánh giá rủi ro, thủ tục kiểm toán, chuẩn mực đạo đức. Các tình huống kiểm toán BCTC khác nhau.', '1766480037_thumb_t4.jpg', '1766480037_BaoCaoDoAnCN.pdf', 'pdf', 0, 12, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 34, '1766480037_BaoCaoDoAnCN.pdf', 2, '2026-01-05 23:55:23', '2026-01-08 22:44:56'),
+(40, 'Bài giảng Định giá tài sản: Chương 5 - ThS. Nguyễn Minh Hiền', 'Bài giảng Định giá tài sản: Chương 5 về định giá doanh nghiệp, bao gồm các nội dung về: Giá trị doanh nghiệp, phương pháp (tài sản thuần, P/E..), quy trình, phương pháp giá trị tài sản thuần.', '1766480113_thumb_d1.jpg', '1766480113_BaoCaoDoAnCN.pdf', 'pdf', 0, 13, 'approved', 1, '2026-01-06 10:19:27', 'admin', 'admin', 'admin', 80, '1766480113_BaoCaoDoAnCN.pdf', 3, '2026-01-05 23:55:23', '2026-01-09 14:27:03'),
+(41, 'Bài giảng Tài chính nhà quản trị: Chương 7 - Chi phí sử dụng vốn', 'Bài giảng Tài chính nhà quản trị: Chương 7 trình bày về khái niệm, chi phí vốn bộ phận, chi phí vốn trung bình trọng số, chi phí vốn biên tế & quyết định đầu tư.', '1766480166_thumb_d2.jpg', '1766480166_BaoCaoDoAnCN.pdf', 'pdf', 0, 13, 'approved', 1, '2026-01-08 18:09:25', 'admin', 'admin', 'admin', 10, '1766480166_BaoCaoDoAnCN.pdf', 0, '2026-01-05 23:55:23', '2026-01-09 00:09:25'),
+(57, 'ggggggggg', 'nnnnnnnnnnn', '1767883689_thumb_695fc3a9db676.jpg', '1767883689_BaoCaoDoAnCSN.doc', 'doc', 8292686, 30, 'rejected', 0, NULL, NULL, 'hanhan', 'user', 0, '1767883689_BaoCaoDoAnCSN.doc', 0, '2026-01-08 21:48:09', '2026-01-08 23:49:44'),
+(58, 'Cẩm nang Kỹ thuật chăn nuôi bò thịt lai giống ngoại', 'Cẩm nang Kỹ thuật chăn nuôi bò thịt lai giống ngoại tại thành phố Hồ Chí Minh trình bày các nội dung: Hướng dẫn chọn giống, xây chuồng, chăm sóc, phòng bệnh và trồng cỏ.', '1767948421_thu_y.jpg', '1767948653_TracNghiem - XLA.pdf', 'pdf', 2067530, 32, 'approved', 1, '2026-01-09 09:50:53', 'admin', 'hanhan', 'user', 14, '1767885045_LapTrinhHTML.pdf', 3, '2026-01-08 22:10:45', '2026-01-09 15:51:09');
 
 -- --------------------------------------------------------
 
@@ -192,16 +204,11 @@ INSERT INTO `saved_documents` (`id`, `username`, `document_id`, `created_at`) VA
 (5, 'khachhang1', 31, '2025-12-23 15:19:45'),
 (6, 'khachhang1', 30, '2025-12-30 09:22:56'),
 (9, 'khachhang1', 33, '2025-12-30 09:38:50'),
-(10, 'hanhan', 29, '2025-12-30 09:52:15'),
-(11, 'hanhan', 28, '2025-12-30 09:52:22'),
 (21, 'admin', 0, '2025-12-30 11:46:57'),
-(23, 'hanhan', 38, '2025-12-30 11:49:03'),
-(28, 'hanhan', 32, '2025-12-30 11:50:36'),
 (35, 'hanhan', 0, '2025-12-30 12:00:09'),
-(52, 'hanhan', 8, '2026-01-06 12:19:51'),
-(55, 'hanhan', 15, '2026-01-07 14:57:52'),
-(57, 'hanhan', 14, '2026-01-07 15:16:22'),
-(58, 'hanhan', 13, '2026-01-07 15:18:27');
+(80, 'hanhan', 35, '2026-01-08 21:21:25'),
+(81, 'hanhan', 13, '2026-01-08 21:21:39'),
+(82, 'hanhan', 12, '2026-01-08 22:41:30');
 
 -- --------------------------------------------------------
 
@@ -222,9 +229,8 @@ CREATE TABLE `slideshows` (
 --
 
 INSERT INTO `slideshows` (`slideshow_id`, `title`, `description`, `imageurl`, `status`) VALUES
-(6, 'hehehehehehe', 'hihihihi', '1765251745_banner.jpg', 1),
-(7, 'aaaaaaa', 'aaaaaaa', '1765251777_banner2.jpg', 1),
-(8, 'bbbbbb', 'bbbbbb', '1765251815_banner1.jpg', 1);
+(6, 'Banner1', 'Banner1', '1765251745_banner.jpg', 1),
+(7, 'Banner2', 'Banner2', '1765251777_banner2.jpg', 1);
 
 -- --------------------------------------------------------
 
@@ -306,8 +312,7 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`username`, `fullname`, `password`, `email`, `avatar`, `role`, `google_id`, `status`) VALUES
 ('admin', 'Admin', 'e10adc3949ba59abbe56e057f20f883e', 'admin@gmail.com', 'avt5.jpg', 1, NULL, 0),
 ('hanhan', 'Nguyễn Thị Ngọc Hân', 'e10adc3949ba59abbe56e057f20f883e', 'hanhanne@gmail.com', '1767063300_69533f0466239.jpg', 0, NULL, 0),
-('jungdung2004', 'Hồ Nguyễn Quốc Dũng', '902464e5ee5bbf45f57e32ed3a66d1ef', 'jungdung2004@gmail.com', '1766470284_694a328c7f272.jpg', 0, '109039166477257996447', 0),
-('khachhang1', 'Nguyễn Văn Tài', 'e10adc3949ba59abbe56e057f20f883e', 'duy2912www@gmail.com', 'avt6.jpg', 0, '106649780835115078066', 0);
+('jungdung2004', 'Hồ Nguyễn Quốc Dũng', '902464e5ee5bbf45f57e32ed3a66d1ef', 'jungdung2004@gmail.com', '1766470284_694a328c7f272.jpg', 0, '109039166477257996447', 0);
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -389,13 +394,13 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT cho bảng `comments`
 --
 ALTER TABLE `comments`
-  MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT cho bảng `documents`
 --
 ALTER TABLE `documents`
-  MODIFY `document_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `document_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 
 --
 -- AUTO_INCREMENT cho bảng `document_likes`
@@ -413,7 +418,7 @@ ALTER TABLE `document_uploads`
 -- AUTO_INCREMENT cho bảng `saved_documents`
 --
 ALTER TABLE `saved_documents`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=84;
 
 --
 -- AUTO_INCREMENT cho bảng `slideshows`

@@ -2,7 +2,7 @@
 
 <!-- Footer -->
 <!-- Footer -->
-<footer class="footer mt-5 pt-5 pb-3 bg-light border-top">
+<footer class="footer mt-2 pt-3 pb-3 bg-light border-top">
     <div class="container">
         <div class="row gy-4">
 

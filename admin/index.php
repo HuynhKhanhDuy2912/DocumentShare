@@ -48,6 +48,7 @@
     'subcategories' => 'Quản lý môn học',
     'documents'     => 'Quản lý tài liệu',
     'uploads'       => 'Quản lý tài liệu đăng tải',
+    'comments'      => 'Quản lý bình luận',
     'slideshows'    => 'Quản lý slideshow',
   ];
 
@@ -155,6 +156,12 @@
                 <a href="index.php?p=uploads" class="nav-link <?php if ($page == 'uploads') echo 'active'; ?>">
                   <i class="nav-icon fas fa-cloud-upload-alt"></i>
                   <p>Quản lý tài liệu đăng tải</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="index.php?p=comments" class="nav-link <?php if ($page == 'comments') echo 'active'; ?>">
+                  <i class="fa fa-comments"></i>
+                  <p>Quản lý bình luận</p>
                 </a>
               </li>
               <li class="nav-item">

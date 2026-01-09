@@ -91,10 +91,22 @@ if ($doc['file_type'] === 'pdf') {
 $thumbnail = !empty($doc['thumbnail'])
     ? "uploads/thumbnails/" . $doc['thumbnail']
     : "assets/img/default-document.jpg";
-
-// $sqlComments = "SELECT * FROM comments WHERE document_id = $document_id ORDER BY created_at DESC";
-// $resultComments = mysqli_query($conn, $sqlComments);
 ?>
+<style>
+    .col-lg-3 .card {
+        height: 875px; 
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* 2. Cấu hình Card-body thành Flexbox để chia không gian */
+    .col-lg-3 .card-body {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+    }
+</style>
 
 <div class="container-fluid mrt">
     <div class="row g-4" style="padding-left: 0px !important;">
@@ -175,14 +187,14 @@ $thumbnail = !empty($doc['thumbnail'])
                         <!-- TẢI -->
                         <a href="download.php?id=<?= $document_id ?>"
                             class="btn btn-light border flex-fill mx-1 py-2">
-                            <i class="fas fa-download fs-5 d-block mb-1"></i>
+                            <i class="fas fa-download fs-5 d-block mb-1 text-success"></i>
                             <span class="small">Tải</span>
                         </a>
 
                         <!-- CHIA SẺ -->
                         <button class="btn btn-light border flex-fill mx-1 py-2"
                             data-bs-toggle="modal" data-bs-target="#shareModal">
-                            <i class="fas fa-share-alt fs-5 d-block mb-1"></i>
+                            <i class="fas fa-share-alt fs-5 d-block mb-1 text-primary"></i>
                             <span class="small">Chia sẻ</span>
                         </button>
                     </div>
@@ -227,7 +239,7 @@ $thumbnail = !empty($doc['thumbnail'])
         </div>
 
         <!-- PHẢI -->
-        <div class="col-lg-2">
+        <div class="col-lg-2" style="padding-left: 0px !important;">
             <h4 class="fw-bold mb-3">Tài liệu liên quan</h4>
 
             <?php

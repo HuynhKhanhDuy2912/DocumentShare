@@ -33,6 +33,31 @@ $totalRes = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FRO
 $totalComments = $totalRes['total'];
 ?>
 
+<style>
+    .comment-section {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        margin-top: 15px;
+    }
+
+    .comment-list {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding-right: 5px;
+    }
+
+    .comment-list::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .comment-list::-webkit-scrollbar-thumb {
+        background: #ddd;
+        border-radius: 10px;
+    }
+</style>
+
 <div class="comment-section mt-4 pt-3 border-top">
     <h6 class="fw-bold mb-3 text-uppercase" style="font-size: 0.85rem;">Bình luận (<?= $totalComments ?>)</h6>
 
@@ -52,21 +77,22 @@ $totalComments = $totalRes['total'];
     <div class="comment-list">
         <?php
         // Lấy bình luận gốc kèm Avatar
-        $sqlMain = "SELECT c.*, u.avatar 
-                    FROM comments c 
-                    LEFT JOIN users u ON c.username = u.username 
-                    WHERE c.document_id = $document_id AND c.parent_id = 0 $whereVisible 
-                    ORDER BY c.created_at DESC";
+        $sqlMain = "SELECT c.*, u.avatar, 
+            (SELECT COUNT(*) FROM comments r WHERE r.parent_id = c.comment_id) as reply_count
+            FROM comments c 
+            LEFT JOIN users u ON c.username = u.username 
+            WHERE c.document_id = $document_id AND c.parent_id = 0 $whereVisible 
+            ORDER BY c.created_at DESC";
         $resMain = mysqli_query($conn, $sqlMain);
 
         while ($c = mysqli_fetch_assoc($resMain)):
             $userAvatar = !empty($c['avatar']) ? 'uploads/users/' . $c['avatar'] : 'assets/img/default-user.jpg';
         ?>
-            <div class="comment-item mb-4 pb-3 border-bottom">
+            <div class="comment-item mb-2 pb-1 border-bottom">
                 <div class="d-flex justify-content-between">
                     <div class="d-flex align-items-center">
                         <img src="<?= $userAvatar ?>" class="rounded-circle me-2 border" width="40" height="40" style="object-fit: cover;">
-                        <span class="fw-bold text-primary"><?= htmlspecialchars($c['username']) ?></span>
+                        <span class="fw-bold"><?= htmlspecialchars($c['username']) ?></span>
                         <?php if ($isAdmin && $c['status'] == 1): ?>
                             <span class="badge bg-danger ms-2" style="font-size: 9px;">ĐÃ ẨN</span>
                         <?php endif; ?>
@@ -74,13 +100,15 @@ $totalComments = $totalRes['total'];
                     <span class="text-muted" style="font-size: 12px;"><?= date('d/m/Y', strtotime($c['created_at'])) ?></span>
                 </div>
 
-                <p class="ms-5 small text-dark mb-0" style="font-size: 13px;"><?= nl2br(htmlspecialchars($c['content'])) ?></p>
+                <p class="ms-5 text-dark mb-0" style="font-size: 13px;"><?= nl2br(htmlspecialchars($c['content'])) ?></p>
 
                 <div class="actions ms-5">
                     <?php if ($isAdmin): ?>
-                        <button class="btn btn-link p-0 text-decoration-none small me-3" onclick="toggleReply(<?= $c['comment_id'] ?>)" style="font-size: 12px;">
-                            <i class="fa fa-reply me-1"></i>Trả lời
-                        </button>
+                        <?php if ((int)$c['reply_count'] === 0): ?>
+                            <button class="btn btn-link p-0 text-decoration-none small me-3" onclick="toggleReply(<?= $c['comment_id'] ?>)" style="font-size: 12px;">
+                                <i class="fa fa-reply me-1"></i>Trả lời
+                            </button>
+                        <?php endif; ?>
                         <a href="process_comment.php?action=toggle_status&id=<?= $c['comment_id'] ?>&doc_id=<?= $document_id ?>"
                             class="text-decoration-none small <?= $c['status'] == 0 ? 'text-danger' : 'text-success' ?>" style="font-size: 12px;">
                             <i class="fa <?= $c['status'] == 0 ? 'fa-eye-slash' : 'fa-eye' ?> me-1"></i>
@@ -89,7 +117,7 @@ $totalComments = $totalRes['total'];
                     <?php endif; ?>
                 </div>
 
-                <div id="reply-form-<?= $c['comment_id'] ?>" class="mt-3 d-none ms-5">
+                <div id="reply-form-<?= $c['comment_id'] ?>" class="d-none ms-5">
                     <form method="POST">
                         <input type="hidden" name="document_id" value="<?= $document_id ?>">
                         <input type="hidden" name="parent_id" value="<?= $c['comment_id'] ?>">
