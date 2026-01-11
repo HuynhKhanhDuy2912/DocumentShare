@@ -91,7 +91,7 @@ if ($result && mysqli_num_rows($result) > 0) {
 
                                     <div class="mega-column">
                                         <h4 class="mega-title">
-                                            <a href="javascript:void(0)" style="color: #000; text-decoration: none;">
+                                             <a href="category_detail.php?id=<?= $category['category_id'] ?>" style="color: #000; text-decoration: none;">
                                                 <?= htmlspecialchars($category['name']) ?>
                                             </a>
                                         </h4>
@@ -143,7 +143,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                             </div>
                         </div>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="contact.php"><i class="fa fa-envelope mr-1"></i> Liên hệ</a></li>
+                    <li class="nav-item" style="z-index: 999;"><a class="nav-link" href="contact.php"><i class="fa fa-envelope mr-1"></i> Liên hệ</a></li>
                 </ul>
 
                 <form class="form-inline search-box mx-auto" action="search.php" method="get">
