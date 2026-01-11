@@ -21,8 +21,51 @@ if (mysqli_num_rows($res_check) == 0) {
 }
 ?>
 
-<div class="container-fluid chat-wrapper bg-white shadow-sm rounded-4 overflow-hidden" style="height: 500px; margin-top: 95px; max-width: 1200px;">
-    <div class="row h-100 g-0">
+<div class="container-fluid chat-wrapper bg-white shadow-sm rounded-4 overflow-hidden" style="height: auto; margin-top: 95px; max-width: 1200px;">
+
+    <div class="container-fluid mb-4" style="max-width: 1200px; margin-top: 20px;">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="d-flex align-items-center bg-white p-3 shadow-sm rounded-4 h-100 border border-light">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3"
+                        style="width: 50px; height: 50px; background-color: #ff3366;">
+                        <i class="fas fa-map-marker-alt text-white fs-5"></i>
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="mb-0 fw-bold small">Trụ sở chính</p>
+                        <p class="mb-0 text-muted small text-truncate">126 Nguyễn Thiện Thành, Trà Vinh</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="d-flex align-items-center bg-white p-3 shadow-sm rounded-4 h-100 border border-light">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3"
+                        style="width: 50px; height: 50px; background-color: #ff9900;">
+                        <i class="fas fa-phone-alt text-white fs-5"></i>
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="mb-0 fw-bold small">Hotline hỗ trợ</p>
+                        <p class="mb-0 text-muted small text-truncate">0999 999 999</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="d-flex align-items-center bg-white p-3 shadow-sm rounded-4 h-100 border border-light">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3"
+                        style="width: 50px; height: 50px; background-color: #007bff;">
+                        <i class="fas fa-envelope text-white fs-5"></i>
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="mb-0 fw-bold small">Email liên hệ</p>
+                        <p class="mb-0 text-muted small text-truncate">contact@documentshare.vn</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row g-0" style="height: 450px;">
         <div class="col-md-4 col-lg-3 border-end h-100 d-flex flex-column bg-light">
             <div class="p-3 border-bottom bg-white">
                 <h6 class="mb-0 fw-bold"><i class="fas fa-comments me-2"></i>Tin nhắn</h6>
