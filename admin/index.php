@@ -176,7 +176,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="../logout.php" class="nav-link">
+                <a href="../logout.php" class="nav-link text-danger">
                   <i class="nav-icon fas fa-sign-out-alt"></i>
                   <p>Đăng xuất</p>
                 </a>
