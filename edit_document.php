@@ -32,7 +32,7 @@ if (!$doc) {
     exit();
 }
 
-// Lấy danh sách danh mục cha
+// Lấy danh sách chủ đề
 $result_categories = mysqli_query($conn, "SELECT category_id, name FROM categories WHERE status = 0 ORDER BY name ASC");
 
 /* ================== 3. XỬ LÝ CẬP NHẬT ================== */

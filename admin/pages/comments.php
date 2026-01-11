@@ -48,7 +48,7 @@ $total_pages = ceil($total_records / $limit);
 
 <div class="card shadow">
     <div class="card-header bg-gradient-dark text-white d-flex align-items-center">
-        <h4 class="mb-0"><i class="fas fa-comments me-2"></i><?php echo $page_title; ?></h4>
+        <h4 class="mb-0"></i><?php echo $page_title; ?></h4>
     </div>
 
     <div class="card-body">
@@ -66,16 +66,11 @@ $total_pages = ceil($total_records / $limit);
                         <th>Tài liệu</th>
                         <th width="140">Phản hồi</th>
                         <th width="130">Trạng thái</th>
-                        <th width="120">Thao tác</th>
+                        <th width="140">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
-                    /**
-                     * SẮP XẾP:
-                     * 1. reply_count ASC: Ưu tiên số lượng phản hồi = 0 lên trước (Chưa phản hồi)
-                     * 2. c.created_at DESC: Sau đó sắp xếp theo thời gian mới nhất
-                     */
                     $sql = "SELECT c.*, d.title as doc_title, u.avatar,
                             (SELECT COUNT(*) FROM comments r WHERE r.parent_id = c.comment_id) as reply_count
                             FROM comments c
@@ -150,7 +145,7 @@ $total_pages = ceil($total_records / $limit);
                                     <?php else: ?>
                                         <a href="#" style="cursor: not-allowed; opacity: 50%"
                                         class="btn btn-primary btn-sm rounded-pill px-3">
-                                        <i class="fas fa-reply me-1"></i> Trả lời
+                                        <i class="fas fa-reply me-1"></i> Đã trả lời
                                     </a>
                                     <?php endif; ?>
                                 </td>

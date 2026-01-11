@@ -6,7 +6,7 @@ $sql_featured_sets = "
     SELECT 
         c.category_id, 
         c.name AS category_name,
-        c.image AS category_image, -- Lấy ảnh đại diện của danh mục
+        c.image AS category_image,
         SUM(d.downloads) AS total_downloads,
         COUNT(d.document_id) AS total_docs
     FROM categories c
@@ -127,7 +127,7 @@ function formatK($num)
                         </a>
 
                         <div class="d-flex justify-content-between set-stats">
-                            <div class="mb-1"><i class="fa-solid fa-file-lines me-1"></i>
+                            <div class="mb-1"><i class="fas fa-book me-1"></i>
                                 <?= number_format($set['total_docs']) ?> tài liệu</div>
                             <div class="ms-auto"><i class="fa-solid fa-download me-1"></i>
                             <?= formatK($set['total_downloads']) ?> lượt tải</div>

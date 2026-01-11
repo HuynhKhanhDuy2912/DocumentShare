@@ -2,16 +2,16 @@
 include "config.php";
 include "header.php";
 
-// 1. Lấy ID danh mục lớn từ URL
+// 1. Lấy ID chủ đề lớn từ URL
 $category_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-// 2. Lấy thông tin danh mục lớn
+// 2. Lấy thông tin chủ đề lớn
 $sql_cate = "SELECT * FROM categories WHERE category_id = $category_id LIMIT 1";
 $res_cate = mysqli_query($conn, $sql_cate);
 $category = mysqli_fetch_assoc($res_cate);
 
 if (!$category) {
-    echo "<div class='container mt-5 pt-5'><div class='alert alert-danger'>Danh mục không tồn tại!</div></div>";
+    echo "<div class='container mt-5 pt-5'><div class='alert alert-danger'>Chủ đề không tồn tại!</div></div>";
     include "footer.php";
     exit;
 }
@@ -27,7 +27,7 @@ if (isset($_SESSION['username'])) {
     }
 }
 
-// 4. Lấy tất cả danh mục nhỏ thuộc danh mục lớn này
+// 4. Lấy tất cả chủ đề nhỏ thuộc chủ đề lớn này
 $sql_sub = "SELECT * FROM subcategories WHERE category_id = $category_id AND status = 0 ORDER BY name ASC";
 $res_sub = mysqli_query($conn, $sql_sub);
 ?>
@@ -132,7 +132,7 @@ $res_sub = mysqli_query($conn, $sql_sub);
     while ($sub = mysqli_fetch_assoc($res_sub)):
         $sub_id = $sub['subcategory_id'];
 
-        // Lấy danh sách tài liệu thuộc danh mục nhỏ này (Giới hạn hiển thị mẫu)
+        // Lấy danh sách tài liệu thuộc chủ đề nhỏ này (Giới hạn hiển thị mẫu)
         $sql_docs = "SELECT * FROM documents WHERE subcategory_id = $sub_id 
                      AND status = 'approved' AND is_visible = 1 
                      ORDER BY document_id DESC LIMIT 10";

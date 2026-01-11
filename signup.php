@@ -44,8 +44,8 @@ if (isset($_POST['sbDangky'])) {
 
                 if (move_uploaded_file($_FILES["fileAnh"]["tmp_name"], $targetFilePath)) {
 
-                    $sql = "INSERT INTO users(username, password, fullname, email, avatar, role, status)
-                            VALUES('$tendangnhap', '$matkhau', '$tendaydu', '$email', '$fileName', 0, 0)";
+                    $sql = "INSERT INTO users(username, password, fullname, email, avatar, role, status, created_at)
+                            VALUES('$tendangnhap', '$matkhau', '$tendaydu', '$email', '$fileName', 0, 0, NOW())";
 
                     if ($conn->query($sql)) {
                         echo "<script>
@@ -65,8 +65,8 @@ if (isset($_POST['sbDangky'])) {
         } else {
 
             // Không upload avatar
-            $sql = "INSERT INTO users(username, password, fullname, email, role, status)
-                    VALUES('$tendangnhap', '$matkhau', '$tendaydu', '$email', 0, 0)";
+            $sql = "INSERT INTO users(username, password, fullname, email, role, status, created_at)
+                    VALUES('$tendangnhap', '$matkhau', '$tendaydu', '$email', 0, 0, NOW())";
 
             if ($conn->query($sql)) {
                 echo "<script>
@@ -98,6 +98,7 @@ if (isset($_POST['sbDangky'])) {
                 <input type="text" class="form-control" name="txtTendangnhap" id="txtTendangnhap" placeholder="Tên đăng nhập" required>
                 <label for="txtTendangnhap"><i class="fa fa-user me-2"></i> Tên đăng nhập</label>
             </div>
+            <div id="username-feedback" class="small mb-3 ms-2"></div>
 
             <div class="form-floating mb-3">
                 <input type="text" class="form-control" name="txtTendaydu" id="txtTendaydu" placeholder="Họ và tên">

@@ -5,7 +5,7 @@ include 'config.php';
 if (isset($_GET['category_id'])) {
     $category_id = intval($_GET['category_id']);
     
-    // Truy vấn danh mục con (Sử dụng status = 0 theo logic database của bạn)
+    // Truy vấn môn học
     $stmt = $conn->prepare("SELECT subcategory_id, name FROM subcategories WHERE category_id = ? AND status = 0 ORDER BY name ASC");
     $stmt->bind_param("i", $category_id);
     $stmt->execute();

@@ -6,26 +6,26 @@ include "config.php";
 include "header.php";
 
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    echo "<div class='container mt-5 alert alert-danger'>Danh mục không hợp lệ</div>";
+    echo "<div class='container mt-5 alert alert-danger'>Môn học không hợp lệ</div>";
     include "footer.php";
     exit;
 }
 
 $sub_id = (int)$_GET['id'];
 
-// Lấy thông tin danh mục con
+// Lấy thông tin môn học
 $sub_sql = "SELECT name FROM subcategories WHERE subcategory_id = $sub_id AND status = 0";
 $sub_res = mysqli_query($conn, $sub_sql);
 
 if (!$sub_res || mysqli_num_rows($sub_res) == 0) {
-    echo "<div class='container mt-5 alert alert-warning'>Danh mục không tồn tại</div>";
+    echo "<div class='container mt-5 alert alert-warning'>Môn học không tồn tại</div>";
     include "footer.php";
     exit;
 }
 
 $subcategory = mysqli_fetch_assoc($sub_res);
 
-// Lấy tài liệu theo danh mục con
+// Lấy tài liệu theo môn học
 $doc_sql = "SELECT * FROM documents 
             WHERE subcategory_id = $sub_id AND status = 'approved' AND is_visible = 1
             ORDER BY document_id DESC";
@@ -88,7 +88,7 @@ $doc_res = mysqli_query($conn, $doc_sql);
             <?php endwhile; ?>
         <?php else: ?>
             <div class="col-lg-12 py-5 text-center">
-                <p class="text-muted mt-3" style="font-size: 18px;">Chưa có tài liệu nào trong danh mục này.</p>
+                <p class="text-muted mt-3" style="font-size: 18px;">Chưa có tài liệu nào trong môn học này.</p>
             </div>
         <?php endif; ?>
     </div>

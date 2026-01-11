@@ -117,12 +117,12 @@ $totalComments = $totalRes['total'];
                     <?php endif; ?>
                 </div>
 
-                <div id="reply-form-<?= $c['comment_id'] ?>" class="d-none ms-5">
+                <div id="reply-form-<?= $c['comment_id'] ?>" class="d-none ms-5 pt-3 text-end">
                     <form method="POST">
                         <input type="hidden" name="document_id" value="<?= $document_id ?>">
                         <input type="hidden" name="parent_id" value="<?= $c['comment_id'] ?>">
                         <textarea class="form-control mb-2" name="content" rows="1" placeholder="Phản hồi..." required></textarea>
-                        <button type="submit" class="btn btn-dark btn-sm">Gửi</button>
+                        <button type="submit" class="btn btn-secondary btn-sm">Gửi</button>
                     </form>
                 </div>
 

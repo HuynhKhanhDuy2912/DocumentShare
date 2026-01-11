@@ -55,45 +55,45 @@ if (isset($_POST['save_user'])) {
     }
     // --- THÊM MỚI (INSERT) ---
     // --- THÊM MỚI (INSERT) ---
-else {
-    $username   = $_POST['username'];
-    $fullname   = $_POST['fullname'];
-    $email      = $_POST['email'];
-    $google_id  = $_POST['google_id'];
-    $password   = $_POST['password'];
+    else {
+        $username   = $_POST['username'];
+        $fullname   = $_POST['fullname'];
+        $email      = $_POST['email'];
+        $google_id  = $_POST['google_id'];
+        $password   = $_POST['password'];
 
-    $avatar_path = $default_avatar;
-    if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] == 0) {
-        $target_dir = "../uploads/users/";
-        if (!file_exists($target_dir)) mkdir($target_dir, 0777, true);
-        $filename = time() . "_" . basename($_FILES["avatar"]["name"]);
-        move_uploaded_file($_FILES["avatar"]["tmp_name"], $target_dir . $filename);
-        $avatar_path = $filename;
-    }
+        $avatar_path = $default_avatar;
+        if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] == 0) {
+            $target_dir = "../uploads/users/";
+            if (!file_exists($target_dir)) mkdir($target_dir, 0777, true);
+            $filename = time() . "_" . basename($_FILES["avatar"]["name"]);
+            move_uploaded_file($_FILES["avatar"]["tmp_name"], $target_dir . $filename);
+            $avatar_path = $filename;
+        }
 
-    $check = mysqli_query($conn, "SELECT username FROM users WHERE username = '$username'");
-    if (mysqli_num_rows($check) > 0) {
-        $message = "Lỗi: Tên đăng nhập '<strong>$username</strong>' đã tồn tại!";
-        $current_view = 'form';
-        $data = $_POST;
-        $data['avatar'] = $avatar_path;
-    } else {
-        // --- SỬA TẠI ĐÂY: Dùng MD5 thay vì password_hash ---
-        $md5_password = md5($password); 
-        
-        $sql = "INSERT INTO users (username, fullname, password, email, avatar, role, status, google_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        $stmt = mysqli_prepare($conn, $sql);
-        // Biến truyền vào là $md5_password
-        mysqli_stmt_bind_param($stmt, "ssssssis", $username, $fullname, $md5_password, $email, $avatar_path, $role, $status, $google_id);
-
-        if (mysqli_stmt_execute($stmt)) {
-            echo "<script>alert('Thêm mới thành công!'); window.location.href='$base_url';</script>";
-            exit;
+        $check = mysqli_query($conn, "SELECT username FROM users WHERE username = '$username'");
+        if (mysqli_num_rows($check) > 0) {
+            $message = "Lỗi: Tên đăng nhập '<strong>$username</strong>' đã tồn tại!";
+            $current_view = 'form';
+            $data = $_POST;
+            $data['avatar'] = $avatar_path;
         } else {
-            $message = "Lỗi thêm mới: " . mysqli_error($conn);
+            // --- SỬA TẠI ĐÂY: Dùng MD5 thay vì password_hash ---
+            $md5_password = md5($password);
+
+            $sql = "INSERT INTO users (username, fullname, password, email, avatar, role, status, google_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            $stmt = mysqli_prepare($conn, $sql);
+            // Biến truyền vào là $md5_password
+            mysqli_stmt_bind_param($stmt, "ssssssis", $username, $fullname, $md5_password, $email, $avatar_path, $role, $status, $google_id);
+
+            if (mysqli_stmt_execute($stmt)) {
+                echo "<script>alert('Thêm mới thành công!'); window.location.href='$base_url';</script>";
+                exit;
+            } else {
+                $message = "Lỗi thêm mới: " . mysqli_error($conn);
+            }
         }
     }
-}
 }
 
 // B. XỬ LÝ GET ACTION
@@ -138,6 +138,23 @@ if (isset($_GET['action'])) {
 }
 
 $is_edit_mode = ($current_view == 'form' && !empty($data['username']));
+
+// --- CẤU HÌNH TÌM KIẾM & PHÂN TRANG ---
+$search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
+$limit = 5; // Số dòng trên mỗi trang
+$page = (isset($_GET['page']) && is_numeric($_GET['page'])) ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $limit;
+
+// Xây dựng điều kiện WHERE cho tìm kiếm
+$where_clause = "";
+if (!empty($search)) {
+    $where_clause = " WHERE username LIKE '%$search%' OR email LIKE '%$search%' OR fullname LIKE '%$search%' ";
+}
+
+// Tính tổng số dòng để phân trang
+$total_rows_query = mysqli_query($conn, "SELECT COUNT(*) as total FROM users" . $where_clause);
+$total_rows = mysqli_fetch_assoc($total_rows_query)['total'];
+$total_pages = ceil($total_rows / $limit);
 ?>
 
 <div class="card shadow">
@@ -146,6 +163,14 @@ $is_edit_mode = ($current_view == 'form' && !empty($data['username']));
         <h4 class="mb-0"><?php echo $page_title; ?></h4>
 
         <?php if ($current_view == 'list'): ?>
+            <form method="GET" class="ms-auto d-flex me-2">
+                <input type="hidden" name="p" value="users">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control" placeholder="Tìm tên, email..." value="<?php echo htmlspecialchars($search); ?>">
+                    <button class="btn btn-light" type="submit"><i class="fas fa-search"></i></button>
+                </div>
+            </form>
+
             <a href="<?php echo $base_url; ?>&action=add" class="btn btn-warning ms-auto px-3">
                 <i class="fas fa-plus-circle me-1"></i> Thêm mới
             </a>
@@ -256,7 +281,8 @@ $is_edit_mode = ($current_view == 'form' && !empty($data['username']));
                     </thead>
                     <tbody>
                         <?php
-                        $sql = "SELECT * FROM users ORDER BY username ASC";
+                        // Thay đổi câu SQL để hỗ trợ tìm kiếm và phân trang
+                        $sql = "SELECT * FROM users $where_clause ORDER BY username ASC LIMIT $limit OFFSET $offset";
                         $result = mysqli_query($conn, $sql);
 
                         if (!$result):
@@ -282,9 +308,9 @@ $is_edit_mode = ($current_view == 'form' && !empty($data['username']));
                                     <td><?php echo $row['fullname']; ?></td>
                                     <td><?php echo ($row['role'] == 1) ? 'Quản trị viên' : 'Người dùng'; ?>
                                     </td>
-                                    <td>
+                                    <td class="text-center">
                                         <?php if ($row['status'] == 1): ?>
-                                            <span class="badge bg-secondary"><i class="fas fa-ban"></i> Bị chặn</span>
+                                            <span class="badge bg-danger"><i class="fas fa-ban"></i> Bị chặn</span>
                                         <?php else: ?>
                                             <span class="badge bg-success"><i class="fas fa-check-circle"></i> Hoạt động</span>
                                         <?php endif; ?>
@@ -315,6 +341,25 @@ $is_edit_mode = ($current_view == 'form' && !empty($data['username']));
                     </tbody>
                 </table>
             </div>
+            <?php if ($total_pages > 1): ?>
+                <nav class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item <?php echo ($page <= 1) ? 'disabled' : ''; ?>">
+                            <a class="page-link" href="<?php echo $base_url; ?>&search=<?php echo $search; ?>&page=<?php echo $page - 1; ?>"><span aria-hidden="true">&laquo;</span></a>
+                        </li>
+
+                        <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                            <li class="page-item <?php echo ($page == $i) ? 'active' : ''; ?>">
+                                <a class="page-link" href="<?php echo $base_url; ?>&search=<?php echo $search; ?>&page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                            </li>
+                        <?php endfor; ?>
+
+                        <li class="page-item <?php echo ($page >= $total_pages) ? 'disabled' : ''; ?>">
+                            <a class="page-link" href="<?php echo $base_url; ?>&search=<?php echo $search; ?>&page=<?php echo $page + 1; ?>"><span aria-hidden="true">&raquo;</span></a>
+                        </li>
+                    </ul>
+                </nav>
+            <?php endif; ?>
         <?php endif; ?>
     </div>
 </div>

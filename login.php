@@ -61,8 +61,8 @@ if (isset($_GET['code'])) {
             $random_pass = md5(uniqid(rand(), true)); 
 
             // Lưu vào DB
-            $insert_sql = "INSERT INTO users (username, password, email, role, google_id, status) 
-                           VALUES ('$new_username', '$random_pass', '$email', '$default_role', '$google_id', 0)";
+            $insert_sql = "INSERT INTO users (username, password, email, role, google_id, status, created_at) 
+                           VALUES ('$new_username', '$random_pass', '$email', '$default_role', '$google_id', 0, NOW())";
 
             if ($conn->query($insert_sql) === TRUE) {
                 $_SESSION['username'] = $new_username;

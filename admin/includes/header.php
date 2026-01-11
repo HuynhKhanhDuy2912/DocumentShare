@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Hệ thống quản lý</title>
+  <title>Hệ thống quản lý | DocumentShare</title>
   <link rel="icon" href="../assets/img/logo.jpg">
 
   <!-- Boostrap 5 -->
@@ -28,4 +28,6 @@
   <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
   <!-- summernote -->
   <link rel="stylesheet" href="plugins/summernote/summernote-bs4.min.css">
+  <!-- biểu đồ -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>

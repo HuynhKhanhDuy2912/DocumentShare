@@ -94,7 +94,7 @@ $thumbnail = !empty($doc['thumbnail'])
 ?>
 <style>
     .col-lg-3 .card {
-        height: 875px; 
+        height: 972px; 
         display: flex;
         flex-direction: column;
     }
@@ -218,9 +218,9 @@ $thumbnail = !empty($doc['thumbnail'])
                     <?php if ($doc['file_type'] === 'pdf'): ?>
 
                         <?php if ($isLogin): ?>
-                            <iframe src="<?= $filePath ?>" width="100%" height="850" style="border:none;"></iframe>
+                            <iframe src="<?= $filePath ?>" width="100%" height="950" style="border:none;"></iframe>
                         <?php else: ?>
-                            <iframe src="<?= $filePath ?>#toolbar=0&navpanes=0&scrollbar=0" width="100%" height="850" style="border:none;"></iframe>
+                            <iframe src="<?= $filePath ?>#toolbar=0&navpanes=0&scrollbar=0" width="100%" height="950" style="border:none;"></iframe>
                         <?php endif; ?>
 
                     <?php else: ?>

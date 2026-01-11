@@ -259,6 +259,7 @@ $total_pages = ceil($total_records / $limit);
                 <table class="table table-bordered table-striped table-hover">
                     <thead class="table-light">
                         <tr>
+                            <th>#</th>
                             <th>Ảnh</th>
                             <th>Tên chủ đề</th>
                             <th>Mô tả</th>
@@ -284,8 +285,11 @@ $total_pages = ceil($total_records / $limit);
                             </tr>
 
                         <?php else: ?>
-                            <?php while ($row = mysqli_fetch_assoc($result)): ?>
+                            <?php 
+                                $stt = 1;
+                                while ($row = mysqli_fetch_assoc($result)): ?>
                                 <tr>
+                                    <td class="text-center"><?= $stt++ ?></td>
                                     <td>
                                         <?php if (!empty($row['image'])): ?>
                                             <img src="../uploads/categories/<?= $row['image'] ?>" width="50" height="50" style="object-fit: cover;">

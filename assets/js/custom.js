@@ -164,6 +164,11 @@ function updateSaveUI(docId, isSaved) {
 
       icon.classList.toggle("fas", isSaved);
       icon.classList.toggle("far", !isSaved);
+
+      const textSpan = btn.querySelector("span");
+      if (textSpan) {
+        textSpan.textContent = isSaved ? "Đã lưu" : "Lưu";
+      }
     });
 
   // ===== CẬP NHẬT NÚT TRONG MODAL =====
@@ -291,3 +296,90 @@ document.addEventListener("DOMContentLoaded", () => {
   overlay.addEventListener("click", closeModal);
   closeBtn.addEventListener("click", closeModal);
 });
+/* ==================================================
+                  CHECK USERNAME
+================================================== */
+document.addEventListener("DOMContentLoaded", function () {
+  const usernameInput = document.getElementById("txtTendangnhap");
+  const feedback = document.getElementById("username-feedback");
+
+  if (usernameInput && feedback) {
+    usernameInput.addEventListener("input", function () {
+      const username = this.value.trim();
+
+      if (username.length < 3) {
+        feedback.innerHTML = "";
+        return;
+      }
+
+      fetch("check_username.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "username=" + encodeURIComponent(username),
+      })
+        .then((response) => response.text())
+        .then((data) => {
+          if (data === "exists") {
+            feedback.innerHTML =
+              '<i class="fa fa-times-circle me-1"></i> Tên đăng nhập đã tồn tại';
+            feedback.className = "small mb-3 ms-2 text-danger";
+            usernameInput.classList.add("is-invalid");
+            usernameInput.classList.remove("is-valid");
+          } else {
+            feedback.innerHTML =
+              '<i class="fa fa-check-circle me-1"></i> Bạn có thể dùng tên này';
+            feedback.className = "small mb-3 ms-2 text-success";
+            usernameInput.classList.add("is-valid");
+            usernameInput.classList.remove("is-invalid");
+          }
+        })
+        .catch((error) => console.error("Lỗi AJAX:", error));
+    });
+  }
+});
+
+
+/* ==================================================
+                  CONTACT
+================================================== */
+$(document).ready(function() {
+    const chatBody = $('#chat-body');
+    const chatInput = $('#chat-input');
+
+    function loadMessages() {
+        $.ajax({
+            url: 'ajax_chat_user.php?action=load',
+            type: 'GET',
+            success: function(data) {
+                if(chatBody.html() !== data) {
+                    chatBody.html(data);
+                    chatBody.scrollTop(chatBody[0].scrollHeight);
+                }
+            }
+        });
+    }
+
+    $('#send-btn').on('click', function() {
+        let message = chatInput.val().trim();
+        if (message === "") return;
+
+        $.ajax({
+            url: 'ajax_chat_user.php',
+            type: 'POST',
+            data: { action: 'send', message: message },
+            success: function() {
+                chatInput.val('');
+                loadMessages();
+            }
+        });
+    });
+
+    chatInput.on('keypress', function(e) {
+        if(e.which == 13) $('#send-btn').click();
+    });
+
+    // Cập nhật tin nhắn mỗi 2 giây
+    setInterval(loadMessages, 2000);
+    loadMessages();
+});
+

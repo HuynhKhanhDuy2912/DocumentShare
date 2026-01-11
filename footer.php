@@ -19,7 +19,7 @@
 
             <!-- DANH MỤC -->
             <div class="col-lg-2 col-md-6">
-                <h6 class="fw-bold mb-3">Danh mục</h6>
+                <h6 class="fw-bold mb-3">Chủ đề</h6>
                 <ul class="list-unstyled small">
                     <li><a href="#" class="text-muted text-decoration-none">Công nghệ thông tin</a></li>
                     <li><a href="#" class="text-muted text-decoration-none">Kinh tế</a></li>
@@ -66,6 +66,7 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="assets/js/custom.js"></script>
 
 </body>

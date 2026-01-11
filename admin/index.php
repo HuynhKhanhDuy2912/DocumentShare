@@ -81,12 +81,11 @@
           <li class="nav-item">
             <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
           </li>
+          <?php if ($page != 'dashboard'): ?>
           <li class="nav-item d-none d-sm-inline-block">
-            <a href="index.php" class="nav-link">Trang chủ</a>
-          </li>
-          <li class="nav-item d-none d-sm-inline-block">
-            <a href="#" class="nav-link">Liên hệ</a>
-          </li>
+            <a href="index.php" class="nav-link"><i class="fa fa-home"></i> Trang chủ</a>
+          </li>          
+          <?php endif; ?>
         </ul>
 
         <ul class="navbar-nav ml-auto">
@@ -130,7 +129,7 @@
 
               <li class="nav-item">
                 <a href="index.php?p=users" class="nav-link <?php if ($page == 'users') echo 'active'; ?>">
-                  <i class="nav-icon fas fa-user"></i>
+                  <i class="nav-icon fas fa-users"></i>
                   <p>Quản lý tài khoản</p>
                 </a>
               </li>
@@ -148,7 +147,7 @@
               </li>
               <li class="nav-item">
                 <a href="index.php?p=documents" class="nav-link <?php if ($page == 'documents') echo 'active'; ?>">
-                  <i class="nav-icon fas fa-file"></i>
+                  <i class="nav-icon fas fa-file-alt"></i>
                   <p>Quản lý tài liệu</p>
                 </a>
               </li>
@@ -160,8 +159,14 @@
               </li>
               <li class="nav-item">
                 <a href="index.php?p=comments" class="nav-link <?php if ($page == 'comments') echo 'active'; ?>">
-                  <i class="fa fa-comments"></i>
+                  <i class="nav-icon fa fa-comments"></i>
                   <p>Quản lý bình luận</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="index.php?p=contacts" class="nav-link <?php if ($page == 'contacts') echo 'active'; ?>">
+                  <i class="nav-icon fa fa-envelope"></i>
+                  <p>Quản lý liên hệ</p>
                 </a>
               </li>
               <li class="nav-item">
@@ -182,6 +187,7 @@
       </aside>
 
       <div class="content-wrapper">
+        <?php if ($page != 'dashboard'): ?>
         <section class="content-header">
           <div class="container-fluid">
             <div class="row mb-2">
@@ -197,6 +203,7 @@
             </div>
           </div>
         </section>
+        <?php endif; ?>
 
         <section class="content">
           <div class="container-fluid">
