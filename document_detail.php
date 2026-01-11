@@ -23,6 +23,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 
 $document_id = (int)$_GET['id'];
 
+// Lấy thông tin tài liệu
 $sql = "SELECT d.*, 
                sc.name AS sub_name, 
                c.name AS cate_name, 
@@ -61,7 +62,7 @@ if (isset($_SESSION['username'])) {
     }
 }
 
-//Lấy danh sách document
+//Lấy danh sách tài liệu đã lưu
 $savedDocs = [];
 
 if (isset($_SESSION['username'])) {
@@ -99,7 +100,6 @@ $thumbnail = !empty($doc['thumbnail'])
         flex-direction: column;
     }
 
-    /* 2. Cấu hình Card-body thành Flexbox để chia không gian */
     .col-lg-3 .card-body {
         display: flex;
         flex-direction: column;
@@ -258,7 +258,7 @@ $thumbnail = !empty($doc['thumbnail'])
                 AND d.document_id != $docId
                 AND d.status = 'approved' AND d.is_visible = 1
                 ORDER BY RAND()
-                LIMIT 7";
+                LIMIT 8";
 
             $related = mysqli_query($conn, $sqlRelated);
 

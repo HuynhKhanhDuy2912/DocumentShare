@@ -1,2 +1,0 @@
-ClientID: 483642035448-o4gcrpg5vd9knnu8av8j70mip7sklbul.apps.googleusercontent.com
-Client Secrect: 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

@@ -342,44 +342,44 @@ document.addEventListener("DOMContentLoaded", function () {
 /* ==================================================
                   CONTACT
 ================================================== */
-$(document).ready(function() {
-    const chatBody = $('#chat-body');
-    const chatInput = $('#chat-input');
+$(document).ready(function () {
+  const chatBody = $("#chat-body");
+  const chatInput = $("#chat-input");
 
-    function loadMessages() {
-        $.ajax({
-            url: 'ajax_chat_user.php?action=load',
-            type: 'GET',
-            success: function(data) {
-                if(chatBody.html() !== data) {
-                    chatBody.html(data);
-                    chatBody.scrollTop(chatBody[0].scrollHeight);
-                }
-            }
-        });
-    }
-
-    $('#send-btn').on('click', function() {
-        let message = chatInput.val().trim();
-        if (message === "") return;
-
-        $.ajax({
-            url: 'ajax_chat_user.php',
-            type: 'POST',
-            data: { action: 'send', message: message },
-            success: function() {
-                chatInput.val('');
-                loadMessages();
-            }
-        });
+  function loadMessages() {
+    $.ajax({
+      url: "ajax_chat_user.php?action=load",
+      type: "GET",
+      success: function (data) {
+        if (chatBody.html() !== data) {
+          chatBody.html(data);
+          chatBody.scrollTop(chatBody[0].scrollHeight);
+        }
+      },
     });
+  }
 
-    chatInput.on('keypress', function(e) {
-        if(e.which == 13) $('#send-btn').click();
+  $("#send-btn").on("click", function () {
+    let message = chatInput.val().trim();
+    if (message === "") return;
+
+    $.ajax({
+      url: "ajax_chat_user.php",
+      type: "POST",
+      data: { action: "send", message: message },
+      success: function () {
+        chatInput.val("");
+        loadMessages();
+      },
     });
+  });
 
-    // Cập nhật tin nhắn mỗi 2 giây
-    setInterval(loadMessages, 2000);
-    loadMessages();
+  chatInput.on("keypress", function (e) {
+    if (e.which == 13) $("#send-btn").click();
+  });
+
+  // Cập nhật tin nhắn mỗi 2 giây
+  setInterval(loadMessages, 2000);
+  loadMessages();
 });
 
