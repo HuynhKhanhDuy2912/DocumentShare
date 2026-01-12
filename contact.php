@@ -2,22 +2,21 @@
 include 'config.php';
 include 'header.php';
 
-if (!isset($_SESSION['username'])) {
-    echo "<script>window.location.assign('login.php');</script>";
-    exit();
-}
+$isLoggedIn = isset($_SESSION['username']);
+$conv_id = 0; // Mặc định
 
-$username = $_SESSION['username'];
+if ($isLoggedIn) {
+    $username = $_SESSION['username'];
+    // Kiểm tra hội thoại hiện tại, nếu chưa có thì tạo mới
+    $sql_check = "SELECT conv_id FROM conversations WHERE username = '$username' LIMIT 1";
+    $res_check = mysqli_query($conn, $sql_check);
 
-// Kiểm tra hội thoại hiện tại, nếu chưa có thì tạo mới
-$sql_check = "SELECT conv_id FROM conversations WHERE username = '$username' LIMIT 1";
-$res_check = mysqli_query($conn, $sql_check);
-
-if (mysqli_num_rows($res_check) == 0) {
-    mysqli_query($conn, "INSERT INTO conversations (username, status, isReadByUser) VALUES ('$username', 'new', 1)");
-    $conv_id = mysqli_insert_id($conn);
-} else {
-    $conv_id = mysqli_fetch_assoc($res_check)['conv_id'];
+    if (mysqli_num_rows($res_check) == 0) {
+        mysqli_query($conn, "INSERT INTO conversations (username, status, isReadByUser) VALUES ('$username', 'new', 1)");
+        $conv_id = mysqli_insert_id($conn);
+    } else {
+        $conv_id = mysqli_fetch_assoc($res_check)['conv_id'];
+    }
 }
 ?>
 
@@ -98,11 +97,23 @@ if (mysqli_num_rows($res_check) == 0) {
 
             <div class="p-3 border-top bg-white">
                 <div class="input-group align-items-center bg-light rounded-pill px-3 py-1">
-                    <input type="text" id="chat-input" class="form-control border-0 bg-transparent shadow-none" placeholder="Nhập tin nhắn hỗ trợ...">
-                    <button class="btn btn-link text-primary p-0 ms-2" id="send-btn">
+                    <input type="text" id="chat-input"
+                        class="form-control border-0 bg-transparent shadow-none"
+                        placeholder="<?php echo $isLoggedIn ? 'Nhập tin nhắn hỗ trợ...' : 'Vui lòng đăng nhập để gửi tin nhắn...'; ?>"
+                        <?php echo !$isLoggedIn ? 'disabled' : ''; ?>>
+
+                    <button class="btn btn-link text-primary p-0 ms-2"
+                        id="send-btn"
+                        <?php echo !$isLoggedIn ? 'disabled style="color: #ccc !important;"' : ''; ?>>
                         <i class="fas fa-paper-plane fa-lg"></i>
                     </button>
                 </div>
+
+                <?php if (!$isLoggedIn): ?>
+                    <div class="text-center mt-2">
+                        <small class="text-muted">Bạn cần <a href="login.php" class="text-primary fw-bold">đăng nhập</a> để bắt đầu trò chuyện.</small>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>

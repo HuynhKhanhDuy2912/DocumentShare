@@ -338,13 +338,16 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-
 /* ==================================================
                   CONTACT
 ================================================== */
 $(document).ready(function () {
   const chatBody = $("#chat-body");
   const chatInput = $("#chat-input");
+
+  if (chatBody.length === 0) {
+    return;
+  }
 
   function loadMessages() {
     $.ajax({
@@ -353,8 +356,14 @@ $(document).ready(function () {
       success: function (data) {
         if (chatBody.html() !== data) {
           chatBody.html(data);
-          chatBody.scrollTop(chatBody[0].scrollHeight);
+
+          if (chatBody[0]) {
+            chatBody.scrollTop(chatBody[0].scrollHeight);
+          }
         }
+      },
+      error: function () {
+        console.log("Không thể kết nối máy chủ chat.");
       },
     });
   }
@@ -362,6 +371,8 @@ $(document).ready(function () {
   $("#send-btn").on("click", function () {
     let message = chatInput.val().trim();
     if (message === "") return;
+
+    $("#send-btn, #chat-input").prop("disabled", true);
 
     $.ajax({
       url: "ajax_chat_user.php",
@@ -371,15 +382,20 @@ $(document).ready(function () {
         chatInput.val("");
         loadMessages();
       },
+      complete: function () {
+        $("#send-btn, #chat-input").prop("disabled", false);
+        chatInput.focus();
+      },
     });
   });
 
   chatInput.on("keypress", function (e) {
-    if (e.which == 13) $("#send-btn").click();
+    if (e.which == 13) {
+      e.preventDefault();
+      $("#send-btn").click();
+    }
   });
 
-  // Cập nhật tin nhắn mỗi 2 giây
-  setInterval(loadMessages, 2000);
   loadMessages();
+  setInterval(loadMessages, 3000);
 });
-

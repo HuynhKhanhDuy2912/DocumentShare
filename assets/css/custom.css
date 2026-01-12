@@ -1026,3 +1026,23 @@ body {
     background: #0d6efd;
   }
 }
+
+/* Tùy chỉnh danh sách thông tin liên hệ ở Footer */
+.footer-contact-info li {
+    transition: all 0.3s ease;
+}
+
+.footer-contact-info li:hover {
+    color: #0d6efd !important;
+}
+
+/* Đảm bảo tiêu đề footer có gạch chân trang trí */
+.footer-title::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 30px;
+    height: 2px;
+    background: #0d6efd;
+}

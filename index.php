@@ -77,7 +77,7 @@ while ($row = mysqli_fetch_assoc($rsFeatured)) {
 
 <!-- CAROUSEL -->
 <div class="bg" style="margin-top: 80px; background-color: #083f87; padding: 10px;">
-    <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div id="myCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
         <div class="carousel-inner">
 
             <?php foreach ($banners as $index => $banner): ?>
@@ -103,7 +103,7 @@ while ($row = mysqli_fetch_assoc($rsFeatured)) {
 
 <div class="container mt-4">
 
-<?php include 'featured_document.php' ?>
+    <?php include 'featured_document.php' ?>
 
     <!-- TÀI LIỆU NỔI BẬT -->
     <?php if (!empty($featuredDocs)): ?>
@@ -280,10 +280,10 @@ while ($row = mysqli_fetch_assoc($rsFeatured)) {
         <div>
             <div class="d-flex gap-4 text-muted mt-2 mb-2" style="font-size:14px;">
                 <span><b id="modalPageCount">0</b> trang</span>
-                <span class="dot">•</span>                
+                <span class="dot">•</span>
                 <span><b id="modalViewCount">0</b> lượt xem</span>
-                <span class="dot">•</span>                
-                <span><b id="modalDownloadCount">0</b> lượt tải</span>                
+                <span class="dot">•</span>
+                <span><b id="modalDownloadCount">0</b> lượt tải</span>
             </div>
             <h5 id="modalTitle"></h5>
             <p id="modalDesc" class="text-muted"></p>

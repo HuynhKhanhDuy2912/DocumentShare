@@ -78,7 +78,6 @@ if ($_POST['action'] == 'send') {
     $conv_id = (int)$_POST['conv_id'];
     $msg = mysqli_real_escape_string($conn, $_POST['message']);
     mysqli_query($conn, "INSERT INTO chat_messages (conv_id, sender, message) VALUES ($conv_id, 'admin', '$msg')");
-    // User chưa đọc tin của Admin -> Hiện chấm đỏ bên phía User
     mysqli_query($conn, "UPDATE conversations SET isReadByUser = 0, isReadByAdmin = 1 WHERE conv_id = $conv_id");
     exit;
 }

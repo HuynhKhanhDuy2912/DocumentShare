@@ -3,7 +3,7 @@ include 'config.php';
 
 // Kiểm tra đăng nhập
 if (!isset($_SESSION['username'])) {
-    exit("Bạn cần đăng nhập để nhắn tin.");
+    exit();
 }
 
 $username = $_SESSION['username'];

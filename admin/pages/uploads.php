@@ -32,18 +32,27 @@ if (isset($_GET['approve'])) {
 // =====================================================
 // TỪ CHỐI TÀI LIỆU
 // =====================================================
-if (isset($_GET['reject'])) {
-    $id = (int)$_GET['reject'];
+// =====================================================
+// TỪ CHỐI TÀI LIỆU (POST)
+// =====================================================
+if (isset($_POST['btn_reject_submit'])) {
+    $id = (int)$_POST['reject_id'];
+    $reason = mysqli_real_escape_string($conn, $_POST['reason']);
+    $admin_user = $_SESSION['username'] ?? 'admin';
 
-    mysqli_query($conn, "
-        UPDATE documents SET
-            status='rejected',
-            is_visible=0
-        WHERE document_id=$id
-          AND uploader_role='user'
-    ");
+    $sql = "UPDATE documents SET 
+                status = 'rejected', 
+                is_visible = 0,
+                rejection_reason = '$reason',
+                approved_by = '$admin_user',
+                approved_at = NOW()
+            WHERE document_id = $id AND uploader_role = 'user'";
 
-    echo "<script>alert('Đã từ chối tài liệu!');location.href='?p=uploads'</script>";
+    if (mysqli_query($conn, $sql)) {
+        echo "<script>alert('Đã từ chối tài liệu và gửi lý do!'); location.href='?p=uploads';</script>";
+    } else {
+        echo "<script>alert('Có lỗi xảy ra!');</script>";
+    }
     exit;
 }
 
@@ -182,16 +191,8 @@ $result = mysqli_query($conn, $sql);
                                     <a href="#"
                                         class="btn btn-sm btn-info btn-preview"
                                         data-id="<?= $row['document_id'] ?>">
-                                        <i class="fas fa-eye"></i>  
+                                        <i class="fas fa-eye"></i>
                                     </a>
-
-                                    <?php if ($row['status'] !== 'rejected'): ?>
-                                        <a href="?p=documents&action=edit&id=<?= $row['document_id'] ?>&redirect=uploads"
-                                            class="btn btn-sm btn-warning">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                    <?php endif; ?>
-
                                     <?php if ($row['status'] === 'pending'): ?>
 
                                         <a href="?p=uploads&approve=<?= $row['document_id'] ?>"
@@ -200,11 +201,12 @@ $result = mysqli_query($conn, $sql);
                                             <i class="fas fa-check"></i>
                                         </a>
 
-                                        <a href="?p=uploads&reject=<?= $row['document_id'] ?>"
-                                            class="btn btn-sm btn-danger"
-                                            onclick="return confirm('Bạn muốn từ chối tài liệu này?')">
+                                        <button type="button"
+                                            class="btn btn-sm btn-danger btn-reject-modal"
+                                            data-id="<?= $row['document_id'] ?>"
+                                            data-title="<?= htmlspecialchars($row['title']) ?>">
                                             <i class="fas fa-times"></i>
-                                        </a>
+                                        </button>
 
                                     <?php endif; ?>
                                 </td>
@@ -276,6 +278,31 @@ $result = mysqli_query($conn, $sql);
     </div>
 </div>
 
+<div class="modal fade" id="rejectModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form method="POST" action="?p=uploads">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Từ chối tài liệu</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Tài liệu: <strong id="rejectDocTitle"></strong></p>
+                    <input type="hidden" name="reject_id" id="rejectDocId">
+                    <div class="form-group">
+                        <label>Lý do từ chối:</label>
+                        <textarea name="reason" class="form-control" rows="4" placeholder="Nhập lý do để người dùng được biết..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                    <button type="submit" name="btn_reject_submit" class="btn btn-danger">Xác nhận từ chối</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
     document.querySelectorAll('.btn-preview').forEach(btn => {
         btn.addEventListener('click', function(e) {
@@ -292,6 +319,18 @@ $result = mysqli_query($conn, $sql);
                 .then(html => {
                     document.getElementById('previewContent').innerHTML = html;
                 });
+        });
+    });
+
+    document.querySelectorAll('.btn-reject-modal').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.dataset.id;
+            const title = this.dataset.title;
+
+            document.getElementById('rejectDocId').value = id;
+            document.getElementById('rejectDocTitle').innerText = title;
+
+            $('#rejectModal').modal('show');
         });
     });
 </script>

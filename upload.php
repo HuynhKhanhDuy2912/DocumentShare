@@ -111,7 +111,7 @@ function formatSizeUnits($bytes)
                         <th>Môn học</th>
                         <th>Kiểm duyệt</th>
                         <th>Hiển thị</th>
-                        <th width="140" >Thống kê</th>
+                        <th width="140">Thống kê</th>
                         <th width="180">Thao tác</th>
                     </tr>
                 </thead>
@@ -137,6 +137,12 @@ function formatSizeUnits($bytes)
                                         <span class="badge bg-success">Đã duyệt</span>
                                     <?php elseif ($row['status'] == 'rejected'): ?>
                                         <span class="badge bg-danger">Từ chối</span>
+                                        <button type="button"
+                                            class="btn btn-link btn-sm p-0 ms-1 text-danger btn-view-reason"
+                                            data-reason="<?= htmlspecialchars($row['rejection_reason'] ?? 'Không có lý do cụ thể.') ?>"
+                                            title="Xem lý do từ chối">
+                                            <i class="fas fa-info-circle"></i>
+                                        </button>
                                     <?php else: ?>
                                         <span class="badge bg-info">Chờ duyệt</span>
                                     <?php endif; ?>
@@ -215,5 +221,50 @@ function formatSizeUnits($bytes)
         </nav>
     <?php endif; ?>
 </div>
+
+<!-- MODAL -->
+<div class="modal fade" id="reasonModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-circle me-2"></i>Lý do từ chối tài liệu
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="p-3 bg-light rounded border">
+                    <p id="displayReason" class="mb-0 text-dark" style="line-height: 1.6;"></p>
+                </div>
+                <div class="mt-3 text-muted small">
+                    <i class="fas fa-lightbulb me-1"></i>
+                    <strong>Gợi ý:</strong> Bạn có thể chỉnh sửa lại tài liệu theo lý do trên và gửi lại yêu cầu duyệt.
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const reasonButtons = document.querySelectorAll('.btn-view-reason');
+    const reasonModal = new bootstrap.Modal(document.getElementById('reasonModal'));
+    const displayReason = document.getElementById('displayReason');
+
+    reasonButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Lấy lý do từ thuộc tính data-reason
+            const reason = this.getAttribute('data-reason');
+            
+            // Gán vào modal và hiển thị
+            displayReason.innerText = reason;
+            reasonModal.show();
+        });
+    });
+});
+</script>
 
 <?php include("footer.php"); ?>

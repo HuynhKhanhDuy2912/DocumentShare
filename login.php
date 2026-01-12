@@ -12,7 +12,7 @@ $redirectUri = 'http://localhost/chiasetailieu/login.php';
 $client = new Google_Client();
 $client->setClientId($clientID);
 $client->setClientSecret($clientSecret);
-$client->setRedirectUri($redirectUri);  
+$client->setRedirectUri($redirectUri);
 $client->addScope("email");
 $client->addScope("profile");
 
@@ -37,6 +37,11 @@ if (isset($_GET['code'])) {
         if ($result->num_rows > 0) {
             // --> Trường hợp A: Đã có tài khoản -> Đăng nhập luôn
             $row = $result->fetch_assoc();
+            if ($row['status'] == 1) {
+                echo "<script>alert('Tài khoản của bạn đã bị khóa! Vui lòng liên hệ Admin để được hỗ trợ.');";
+                echo "window.location.assign('login.php');</script>";
+                exit();
+            }
             $_SESSION['username'] = $row['username'];
             $_SESSION['emailUser'] = $row['email'];
             $_SESSION['role'] = $row['role'];
@@ -57,8 +62,8 @@ if (isset($_GET['code'])) {
         } else {
             // --> Trường hợp B: Chưa có tài khoản -> Tự động Đăng ký
             $new_username = explode('@', $email)[0]; // Tạo username lấy phần trước @ của email
-            $default_role = 0;            
-            $random_pass = md5(uniqid(rand(), true)); 
+            $default_role = 0;
+            $random_pass = md5(uniqid(rand(), true));
 
             // Lưu vào DB
             $insert_sql = "INSERT INTO users (username, password, email, role, google_id, status, created_at) 
@@ -90,13 +95,18 @@ if (isset($_REQUEST['sbSubmit'])) {
     $matkhau = md5($_REQUEST['txtMatkhau']);
     $sql = "select * from users where username='$tendangnhap' and password='$matkhau'";
     $result = $conn->query($sql);
-if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    $_SESSION['username'] = $tendangnhap;
-    $_SESSION['emailUser'] = $row['email'];
-    $_SESSION['role'] = $row['role'];
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        if ($row['status'] == 1) {
+            echo "<script>alert('Tài khoản của bạn đã bị khóa! Vui lòng liên hệ Admin để được hỗ trợ.');";
+            echo "window.location.assign('login.php');</script>";
+            exit();
+        }
+        $_SESSION['username'] = $tendangnhap;
+        $_SESSION['emailUser'] = $row['email'];
+        $_SESSION['role'] = $row['role'];
 
-    echo "<script>
+        echo "<script>
         console.log('--- Đăng nhập hệ thống thành công ---');
         console.log('User: " . $row['username'] . "');
         console.log('Email: " . $row['email'] . "');
@@ -134,7 +144,7 @@ if ($result->num_rows > 0) {
             </div>
             <h3>Đăng Nhập Tài Khoản</h3>
             <p class="text-muted small">Chào mừng bạn đến với DocumentShare</p>
-        </div> 
+        </div>
 
         <form action="" method="post" name="f1">
             <div class="form-floating mb-3">
@@ -174,7 +184,7 @@ if ($result->num_rows > 0) {
                     <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.13-5.51c-2.18 1.45-5.04 2.3-8.76 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
                     <path fill="none" d="M0 0h48v48H0z"></path>
                 </g>
-            </svg> 
+            </svg>
             Đăng nhập bằng Google
         </a>
 
@@ -183,4 +193,4 @@ if ($result->num_rows > 0) {
         </p>
     </div>
 
-<?php require('footer.php') ?>
+    <?php require('footer.php') ?>
